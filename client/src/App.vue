@@ -1,13 +1,29 @@
 <template>
   <div id="app">
-    <div class="container mt-3">
+    <nav-bar-component></nav-bar-component>
+    <div class="content container mt-3">
       <router-view />
     </div>
   </div>
 </template>
 
 <script>
+// import { Slide } from 'vue-burger-menu'
+import NavBarComponent from './components/NavBarComponent.vue'
+
 export default {
-  name: "app"
+  name: "app",
+  components: {
+        // Slide,
+    NavBarComponent,
+
+    }
+
 };
 </script>
+<style>
+  h1 {
+    text-align: center;
+    font-family: Raleway;
+  }
+</style>

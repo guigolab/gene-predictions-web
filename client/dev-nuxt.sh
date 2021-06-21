@@ -7,14 +7,14 @@ app="${root}/client"
 
 (
   cd "${app}"
- 
-  if [[ ! -d node_modules/.bin ]]; then
+
+  # if [[ ! -d node_modules/.bin ]]; then
     echo "Installing dependencies"
     npm install
-  fi
+  # fi
 
   echo "Starting frontend server"
-  #npm run lintfix
+  # npm run lint
   npm install --no-package-lock
   npm run serve
 )

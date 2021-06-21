@@ -17,7 +17,9 @@ class UsersApi(Resource):
 
 	def post(self):
 		try:
-			body = request.get_json()
+			app.logger.info(request.args.get("data"))
+			body = request.get_json(force=True)
+			app.logger.info(body)
 			user = User(**body).save()
 			id = user.id
 			return {'id': str(id)}, 201
