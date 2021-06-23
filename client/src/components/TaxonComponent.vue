@@ -1,5 +1,5 @@
 <template>
-  <div class="list row shadow p-3">
+  <div ref="taxon-container" class="list row shadow p-3">
     <div class="col-md-12">
       <div class="list row mb-2">
         <div class="col-md">
@@ -19,7 +19,7 @@
             class="mb-0"
             >
             <b-input-group size="sm">
-                <b-form-input
+                <b-form-input ref="filter"
                 id="filter-input"
                 v-model="filter"
                 type="search"
@@ -103,11 +103,11 @@ export default {
     return {
       selectedTaxon:{"tax_id":null,"name":null},
       taxons: [],
-      fields: ["tax_id", "name", { key: 'actions', label: '' },],
+      fields: ["tax_id", "name", "children", { key: 'actions', label: '' }],
       selectMode:"single",
       currentPage: 1,
       currentModalPage: 1,
-      perPage: 5,
+      perPage: 1000000,
       showModal: false,
       filter: null,
       filterOn: [],
@@ -166,7 +166,9 @@ export default {
         // Trigger pagination to update the number of buttons/pages due to filtering
         this.totalRows = filteredItems.length
         this.currentPage = 1
-      }
+      },
+         emitToParent () {
+    }
     },
     computed: {
         rows() {
