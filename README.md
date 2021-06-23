@@ -54,7 +54,7 @@
   tax_id
   description 
   not implemented yet:
-  list of taxon_nodes (add mongoengine link --> lazyreference field
+  list of taxon_nodes (add mongoengine link --> lazyreference field  https://docs.mongoengine.org/apireference.html#mongoengine.fields.LazyReferenceField 
   
   The TaxonFile model is the model where we store files and reference them to a taxon_node (to save 	a file in the database we must provide a taxon_node first)
   current attributes:
