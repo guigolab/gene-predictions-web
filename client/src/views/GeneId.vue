@@ -1,5 +1,6 @@
 <template>
     <b-container>
+            <page-heading-component :header="header"></page-heading-component>
         <b-row>
     <b-col cols="6" md="4" class="form">
         <GeneIdForm> </GeneIdForm>
@@ -60,19 +61,23 @@
 <script>
 import configs from '../static-config'
 import GeneIdForm from '../components/GeneIdFormComponent.vue'
-
+import PageHeadingComponent from '../components/PageHeadingComponent.vue'
 export default {
+    name: 'gene-id',
+
     data() {
         return {
             chapters: [],
-            text: ''
+            text: '',
+            header: configs.resources.geneIdDescription
         }
     },
     components: {
-        GeneIdForm
+        GeneIdForm,
+        PageHeadingComponent
     },
     mounted() {
-        configs.geneIdtexts
+        configs.resources.geneIdtexts
         .forEach((item) => {
             item.show = false;
             console.log(item);

@@ -1,3 +1,4 @@
+# from rest.taxon_files import TaxonFilesApi
 from flask import Response, request
 from flask import current_app as app
 from db.models import TaxonNode
@@ -11,6 +12,15 @@ class TaxonNodesApi(Resource):
 		taxonNodes = TaxonNode.objects().to_json()
 		return Response(taxonNodes, mimetype="application/json", status=200)
 
+ # this is what the taxon_service should do: iterate over lineage (we get only the 8/9 mayor taxonomy ranks) of a species, 
+ # create a taxon_node (tax_id, name) for every element of the array. 
+ # Than iterate from the children to the parent and push the children to the parent's children attribute
+	# def post(self):
+	# 	tax1 = TaxonNode(tax_id = "0026", name= "fadsfasd").save()
+	# 	tax2= TaxonNode(tax_id = "0009",name= "afasf").save()
+	# 	tax3 = TaxonNode(tax_id= "00012", name= "cacsafa").save()
+	# 	taxon_node = TaxonNode(tax_id = "0015", name="test node with children 2", children = [tax1,tax2,tax3]).save()
+	# 	return Response(taxon_node, mimetype="application/json", status=200)
 	# def delete(self):
 	# 	taxonNodes = TaxonNode.objects.delete()
 	# 	return '', 200

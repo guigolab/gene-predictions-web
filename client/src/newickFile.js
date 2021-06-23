@@ -50,5 +50,68 @@ module.exports = {
         Clupeidae:4)
         Clupeiformes:4)
         Actinopteri:4
-        )Chordata:4;`
+        )Chordata:4;`,
+        
+        treeData: {
+        'name': 'root',
+        'children': [
+            {'name':'Chordata',
+            'children': [
+            {'name':'Mammalia',
+                'children': [{'name':'Monodelphis domestica'},{'name':'Capra hircus'},{'name':'Sarcophilus harrisii'}]
+            },
+            {'name':'Aves', 
+            'children': [
+                {'name':'Passeriformes','children': [
+                    {'name':'Paridae','children': [
+                        {'name':'Parus','children':[{'name':'Parus minor'}]
+                        }
+                      ]
+                    },
+                            {'name':'Thraupidae','children': [
+                                    {'name':'Camarhynchus','children':[{'name':'Camarhynchus parvulus'}]
+                                    }
+                                ]
+                            },
+                                        {'name':'Estrildidae','children':[
+                                            {'name':'Taeniopygia','children':[{'name':'Taeniopygia guttata'}]}
+                                            ]
+                                        }
+                    ]
+                },
+                {'name':'Phasianidae','children': [
+                    {'name':'Coturnix','children':[{'name':'Coturnix japonica'}]
+                    },
+                    {'name':'Meleagris','children':[{'name':'Meleagris gallopavo'}]
+                    }
+                  ]
+                }
+              ]
+            },
+            {'name':'Amphibia','children': [
+                {'name':'Anura','children':[
+                    {'name': 'Pipidae','children': [
+                        {'name':'Xenopus','children':[{'name':'Xenopus tropicalis'}]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {'name':'Actinopteri','children':[
+                {'name':'Clupeiformes','children': [
+                    {'name':'Clupeidae','children': [
+                        {'name':'Clupea','children':[{'name':'Clupea harengus'}]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+      }
+    ]
+  }
 }
