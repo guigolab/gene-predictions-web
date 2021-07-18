@@ -17,7 +17,6 @@ class TaxonNode(db.Document):
     tax_id = db.StringField(required=True,unique=True)
     name = db.StringField(required=True,unique=True)
     description = db.StringField()
-    is_species = db.BooleanField(default=True)
     children = db.ListField(db.LazyReferenceField('self', passthrough=True))
 
 class TaxonFile(db.Document):

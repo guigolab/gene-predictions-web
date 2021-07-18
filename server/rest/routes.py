@@ -7,7 +7,7 @@ def initialize_routes(api):
 	api.add_resource(UsersApi, '/users')
 	api.add_resource(UserApi, '/users/<id>')
 	api.add_resource(SpeciesApi, '/species')
-	api.add_resource(TaxonNodeApi, '/taxon-nodes/<id>')
+	api.add_resource(TaxonNodeApi, '/taxon-nodes/<tax_id>')
 	api.add_resource(TaxonNodesApi, '/taxon-nodes')
 
 	##is it a good practice to change endpoint between 2 related models?

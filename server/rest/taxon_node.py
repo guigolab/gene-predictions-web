@@ -9,9 +9,12 @@ import json
 
 class TaxonNodesApi(Resource):
 	def get(self):
-		taxonNodes = TaxonNode.objects().to_json()
-		return Response(taxonNodes, mimetype="application/json", status=200)
+		taxon_nodes = TaxonNode.objects().to_json()
+		return Response(taxon_nodes, mimetype="application/json", status=200)
 
+	def delete(self):
+		taxon_nodes = TaxonNode.objects.delete()
+		return '', 200
  # this is what the taxon_service should do: iterate over lineage (we get only the 8/9 mayor taxonomy ranks) of a species, 
  # create a taxon_node (tax_id, name) for every element of the array. 
  # Than iterate from the children to the parent and push the children to the parent's children attribute
@@ -48,10 +51,14 @@ class TaxonNodeApi(Resource):
 		TaxonNode.objects.get(id=id).update(**body)
 		return '', 200
 
-	def get(self, id):
+	def get(self, tax_id):
 		try:
-			taxonNode = TaxonNode.objects.get(id=id).to_json()
-			return Response(taxonNode, mimetype="application/json", status=200)
+			taxon_node = TaxonNode.objects(tax_id=tax_id).first()
+			###fetch references
+			children_dict = {}
+			children_dict['children'] = [lazy_ref.fetch().to_json() for lazy_ref in taxon_node.children]
+			app.logger.info(children_dict)
+			return Response(json.dumps(children_dict), mimetype="application/json", status=200)
 		except DoesNotExist:
 			raise UserNotFoundError
 

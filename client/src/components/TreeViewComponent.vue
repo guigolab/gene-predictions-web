@@ -18,6 +18,9 @@
         </li>
 </template>
 <script>
+
+import TaxonNodeDataService from "../services/TaxonNodeDataService";
+
 export default {
     name: 'tree-view',
     props: {
@@ -25,18 +28,57 @@ export default {
     },
     data(){
         return {
-            isOpen: false,
+            // isOpen: false,
         }
     },
     computed: {
           isFolder() {
             return this.item.children && this.item.children.length;
+          },
+          isOpen() {
+              return this.item.isOpen
           }
         },
     methods: {
+        // retrieveChildren() {
+        // TaxonNodeDataService.getChildren(this.item.tax_id)
+        //     .then(response => {
+        //         console.log(response.data)
+        //     return response.data;
+        //     })
+        //     .catch(e => {
+        //     console.log(e);
+        //     });
+        // },
         toggle() {
             if (this.isFolder) {
-                this.isOpen = !this.isOpen;
+                TaxonNodeDataService.getChildren(this.item.tax_id)
+                    .then(response => {
+                    if(response.data['children'].length > 0) {
+                        this.item.children = response.data['children'].map(child => {
+                            let taxChild = JSON.parse(child);
+                            taxChild.isOpen = false;
+                            return taxChild
+                        })
+                    } 
+                    // else {
+
+                    // this.item.children = [JSON.parse(response.data['children'])];
+                    // }
+                    })
+                    .catch(e => {
+                    console.log(e);
+                    });
+                
+                // this.item.children.forEach(function (value) {
+                //     console.log(this.item);
+                //     });
+                this.item.children.map(child => {
+                    child.isOpen = false
+                    })
+                // if(this.item.isOpen){
+                // }
+                this.item.isOpen = !this.item.isOpen
             }
             if(!this.item.children){
                 document.querySelector('#filter-input').value = this.item.name;
@@ -45,7 +87,8 @@ export default {
                 // document.querySelector('#taxon-table').click();
             // document.querySelector('#filter-input').value = this.item.name //bad practice for sure
         }
-    }
+    },
+      
 }
 }
 </script>
@@ -58,7 +101,7 @@ export default {
   font-weight: bold;
 }
 ul {
-  padding-left: 1em;
+  padding-left: 0.25em;
   line-height: 1.5em;
   list-style-type: none;
 }

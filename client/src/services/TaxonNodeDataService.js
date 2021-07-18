@@ -5,9 +5,13 @@ class TaxonNodeDataService {
     return http.get("/taxon-nodes");
   }
 
-  get(id) {
-    return http.get(`/taxon-nodes/${id}`);
+  getChildren(tax_id) {
+    return http.get(`/taxon-nodes/${tax_id}`);
   }
+
+  // get(id) {
+  //   return http.get(`/taxon-nodes/${id}`);
+  // }
 
   create(data) {
     return http.post("/taxon-nodes", data);

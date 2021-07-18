@@ -103,7 +103,7 @@ export default {
     return {
       selectedTaxon:{"tax_id":null,"name":null},
       taxons: [],
-      fields: ["tax_id", "name", "children", { key: 'actions', label: '' }],
+      fields: ["tax_id", "name", { key: 'actions', label: '' }],
       selectMode:"single",
       currentPage: 1,
       currentModalPage: 1,

@@ -1,6 +1,6 @@
 <template>
   <b-form v-if="show" @submit="onSubmit" @reset="onReset">
-        <b-form-group label="Gene Id form" label-size="lg"
+        <b-form-group label="Try it out" label-size="lg"
         label-class="font-weight-bold pt-0"
         class="mb-0">
             <b-form-group label="Paste your FASTA/GFF sequence here" 

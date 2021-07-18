@@ -3,6 +3,7 @@ from flask import Response, request
 from flask import current_app as app
 from db.models import TaxonFile, TaxonNode
 from flask_restful import Resource
+import services.taxon_service as service
 from mongoengine.errors import DoesNotExist, NotUniqueError, ValidationError
 from errors import InternalServerError, SchemaValidationError, UserNotFoundError, EmailAlreadyExistError
 import json
@@ -14,15 +15,19 @@ class TaxonFilesApi(Resource):
         taxon_files= TaxonFile.objects(taxon = taxon).to_json()
         app.logger.info(taxon_files)
         return Response(taxon_files, mimetype="application/json", status=200)
-   
+     
+    def delete(self):
+        app.logger.info("here")
+        taxon_files = TaxonFile.objects.delete()
+        return '', 200
+
     def post(self,tax_id):
         try:
-            file = request.files.get('file')
             app.logger.info(request.form['json'])
+            taxon = service.return_taxon(tax_id)
+            file = request.files.get('file')
             data = json.loads(request.form['json'])
-            name = "Sarcophilus Harrisii"
-            new_taxon = TaxonNode(tax_id=tax_id, name=name).save() ##should use get || create
-            taxon_files = TaxonFile(**data, file=file, taxon = new_taxon).save()
+            taxon_files = TaxonFile(**data, file=file, taxon = taxon).save()
             return  201
         except NotUniqueError:
             raise EmailAlreadyExistError
@@ -31,6 +36,7 @@ class TaxonFilesApi(Resource):
         except Exception as e:
             app.logger.error(e)
         raise InternalServerError
+
 
 class TaxonFileApi(Resource):
 

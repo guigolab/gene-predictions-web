@@ -1,6 +1,7 @@
 <template>
     <b-container>
     <page-heading-component :header="header"></page-heading-component>
+    <p>The predictions available on this page have been obtained by using the gene-finding software <b-link to="/geneid">geneid</b-link> and <b-link to="/sgp2">SGP2</b-link>. SGP2 combines geneid predictions with tblastx comparison of a query genome from one species (i.e. human) against an informant genome of another species (i.e. from mouse). </p>
       <b-row>
         <b-col cols="6" md="4" class="tree-viewer">
             <div class="list row shadow p-3">
@@ -26,17 +27,32 @@ import TreeView from '../components/TreeViewComponent.vue'
 // import PhyloGramComponent from '../components/PhyloGramComponent.vue'
 // import PhyloGeneticTree from '../components/PhylogeneticTreeComponent.vue'
 import config from '../static-config'
-import{ treeData } from '../newickFile'
+import TaxonNodeDataService from "../services/TaxonNodeDataService";
+
 
 export default {
     name: 'gene-prediction',
     data() {
         return {
             header: config.resources.genePDescription,
-            treeData: treeData
+            treeData: Object
         }
     },
+    methods: {
+           retrieveTaxons() {
+        TaxonNodeDataService.getAll()
+            .then(response => {
+            this.treeData = response.data[0];
+            this.treeData.isOpen = false;
+            console.log(this.treeData)
+            })
+            .catch(e => {
+            console.log(e);
+            });
+        },
+    },
     mounted(){
+        this.retrieveTaxons()
 
     },
     components: {
@@ -51,7 +67,7 @@ export default {
 </script>
 <style>
 .tree-viewer {
-    max-height: 400px;
+    max-height: 600px;
     overflow: scroll;
 }
 </style>

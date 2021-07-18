@@ -16,6 +16,6 @@ export default {
 </script>
 <style >
 .page-header-container{
-    margin-bottom: 50px;
+    margin-bottom: 20px;
 }
 </style>
