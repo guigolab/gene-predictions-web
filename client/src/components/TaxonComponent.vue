@@ -47,7 +47,7 @@
         :filter-included-fields="filterOn"
       >
        <template #cell(actions)="row">
-            <b-button size="sm" @click="info(row.item, row.index, $event.target)" class="mr-1">
+            <b-button size="sm" v-show="row.item.hasFiles" @click="info(row.item, row.index, $event.target)" class="mr-1">
             Show Files
             </b-button>
         </template>
@@ -69,6 +69,11 @@
         selectable
         @row-selected="downloadFile"
       >
+      <template #cell(actions)="row">
+            <b-button size="sm" @click="toGenomeBrowser(row.item)" class="mr-1">
+            Visualize Genome
+            </b-button>
+        </template>
       <!-- <template #cell(actions)="data">
           <b-button ref="download-file" size="sm" @click="downloadFile(data.item)" class="mr-1">
             Download 
@@ -114,7 +119,7 @@ export default {
       fileListModal: {
         id: 'file-list-modal',
         files: [],
-        fields: ["name","type"],
+        fields: ["name","type", { key: 'actions', label: '' }],
         currentPage: 1,
         perPage: 5,
         selectMode:"single",
@@ -130,7 +135,18 @@ export default {
         TaxonNodeDataService.getAll()
             .then(response => {
             this.taxons = response.data;
-            })
+            this.taxons.forEach(taxon => {
+              // the back should return the filtered list
+                taxonFileService.getAll(taxon.tax_id)
+                  .then(response => {
+                  this.fileListModal.files  = response.data;
+                  taxon.hasFiles = this.fileListModal.files.length > 0 ? true : false
+                  })
+                  .catch(e => {
+                  console.log(e);
+                  });
+                })
+               })  
             .catch(e => {
             console.log(e);
             });
@@ -139,24 +155,23 @@ export default {
         taxonFileService.getAll(item.tax_id)
             .then(response => {
             this.fileListModal.files  = response.data;
-            console.log(response.data);
             })
             .catch(e => {
             console.log(e);
             });
         this.$root.$emit('bv::show::modal', this.fileListModal.id, button)
         },
-        // resetInfoModal() {
-        //     this.fileListModal.files = null
-        // },
+        toGenomeBrowser(item) {
+              this.$router.push({name: "genome-browser", path:"/", params: {fileName: item.name}})
+              // this.$route.push()
+              // this.$route.params.name 
+              },
         downloadFile(item) {
             taxonFileService.download(item[0].name)
             .then(response => {
-                console.log(response);
                 const url = window.URL.createObjectURL(new Blob([response.data], { type: { type: 'text/plain;charset=utf-8' }}));
                 const link = document.createElement('a');
                 link.href = url;
-                console.log(item.name);
                 link.setAttribute('download', item[0].name);
                 link.click();
 

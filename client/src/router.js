@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Router from "vue-router";
 // import Phylo from './views/PhyloGeneticTree.vue'
-// import Genome from './views/GenomeBrowser.vue'
+import Genome from './views/GenomeBrowser.vue'
 import SGP2Algorithm from './views/SGP2Algorithm.vue'
 import SoftwareDownload from './views/SoftwareDownload.vue'
 import GenePrediction from './views/GenePrediction.vue'
@@ -41,6 +41,11 @@ export default new Router({
       path:"/software-download",
       name: "download-distributions",
       component: SoftwareDownload
+    },
+    {
+      path:"/genome-browser",
+      name:"genome-browser",
+      component: Genome
     },
     {
       path:"/sgp2",
