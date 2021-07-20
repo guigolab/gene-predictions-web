@@ -7,12 +7,6 @@ import os
 ## create a service to retrieve lineage from taxon_id and create taxon_nodes from that
 ## check http://etetoolkit.org/docs/latest/tutorial/tutorial_ncbitaxonomy.html
 
-# how to manage NCBITaxa() instance??
-
-# def load_ncbi_instance():
-#     app.logger.info(os.path.abspath("services/taxdump.tar.gz"))
-#     return NCBITaxa(taxdump_file=os.path.abspath("services/taxdump.tar.gz"))
-
 def insert_taxons_from_lineage(tax_id):
         taxa_db = NCBITaxa(taxdump_file=os.path.abspath("services/taxdump.tar.gz"))
         lineage = taxa_db.get_lineage(tax_id)
@@ -20,7 +14,6 @@ def insert_taxons_from_lineage(tax_id):
             if TaxonNode.objects(tax_id=str(node)).first():
                 continue
             else:
-                app.logger.info(taxa_db.get_taxid_translator([node]).get(node))
                 taxon_node = TaxonNode(tax_id=str(node), name= taxa_db.get_taxid_translator([node]).get(node))
                 taxon_node.save()
         return lineage
@@ -32,7 +25,6 @@ def create_children(lineage):
         next_taxid = str(rev_lineage[index + 1])
         taxon = TaxonNode.objects(tax_id=str(rev_lineage[index])).first()
         father_taxon = TaxonNode.objects(tax_id=next_taxid).first()
-        app.logger.info("pass HERE!!")
         if not any(child_node.id == taxon.id for child_node in father_taxon.children):
             father_taxon.children.append(taxon)
             father_taxon.save()

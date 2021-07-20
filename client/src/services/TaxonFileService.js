@@ -10,6 +10,10 @@ class TaxonFileDataService {
     return download.post(`/download/${name}`);
   }
 
+  getTracks(name) {
+    return http.get(`/download/${name}`)
+  }
+
 //   create(data) {
 //     return http.post("/taxon-nodes", data);
 //   }

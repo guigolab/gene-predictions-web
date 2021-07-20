@@ -43,8 +43,9 @@ export default new Router({
       component: SoftwareDownload
     },
     {
-      path:"/genome-browser",
+      path:"/genome-browser/:fileName",
       name:"genome-browser",
+      props: true,
       component: Genome
     },
     {

@@ -70,7 +70,7 @@
         @row-selected="downloadFile"
       >
       <template #cell(actions)="row">
-            <b-button size="sm" @click="toGenomeBrowser(row.item)" class="mr-1">
+            <b-button size="sm" :to="{name: 'genome-browser', params: {fileName: row.item.name}}" class="mr-1">
             Visualize Genome
             </b-button>
         </template>
@@ -161,11 +161,11 @@ export default {
             });
         this.$root.$emit('bv::show::modal', this.fileListModal.id, button)
         },
-        toGenomeBrowser(item) {
-              this.$router.push({name: "genome-browser", path:"/", params: {fileName: item.name}})
-              // this.$route.push()
-              // this.$route.params.name 
-              },
+        // toGenomeBrowser(item) {
+        //       this.$router.push({path: `/genome-browser/${item.name}`})
+        //       // this.$route.push()
+        //       // this.$route.params.name 
+        //       },
         downloadFile(item) {
             taxonFileService.download(item[0].name)
             .then(response => {
