@@ -1,12 +1,15 @@
 <template>
 <b-container>
-    <page-heading-component :header="header"></page-heading-component> 
-    <GenomeBrowserComponent v-if="tracks" :tracks="tracks"></GenomeBrowserComponent>
+    <PageHeadingComponent :header="header"></PageHeadingComponent>
+    <IGVBrowserComponent v-if="tracks"></IGVBrowserComponent>
+    <!-- <GenomeBrowserComponent v-if="tracks" :tracks="tracks"></GenomeBrowserComponent> -->
 </b-container>
 </template>
 
 <script>
-import GenomeBrowserComponent from '../components/GenomeBrowserComponent.vue'
+
+// import GenomeBrowserComponent from '../components/GenomeBrowserComponent.vue'
+import IGVBrowserComponent from '../components/IGVBrowserComponent.vue';
 import PageHeadingComponent from '../components/PageHeadingComponent.vue';
 import taxonFileService from "../services/TaxonFileService";
 
@@ -22,8 +25,9 @@ export default {
         }
     },
   components: {
-      GenomeBrowserComponent,
+    // GenomeBrowserComponent,
     PageHeadingComponent,
+    IGVBrowserComponent,
   },
 
  beforeRouteEnter (to, from, next) {

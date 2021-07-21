@@ -23,9 +23,7 @@ import TaxonNodeDataService from "../services/TaxonNodeDataService";
 
 export default {
     name: 'tree-view',
-    props: {
-     item: Object,
-    },
+    props:['item'],
     data(){
         return {
             // isOpen: false,
@@ -57,6 +55,7 @@ export default {
                     });
                 this.item.isOpen = !this.item.isOpen
             }
+                if(this.item.has_files)
                 document.querySelector('#filter-input').value = this.item.name;
                 document.querySelector('#filter-input').dispatchEvent(new Event("change"));
                 console.log(document.querySelector('#filter-input'));

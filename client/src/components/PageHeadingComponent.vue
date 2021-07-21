@@ -9,9 +9,7 @@
 
 export default {
     name: "PageHeadingComponent",
-    props: { 
-        header: Object
-        }
+    props: ['header']
 }
 </script>
 <style >

@@ -9,7 +9,7 @@
     </div>
     <div class="col-md-12">
         <b-row id="filter-bar">
-            <b-col lg="6" class="my-1">
+          <b-col lg="6" class="my-1">
             <b-form-group
             label="Filter"
             label-for="filter-input"
@@ -25,15 +25,14 @@
                 type="search"
                 placeholder="Type to Search"
                 >
-           </b-form-input>
+            </b-form-input>
             <b-input-group-append>
               <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
             </b-input-group-append>
-          </b-input-group>
-        </b-form-group>
-      </b-col>
-        </b-row>
-    
+            </b-input-group>
+            </b-form-group>
+          </b-col>
+      </b-row>
       <b-table 
         id="taxon-table"
         striped
@@ -47,46 +46,12 @@
         :filter-included-fields="filterOn"
       >
        <template #cell(actions)="row">
-            <b-button size="sm" v-show="row.item.hasFiles" @click="info(row.item, row.index, $event.target)" class="mr-1">
+            <b-button size="sm" v-show="row.item.has_files" @click="info(row.item, row.index, $event.target)" class="mr-1">
             Show Files
             </b-button>
         </template>
       </b-table>
-    <b-modal title="File List" :id="fileListModal.id" >
-      <b-table 
-        id="files-table"
-        striped
-        hover
-        borderless
-        :items="fileListModal.files"
-        :fields="fileListModal.fields"
-        :per-page="perPage"
-        :current-page="currentModalPage"
-        show-empty
-        responsive="sm"
-        ref="selectableTable"
-        :select-mode="selectMode"
-        selectable
-        @row-selected="downloadFile"
-      >
-      <template #cell(actions)="row">
-            <b-button size="sm" :to="{name: 'genome-browser', params: {fileName: row.item.name}}" class="mr-1">
-            Visualize Genome
-            </b-button>
-        </template>
-      <!-- <template #cell(actions)="data">
-          <b-button ref="download-file" size="sm" @click="downloadFile(data.item)" class="mr-1">
-            Download 
-            </b-button>
-      </template>    -->
-        <b-pagination
-        v-model="currentModalPage"
-        :total-rows="rows"
-        :per-page="perPage"
-        aria-controls="files-table"
-        ></b-pagination>
-      </b-table>
-    </b-modal>
+      <FileListModal :files="files"></FileListModal>
       <b-pagination
         v-model="currentPage"
         :total-rows="rows"
@@ -94,14 +59,13 @@
         aria-controls="taxon-table"
         ></b-pagination>
     </div>
-
   </div>
 </template>
 
 <script>
 import TaxonNodeDataService from "../services/TaxonNodeDataService";
 import taxonFileService from "../services/TaxonFileService";
-
+import FileListModal from "./modal/FileListModal.vue"
 export default {
   name: "taxon-list",
   data() {
@@ -113,39 +77,19 @@ export default {
       currentPage: 1,
       currentModalPage: 1,
       perPage: 1000000,
-      showModal: false,
       filter: null,
       filterOn: [],
-      fileListModal: {
-        id: 'file-list-modal',
-        files: [],
-        fields: ["name","type", { key: 'actions', label: '' }],
-        currentPage: 1,
-        perPage: 5,
-        selectMode:"single",
-      }
+      files: null
     };
   },
   components:{
-    // FileListModal,
-    // CreateUserModal
+    FileListModal,
   },
     methods: {
         retrieveTaxons() {
         TaxonNodeDataService.getAll()
             .then(response => {
             this.taxons = response.data;
-            this.taxons.forEach(taxon => {
-              // the back should return the filtered list
-                taxonFileService.getAll(taxon.tax_id)
-                  .then(response => {
-                  this.fileListModal.files  = response.data;
-                  taxon.hasFiles = this.fileListModal.files.length > 0 ? true : false
-                  })
-                  .catch(e => {
-                  console.log(e);
-                  });
-                })
                })  
             .catch(e => {
             console.log(e);
@@ -154,36 +98,18 @@ export default {
        info(item, button) {
         taxonFileService.getAll(item.tax_id)
             .then(response => {
-            this.fileListModal.files  = response.data;
+            this.files  = response.data;
             })
             .catch(e => {
             console.log(e);
             });
-        this.$root.$emit('bv::show::modal', this.fileListModal.id, button)
-        },
-        // toGenomeBrowser(item) {
-        //       this.$router.push({path: `/genome-browser/${item.name}`})
-        //       // this.$route.push()
-        //       // this.$route.params.name 
-        //       },
-        downloadFile(item) {
-            taxonFileService.download(item[0].name)
-            .then(response => {
-                const url = window.URL.createObjectURL(new Blob([response.data], { type: { type: 'text/plain;charset=utf-8' }}));
-                const link = document.createElement('a');
-                link.href = url;
-                link.setAttribute('download', item[0].name);
-                link.click();
-
-            })
+        this.$root.$emit('bv::show::modal', 'file-list-modal', button)
         },
         onFiltered(filteredItems) {
         // Trigger pagination to update the number of buttons/pages due to filtering
         this.totalRows = filteredItems.length
         this.currentPage = 1
       },
-         emitToParent () {
-    }
     },
     computed: {
         rows() {

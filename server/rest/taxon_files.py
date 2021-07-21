@@ -13,11 +13,17 @@ from BCBio import GFF
 
 class TaxonFilesApi(Resource):
     def get(self,tax_id):
-        taxon = TaxonNode.objects(tax_id=tax_id).first()
-        taxon_files= TaxonFile.objects(taxon = taxon).to_json()
-        return Response(taxon_files, mimetype="application/json", status=200)
+        try:
+            taxon = TaxonNode.objects(tax_id=tax_id).first()
+            taxon_files= TaxonFile.objects(taxon = taxon).to_json()
+            return Response(taxon_files, mimetype="application/json", status=200)
+        except ValidationError:
+            raise SchemaValidationError
+        except Exception as e:
+            app.logger.error(e)
+        raise InternalServerError
      
-    def delete(self):
+    def delete(self,tax_id):
         taxon_files = TaxonFile.objects.delete()
         return '', 200
 
@@ -28,8 +34,6 @@ class TaxonFilesApi(Resource):
             data = json.loads(request.form['json'])
             taxon_files = TaxonFile(**data, file=file, taxon = taxon).save()
             return  201
-        except NotUniqueError:
-            raise EmailAlreadyExistError
         except ValidationError:
             raise SchemaValidationError
         except Exception as e:

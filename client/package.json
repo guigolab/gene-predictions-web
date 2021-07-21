@@ -12,6 +12,7 @@
     "bootstrap": "^4.5.3",
     "bootstrap-vue": "^2.21.2",
     "core-js": "^3.4.3",
+    "igv": "^2.9.2",
     "phylotree": "1.0.0",
     "scribl": "file:./src/Scribl",
     "underscore": "^1.13.1",

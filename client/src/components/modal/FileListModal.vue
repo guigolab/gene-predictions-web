@@ -1,86 +1,71 @@
 <template>
-<b-modal id="bv-modal" ref="bv-modal" v-if="showModal">
-  <div class="list row shadow p-3">
-    <div class="col-md-12">
-      <div class="list row mb-2">
-        <div class="col-md-6">
-          <h4>File List</h4>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-12">
+ <b-modal title="File List" id="file-list-modal" >
       <b-table 
         id="files-table"
         striped
         hover
+        borderless
         :items="files"
         :fields="fields"
         :per-page="perPage"
         :current-page="currentPage"
         show-empty
+        responsive="sm"
+        ref="selectableTable"
+        :select-mode="selectMode"
+        selectable
+        @row-selected="downloadFile"
       >
-        <template #cell(index)="data">
-          {{ ((currentPage-1) * perPage)+(data.index + 1) }}
+      <template #cell(actions)="row">
+            <b-button size="sm" :to="{name: 'genome-browser', params: {fileName: row.item.name}}" class="mr-1">
+            Visualize Genome
+            </b-button>
         </template>
-      </b-table>
-      <b-pagination
+        <!-- <b-pagination
         v-model="currentPage"
         :total-rows="rows"
         :per-page="perPage"
         aria-controls="files-table"
-        ></b-pagination>
-    </div>
-
-  </div>
-</b-modal>
+        ></b-pagination> -->
+      </b-table>
+    </b-modal>
 </template>
 
 <script>
 import taxonFileService from "../../services/TaxonFileService";
-// import Confirmation from "../components/modal/Confirmation";
-// import VisualizeSpeciesModal from "../components/modal/VisualizModal";
 
 export default {
-  name: "file-list",
-  props: {
-      taxon: Object
-  },
+  name: "file-list-modal",
+  props: ['files'],
   data() {
     return {
-      files: [],
-      fields: ["name","type", "format"],
-      currentPage: 1,
-      perPage: 3,
-      showModal:false
+        fields: ["name","type", { key: 'actions', label: '' }],
+        currentPage: 1,
+        perPage: 5,
+        selectMode:"single",
     };
   },
-  components:{
-    // Confirmation,
-    // CreateUserModal
-  },
     methods: {
-        retrieveFiles(taxon) {
-            console.log("pass");
-        const taxId = taxon.taxId;
-        taxonFileService.getAll(taxId)
+        downloadFile(item) {
+          console.log(item)
+            taxonFileService.download(item[0].name)
             .then(response => {
-            this.files = response.data;
-            this.showModal = true;
-            console.log(response.data);
+                const url = window.URL.createObjectURL(new Blob([response.data], { type: { type: 'text/plain;charset=utf-8' }}));
+                const link = document.createElement('a');
+                console.log(link)
+                link.href = url;
+                link.setAttribute('download', item[0].name);
+                link.click();
             })
-            .catch(e => {
-            console.log(e);
-            });
-        },
-        },
-    computed: {
-        rows() {
-            return this.files.length
-            }
-        },
+        },    
+    },
     mounted() {
-        this.retrieveFiles(this.taxon);
-    }
+    },
+    // computed: {
+    // rows() {
+    //     return this.files.length
+    //     }
+    // },
 };
 
 </script>
