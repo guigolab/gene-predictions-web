@@ -12,6 +12,7 @@ from BCBio import GFF
 
 
 class TaxonFilesApi(Resource):
+    #get files of a taxon
     def get(self,tax_id):
         try:
             taxon = TaxonNode.objects(tax_id=tax_id).first()
@@ -22,9 +23,10 @@ class TaxonFilesApi(Resource):
         except Exception as e:
             app.logger.error(e)
         raise InternalServerError
-     
+    #delete files of a taxon
     def delete(self,tax_id):
-        taxon_files = TaxonFile.objects.delete()
+        taxon = TaxonNode.objects(tax_id=tax_id).first()
+        taxon_files= TaxonFile.objects(taxon = taxon).delete()
         return '', 200
 
     def post(self,tax_id):
@@ -43,7 +45,7 @@ class TaxonFilesApi(Resource):
 
 class TaxonFileApi(Resource):
 
-     def post(self, name):
+    def post(self, name):
         try:
             taxon_file = TaxonFile.objects(name=name).first()
             file = taxon_file.file.read()
@@ -56,9 +58,12 @@ class TaxonFileApi(Resource):
         except Exception as e:
             app.logger.error(e)
         raise InternalServerError
+    
+    def delete(self,name):
+        file = TaxonFile.objects(name=name).delete()
+        return '',200
 
-     def get(self,name):
-         ##parse gff and send response to genome viewer
+    def get(self,name):
         try:
             tmp_file = "tmp.txt"
             taxon_file = TaxonFile.objects(name=name).first()
@@ -75,31 +80,6 @@ class TaxonFileApi(Resource):
                         track["strand"] = gene.location._strand
                     arr.append(track)
                 to_json['content'] = arr
-            # # app.logger.info(taxon_file.file.readline(100))
-            # for line in taxon_file.file.read():
-            #     app.logger.info(line)
-                # in_handle.write(line)
-            # in_handle.close()
-            # app.logger.info(in_handle[:100])
-            # with open(tmp_file,'b') as f:
-            #     f.write(file)
-            #     for rec in GFF.parse(f):
-            #         arr = [[i.location._start.position, i.location._end.position, i.location._strand, i.type,i.qualifiers] for i in rec.features]
-            #     app.logger.info(arr[:10])
-            # f.close()
-            # file = taxon_file.file.read()
-            # with open(tmp_file) as out_handle:
-            #     for line in taxon_file.file.read():
-            #         out_handle.write(line)
-            # in_handle = open(tmp_file,'r')
-            # to_json={}
-            # to_json['content'] = arr
-            # app.logger.info(to_json)
-            # to_json['total'] = len(arr)
-            # app.logger.info(in_handle)
-            # for rec in GFF.parse(in_handle):
-            #     arr=[]
-            #     arr = [[i.location._start.position, i.location._end.position, i.location._strand, i.type,i.qualifiers] for i in rec.features]
             return Response(json.dumps(arr), mimetype="application/json", status=200)
         except NotUniqueError:
             raise EmailAlreadyExistError
@@ -108,27 +88,3 @@ class TaxonFileApi(Resource):
         except Exception as e:
             app.logger.error(e)
         raise InternalServerError  
-
-    #TODO expose endopoint to upload files from workflow
-	# def put(self, id):
-	# 	body = request.get_json()
-	# 	TaxonFiles.objects.get(id=id).update(**body)
-	# 	return '', 200
-    # def get(self, name):
-    #     try:
-    #         taxon_file = TaxonFile.objects(name=name).first()
-    #         file = taxon_file.file.read()
-    #         content_type = file.content_type
-    #         return Response(taxon_file, content_type=content_type, status=200)
-    #     except DoesNotExist:
-    #         raise UserNotFoundError
-
-	# def delete(self, id):
-	# 	taxon_files = TaxonFiles.objects.get(id=id).delete()
-	# 	return '', 200
-# TODO create endpoints for retrieving files and send them to client
-# class TaxonNodeFilesApi(Resource):
-
-# 	def get(self,id):
-# 		try:
-# 			taxon_node = TaxonNode.objects

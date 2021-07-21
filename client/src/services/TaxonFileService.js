@@ -7,29 +7,12 @@ class TaxonFileDataService {
   }
 
   download(name) {
-    return download.post(`/download/${name}`);
+    return download.post(`/file/${name}`);
   }
 
   getTracks(name) {
-    return http.get(`/download/${name}`)
+    return http.get(`/file/${name}`)
   }
-
-//   create(data) {
-//     return http.post("/taxon-nodes", data);
-//   }
-
-//   update(id, data) {
-//     return http.put(`/taxon-nodes/${id}`, data);
-//   }
-
-//   delete(id) {
-//     return http.delete(`/taxon-nodes/${id}`);
-//   }
-
-//   deleteAll() {
-//     return http.delete(`/taxon-nodes`);
-//   }
-
 }
 
 export default new TaxonFileDataService();

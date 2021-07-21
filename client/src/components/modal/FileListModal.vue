@@ -16,11 +16,12 @@
         selectable
         @row-selected="downloadFile"
       >
-      <template #cell(actions)="row">
+      <!-- <template #cell(actions)="row">
             <b-button size="sm" :to="{name: 'genome-browser', params: {fileName: row.item.name}}" class="mr-1">
             Visualize Genome
-            </b-button>
-        </template>
+            </b-button> 
+        </template> -->
+        
         <!-- <b-pagination
         v-model="currentPage"
         :total-rows="rows"
@@ -39,7 +40,7 @@ export default {
   props: ['files'],
   data() {
     return {
-        fields: ["name","type", { key: 'actions', label: '' }],
+        fields: ["name","type", { key: 'actions', label: '' }, {key: 'download', label: ''}],
         currentPage: 1,
         perPage: 5,
         selectMode:"single",

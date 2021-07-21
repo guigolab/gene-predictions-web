@@ -1,5 +1,5 @@
 <template>
-        <li>
+        <li class="tree-container">
             <div
             :class="{bold: isFolder}"
             @click="toggle"
@@ -26,7 +26,6 @@ export default {
     props:['item'],
     data(){
         return {
-            // isOpen: false,
         }
     },
     computed: {

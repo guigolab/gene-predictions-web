@@ -1,13 +1,6 @@
 <template>
   <div ref="taxon-container" class="list row shadow p-3">
     <div class="col-md-12">
-      <div class="list row mb-2">
-        <div class="col-md">
-          <h4>Available precomputed whole-genome prediction data sets</h4>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-12">
         <b-row id="filter-bar">
           <b-col lg="6" class="my-1">
             <b-form-group
