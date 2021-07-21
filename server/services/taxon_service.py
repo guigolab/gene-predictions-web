@@ -8,13 +8,13 @@ import os
 ## check http://etetoolkit.org/docs/latest/tutorial/tutorial_ncbitaxonomy.html
 
 def insert_taxons_from_lineage(tax_id):
-        taxa_db = NCBITaxa(taxdump_file=os.path.abspath("services/taxdump.tar.gz"))
+        taxa_db = NCBITaxa()
         lineage = taxa_db.get_lineage(tax_id)
         for node in lineage:
             if TaxonNode.objects(tax_id=str(node)).first():
                 continue
             else:
-                taxon_node = TaxonNode(tax_id=str(node), name= taxa_db.get_taxid_translator([node]).get(node))
+                taxon_node = TaxonNode(tax_id=str(node), name=taxa_db.get_taxid_translator([node]).get(node))
                 taxon_node.save()
         return lineage
 
