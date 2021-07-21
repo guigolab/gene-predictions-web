@@ -15,7 +15,7 @@ class NewickFormat(db.Document):
 
 class TaxonNode(db.Document):
     tax_id = db.StringField(required=True,unique=True)
-    name = db.StringField(required=True,unique=True)
+    name = db.StringField(required=True)
     has_files = db.BooleanField(default=False)
     description = db.StringField()
     children = db.ListField(db.LazyReferenceField('self', passthrough=True))
