@@ -7,6 +7,7 @@ import SoftwareDownload from './views/SoftwareDownload.vue'
 import GenePrediction from './views/GenePrediction.vue'
 import GeneIdAccuracy from './views/GeneIdAccuracy.vue'
 import GeneIdTraining from './views/GeneIdTraining.vue'
+import TreeOfLife from './views/TreeOfLife.vue'
 import SGP2 from './views/SGP2.vue'
 // import Home from './views/Home.vue'
 import GeneId from './views/GeneId.vue'
@@ -57,6 +58,11 @@ export default new Router({
       path:"/sgp2-algorithm",
       name: "sgp2-algorithm",
       component: SGP2Algorithm
+    },
+    {
+      path: "/tree-of-life",
+      name: "tree-of-life",
+      component: TreeOfLife
     }
   ]
 });

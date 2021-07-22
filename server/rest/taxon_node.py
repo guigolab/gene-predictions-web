@@ -1,4 +1,6 @@
 # from rest.taxon_files import TaxonFilesApi
+from logging import root
+import services.taxon_service as service
 from flask import Response, request
 from flask import current_app as app
 from db.models import TaxonNode
@@ -8,9 +10,21 @@ from errors import InternalServerError, SchemaValidationError, UserNotFoundError
 import json
 
 class TaxonNodesApi(Resource):
-	def get(self):
-		taxon_nodes = TaxonNode.objects().to_json()
-		return Response(taxon_nodes, mimetype="application/json", status=200)
+	def get(self, to_tree=None):
+		## get the root node
+		root = TaxonNode.objects(tax_id="1").first()
+		if to_tree:
+			# app.logger.info(root)
+			# tree.children = [lazy_ref.fetch() for lazy_ref in root.children]
+			# for child in root.children:
+			dict={}
+			tree = service.dfs(root,dict)
+			app.logger.info(json.dumps(tree))
+			# tree = service.recursive_children(root, json.loads(root.to_json()))
+			return Response(json.dumps([tree]), mimetype="application/json", status=200)
+		else:
+			taxon_nodes = TaxonNode.objects().to_json()
+			return Response(taxon_nodes, mimetype="application/json", status=200)
 
 	def delete(self):
 		taxon_nodes = TaxonNode.objects.delete()

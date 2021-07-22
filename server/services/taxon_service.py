@@ -4,6 +4,7 @@ from ete3 import NCBITaxa
 from db.models import TaxonNode
 from flask import current_app as app
 import os
+import json
 ## create a service to retrieve lineage from taxon_id and create taxon_nodes from that
 ## check http://etetoolkit.org/docs/latest/tutorial/tutorial_ncbitaxonomy.html
 
@@ -42,3 +43,68 @@ def return_taxon(tax_id):
         taxon = TaxonNode.objects(tax_id=tax_id).first()    
     taxon.update(has_files=True)            
     return taxon
+
+def recursive_children(node,tree):
+    if node.children:
+        node.children = [lazy_ref.fetch() for lazy_ref in node.children]
+        for child in node.children:
+            app.logger.info(child.to_json())
+            tree['children'].append(recursive_children(child, json.loads(child.to_json())))
+    else:
+        tree['children'].append(json.loads(node.to_json()))
+    return tree
+# def recursiveChildren(node,tree):
+#     actual_tree = {'name': node.name, 'children':[]}
+#     if node.children:
+#         for child in node.children:
+#             actual_tree['children'].extend(recursiveChildren(child),actual_tree)
+#             actual_tree['children'].append(child.to_json())
+#         tree['children'].append(actual_tree)
+#     return tree
+# def fetch_children(children):
+#     children = [lazy_ref.fetch() for lazy_ref in root.children]
+#     for child in children:
+#     for child in root.children:
+#         if child.children:
+#             fetch_children(child)
+#     return root
+# def node_to_json(node):
+#     json_node = json.loads(node.to_json())
+#     if node.children:
+#         json_node['children'] = [lazy_ref.fetch().to_json() for lazy_ref in node.children]
+#     return json_node
+# def formTree(children,tree):
+#     if children:
+#         tree = {'children': [lazy_ref.fetch().to_json() for lazy_ref in children]}
+#         for child in children:
+#             currTree = tree
+
+#             for gson in child.children:
+#                 if key not in currTree:
+#                     currTree[key] = {}
+#                 currTree = currTree[key]
+                
+#     return tree
+
+# def create_tree(node):
+#     if node.children:
+#         node.children = get_children(node)
+#         for child in node.children:
+#             create_tree(child)
+#     return node.to_json()
+
+
+    # if taxon_node.children:
+    #     tree.children = [lazy_ref.fetch() for lazy_ref in taxon_node.children]
+    #     for child_node in taxon_node.children:
+    #         create_tree(child_node,tree)
+def dfs(node, tree):
+    tree["name"] = node.name
+    tree["children"] = []
+    if node.children:
+        node.children = [lazy_ref.fetch() for lazy_ref in node.children]
+        for child in node.children:
+            child_dict = {}
+            dfs(child, child_dict)
+            tree["children"].append(child_dict)
+    return tree
