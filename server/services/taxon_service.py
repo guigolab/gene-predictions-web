@@ -48,7 +48,6 @@ def recursive_children(node,tree):
     if node.children:
         node.children = [lazy_ref.fetch() for lazy_ref in node.children]
         for child in node.children:
-            app.logger.info(child.to_json())
             tree['children'].append(recursive_children(child, json.loads(child.to_json())))
     else:
         tree['children'].append(json.loads(node.to_json()))

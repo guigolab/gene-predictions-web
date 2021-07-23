@@ -7,7 +7,7 @@ import * as d3 from "d3";
 import TaxonNodeDataService from "../services/TaxonNodeDataService";
 
 export default {
-  name: "tree-of-life",
+  name: "tree-of-life-component",
   data() {
     return {
         color: null,
@@ -18,7 +18,6 @@ export default {
         innerRadius: 0,
         width: 0,
         data: Object
-       
     };
   },
   mounted() {
@@ -187,6 +186,6 @@ export default {
     height: 50%;
 }
 /* g {
-  transform: translate(-350px,-0px);
+  transform: translate(200px,200px);
 } */
 </style>

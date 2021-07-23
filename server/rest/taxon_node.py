@@ -14,13 +14,8 @@ class TaxonNodesApi(Resource):
 		## get the root node
 		root = TaxonNode.objects(tax_id="1").first()
 		if to_tree:
-			# app.logger.info(root)
-			# tree.children = [lazy_ref.fetch() for lazy_ref in root.children]
-			# for child in root.children:
 			dict={}
 			tree = service.dfs(root,dict)
-			app.logger.info(json.dumps(tree))
-			# tree = service.recursive_children(root, json.loads(root.to_json()))
 			return Response(json.dumps([tree]), mimetype="application/json", status=200)
 		else:
 			taxon_nodes = TaxonNode.objects().to_json()
