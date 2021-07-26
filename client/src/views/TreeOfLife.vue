@@ -1,28 +1,44 @@
 <template>
-    <svg class="tree-svg"></svg>
+<b-container fluid>
+  <b-row>
+    <b-col>
+      <svg ref="svg" class="tree-svg">
+    </svg>
+    </b-col>
+  </b-row>
+  <FileListModal :files="files"></FileListModal>
+</b-container>
 </template>
 
 <script>
 import * as d3 from "d3";
 import TaxonNodeDataService from "../services/TaxonNodeDataService";
+import taxonFileService from "../services/TaxonFileService";
+import FileListModal from "../components/modal/FileListModal.vue"
+
 
 export default {
   name: "tree-of-life",
   data() {
     return {
-        color: null,
+        // color: null,
         clusterAttr: null,
         link: null,
         linkExtension: null,
         outerRadius: 0,
         innerRadius: 0,
         width: 0,
-        data: Object
+        data: Object,
+        files: null
        
     };
   },
+    components:{
+    FileListModal,
+  },
   mounted() {
-      this.width = this.$el.clientWidth
+    console.log(this.$refs.svg.clientWidth)
+      this.width = this.$refs.svg.clientWidth
       this.outerRadius = this.width/2
       this.innerRadius = this.outerRadius - 170
       TaxonNodeDataService.getTree(true)
@@ -45,15 +61,15 @@ export default {
     var cluster = this.radialCluster();
     cluster(root);
     this.setRadius(root, root.data.length = 0, this.innerRadius / this.maxLength(root));
-    // this.setColor(root);
+    this.setColor(root);
   
-    const svg = d3.select(this.$el)
+    const svg = d3.select(this.$refs.svg)
         .attr("viewBox", [-this.outerRadius, -this.outerRadius, this.width, this.width])
         .attr("font-family", "sans-serif")
         .attr("font-size", 10);
   
     // svg.append("g")
-    //     .call(legend);
+    //     .call(this.legend);
   
     svg.append("style").text(`
   
@@ -71,7 +87,7 @@ export default {
   }
   
   `);
-  
+    this.legend(svg);
     this.linkExtension =svg.append("g")
         .attr("fill", "none")
         .attr("stroke", "#000")
@@ -100,7 +116,7 @@ export default {
         .attr("transform", d => `rotate(${d.x - 90}) translate(${this.innerRadius + 4},0)${d.x < 180 ? "" : " rotate(180)"}`)
         .attr("text-anchor", d => d.x < 180 ? "start" : "end")
         .attr("class","leaves-class")
-        .text(d => d.data.name.replace(/_/g, " "))
+        .text(d => d.data.name.replace(/_/g, " ")).on("click", this.info(this))
         .on("mouseover", this.mouseovered(true))
         .on("mouseout", this.mouseovered(false));
     
@@ -112,7 +128,23 @@ export default {
       this.linkExtension.transition(t).attr("d", checked ? this.linkExtensionVariable : this.linkExtensionConstant);
       this.link.transition(t).attr("d", checked ? this.linkVariable : this.linkConstant);
     },
+   info(component) {
+     return function(_, d){
+        component.getFiles(d.data.taxid)
+     }
+        },
 
+    getFiles(taxid){
+      taxonFileService.getAll(taxid)
+            .then(response => {
+              console.log(this)
+            this.files  = response.data;
+            this.$root.$emit('bv::show::modal', 'file-list-modal')
+            })
+            .catch(e => {
+            console.log(e);
+            });
+    },
     mouseovered(active) {
       return function(event, d) {
         d3.select(this).classed("label--active", active);
@@ -131,11 +163,16 @@ export default {
         d.radius = (y0 += d.data.length) * k;
         if (d.children) d.children.forEach(d => this.setRadius(d, y0, k));
     },
-    // setColor(d) {
-    //     var name = d.data.name;
-    //     d.color = this.color.domain().indexOf(name) >= 0 ? this.color(name) : d.parent ? d.parent.color : null;
-    //     if (d.children) d.children.forEach(setColor);
-    // },
+    setColor(d) {
+        var name = d.data.name;
+        d.color = this.color().domain().indexOf(name) >= 0 ? this.color()(name) : d.parent ? d.parent.color : null;
+        // console.log(d.color)
+
+        if (d.children){
+           d.children.forEach((item) => {
+             this.setColor(item)});
+        }
+    },
     linkVariable(d) {
     return this.linkStep(d.source.x, d.source.radius, d.target.x, d.target.radius);
     },
@@ -157,17 +194,35 @@ export default {
         + (endAngle === startAngle ? "" : "A" + startRadius + "," + startRadius + " 0 0 " + (endAngle > startAngle ? 1 : 0) + " " + startRadius * c1 + "," + startRadius * s1)
         + "L" + endRadius * c1 + "," + endRadius * s1;
     }, 
-    // color () {
-    // this.color = d3.scaleOrdinal()
-    // .domain(["Bacteria", "Eukaryota", "Archaea"])
-    // .range(d3.schemeCategory10)
-    // },
+    color () {
+      const color = d3.scaleOrdinal()
+    .domain(["Sarcopterygii","Actinopterygii","Mammalia","Theria"])
+    .range(d3.schemeCategory10)
+    return color
+    },
     radialCluster(){
      return d3.cluster()
     .size([180, this.innerRadius])
     .separation(() => 1)   
     },
+    legend(svg){
+      const g = svg
+    .selectAll("g")
+    .data(this.color().domain())
+    .join("g")
+      .attr("transform", (d, i) => `translate(${-this.outerRadius},${-this.outerRadius + i * 20})`);
 
+  g.append("rect")
+      .attr("width", 18)
+      .attr("height", 18)
+      .attr("fill", this.color());
+
+  g.append("text")
+      .attr("x", 24)
+      .attr("y", 9)
+      .attr("dy", "0.35em")
+      .text(d => d);
+},
   },
   computed: {
     
@@ -180,12 +235,14 @@ export default {
 
 <style>
 .leaves-class {
-    font-size: inherit;
+  cursor: pointer;
+  /* font-size: medium; */
 }
 .tree-svg {
     width: inherit;
-    height: 50%;
+    height: 100%;
 }
+
 /* g {
   transform: translate(-350px,-0px);
 } */

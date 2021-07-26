@@ -33,7 +33,6 @@ class TaxonNodeApi(Resource):
 			###fetch references
 			children_dict = {}
 			children_dict['children'] = [lazy_ref.fetch().to_json() for lazy_ref in taxon_node.children]
-			app.logger.info(children_dict)
 			return Response(json.dumps(children_dict), mimetype="application/json", status=200)
 		except DoesNotExist:
 			raise UserNotFoundError
