@@ -39,7 +39,7 @@
         :filter-included-fields="filterOn"
       >
        <template #cell(actions)="row">
-            <b-button size="sm" v-show="row.item.has_files" @click="info(row.item, row.index, $event.target)" class="mr-1">
+            <b-button size="sm" @click="info(row.item, row.index, $event.target)" class="mr-1">
             Show Files
             </b-button>
         </template>
@@ -82,7 +82,7 @@ export default {
         retrieveTaxons() {
         TaxonNodeDataService.getAll()
             .then(response => {
-            this.taxons = response.data;
+            this.taxons = response.data.filter(taxon => taxon.has_files);
                })  
             .catch(e => {
             console.log(e);

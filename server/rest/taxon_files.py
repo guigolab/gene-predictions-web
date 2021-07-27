@@ -68,18 +68,18 @@ class TaxonFileApi(Resource):
             tmp_file = "tmp.txt"
             taxon_file = TaxonFile.objects(name=name).first()
             to_json={}
-            arr=[]
-            with open(tmp_file,'wb') as tmp:
-                tmp.write(taxon_file.file.read())
-                for rec in GFF.parse(tmp_file):
-                    for gene in rec.features:
-                        track={}
-                        track["id"] = gene.id
-                        track["start"] = gene.location._start.position
-                        track["end"] = gene.location._end.position
-                        track["strand"] = gene.location._strand
-                    arr.append(track)
-                to_json['content'] = arr
+            arr=[{'id': "gene 1", 'start': 10000, 'end': 20000, 'strand': 1}]
+            # with open(tmp_file,'wb') as tmp:
+            #     tmp.write(taxon_file.file.read())
+            #     for rec in GFF.parse(tmp_file):
+            #         for gene in rec.features:
+            #             track={}
+            #             track["id"] = gene.id
+            #             track["start"] = gene.location._start.position
+            #             track["end"] = gene.location._end.position
+            #             track["strand"] = gene.location._strand
+            #         arr.append(track)
+            #     to_json['content'] = arr
             return Response(json.dumps(arr), mimetype="application/json", status=200)
         except NotUniqueError:
             raise EmailAlreadyExistError

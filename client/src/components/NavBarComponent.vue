@@ -12,6 +12,10 @@
           <b-nav-item  active-class="active" class="nav-link" to="/" >
            <b-icon icon="house" variant="outline-info"></b-icon>
             HOME 
+          </b-nav-item>
+          <b-nav-item  active-class="active" class="nav-link" to="/tree-of-life" >
+           <b-icon icon="diagram3" variant="outline-info"></b-icon>
+            TREE OF LIFE 
           </b-nav-item> 
           <b-nav-item class="nav-link" to="/geneid" >
           <b-icon icon="binoculars" variant="outline-info"></b-icon>

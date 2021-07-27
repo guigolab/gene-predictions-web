@@ -37,7 +37,6 @@ export default {
     FileListModal,
   },
   mounted() {
-    console.log(this.$refs.svg.clientWidth)
       this.width = this.$refs.svg.clientWidth
       this.outerRadius = this.width/2
       this.innerRadius = this.outerRadius - 170
@@ -137,7 +136,6 @@ export default {
     getFiles(taxid){
       taxonFileService.getAll(taxid)
             .then(response => {
-              console.log(this)
             this.files  = response.data;
             this.$root.$emit('bv::show::modal', 'file-list-modal')
             })
@@ -196,7 +194,7 @@ export default {
     }, 
     color () {
       const color = d3.scaleOrdinal()
-    .domain(["Sarcopterygii","Actinopterygii","Mammalia","Theria"])
+    .domain(["Sarcopterygii","Actinopterygii","Mammalia"])
     .range(d3.schemeCategory10)
     return color
     },
@@ -236,13 +234,15 @@ export default {
 <style>
 .leaves-class {
   cursor: pointer;
-  /* font-size: medium; */
+  font-size: 14px;
 }
 .tree-svg {
     width: inherit;
     height: 100%;
 }
-
+text {
+  font-size: 14px;
+}
 /* g {
   transform: translate(-350px,-0px);
 } */

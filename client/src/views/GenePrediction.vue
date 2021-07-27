@@ -41,7 +41,6 @@ export default {
             .then(response => {
             this.treeData = response.data[0];
             this.treeData.isOpen = false;
-            console.log(this.treeData)
             })
             .catch(e => {
             console.log(e);
