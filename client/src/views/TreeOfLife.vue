@@ -128,7 +128,7 @@ export default {
       this.link.transition(t).attr("d", checked ? this.linkVariable : this.linkConstant);
     },
    info(component) {
-     return function(_, d){
+     return function(d){
         component.getFiles(d.data.taxid)
      }
         },
@@ -200,7 +200,7 @@ export default {
     },
     radialCluster(){
      return d3.cluster()
-    .size([180, this.innerRadius])
+    .size([360, this.innerRadius])
     .separation(() => 1)   
     },
     legend(svg){

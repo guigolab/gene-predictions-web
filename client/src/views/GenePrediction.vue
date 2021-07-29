@@ -26,7 +26,6 @@ import TreeView from '../components/TreeViewComponent.vue'
 import config from '../static-config'
 import TaxonNodeDataService from "../services/TaxonNodeDataService";
 
-
 export default {
     name: 'gene-prediction',
     data() {
@@ -49,7 +48,7 @@ export default {
     },
     mounted(){
         this.retrieveTaxons()
-
+        // this.test_get()
     },
     components: {
         PageHeadingComponent,

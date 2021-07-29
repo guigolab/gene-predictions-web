@@ -1,6 +1,5 @@
 import Vue from "vue";
 import Router from "vue-router";
-// import Phylo from './views/PhyloGeneticTree.vue'
 import Genome from './views/GenomeBrowser.vue'
 import SGP2Algorithm from './views/SGP2Algorithm.vue'
 import SoftwareDownload from './views/SoftwareDownload.vue'
@@ -9,7 +8,6 @@ import GeneIdAccuracy from './views/GeneIdAccuracy.vue'
 import GeneIdTraining from './views/GeneIdTraining.vue'
 import TreeOfLife from './views/TreeOfLife.vue'
 import SGP2 from './views/SGP2.vue'
-// import Home from './views/Home.vue'
 import GeneId from './views/GeneId.vue'
 
 

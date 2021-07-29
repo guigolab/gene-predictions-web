@@ -7,8 +7,7 @@ import services.taxon_service as service
 from mongoengine.errors import DoesNotExist, NotUniqueError, ValidationError
 from errors import InternalServerError, SchemaValidationError, UserNotFoundError, EmailAlreadyExistError
 import json
-from BCBio.GFF import GFFExaminer
-from BCBio import GFF
+
 
 
 class TaxonFilesApi(Resource):

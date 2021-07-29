@@ -48,12 +48,10 @@ export default {
   },
     methods: {
         downloadFile(item) {
-          console.log(item)
             taxonFileService.download(item[0].name)
             .then(response => {
                 const url = window.URL.createObjectURL(new Blob([response.data], { type: { type: 'text/plain;charset=utf-8' }}));
                 const link = document.createElement('a');
-                console.log(link)
                 link.href = url;
                 link.setAttribute('download', item[0].name);
                 link.click();

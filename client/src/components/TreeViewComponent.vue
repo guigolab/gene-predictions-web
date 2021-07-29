@@ -57,7 +57,6 @@ export default {
                 if(this.item.has_files)
                 document.querySelector('#filter-input').value = this.item.name;
                 document.querySelector('#filter-input').dispatchEvent(new Event("change"));
-                console.log(document.querySelector('#filter-input'));
     },
       
 }

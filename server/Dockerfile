@@ -1,22 +1,26 @@
-FROM python:3.6
+FROM guigolab/geneid:1.2 as geneid
 
-EXPOSE 5000
-
-EXPOSE 8000
-
-RUN python -m pip install --upgrade pip
-
-RUN mkdir /server
+FROM python:3.6-stretch
 
 WORKDIR /server
 
-COPY requirements.txt requirements.txt
+ADD . /server
 
-RUN python -m pip install -r requirements.txt
+# RUN python -m pip install --upgrade pip
 
-COPY . .
+COPY --from=geneid /usr/local/bin/geneid /geneid-software
 
-ENV TAXDUMP_FILE="./services/taxdump.tar.gz"
-RUN python -c "from ete3 import NCBITaxa; NCBITaxa(taxdump_file='${TAXDUMP_FILE}')"
+RUN pip install -r requirements.txt
+# COPY requirements.txt requirements.txt
 
-CMD ["flask", "run", "--host=0.0.0.0", "--port=8000"]
+# RUN python -m pip install -r requirements.txt
+
+# ENV TAXDUMP_FILE="./services/taxdump.tar.gz"
+# RUN python -c "from ete3 import NCBITaxa; NCBITaxa(taxdump_file='${TAXDUMP_FILE}')"
+
+CMD ["uwsgi", "app.ini"]
+
+
+
+
+

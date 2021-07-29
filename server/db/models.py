@@ -1,18 +1,6 @@
 # from typing_extensions import Required
 from . import db
 
-class User(db.Document):
-    name = db.StringField(required=True)
-    email = db.StringField(required=True, unique=True)
-
-class Species(db.Document):
-    tax_id = db.StringField(required=True)
-    name = db.StringField()
-
-class NewickFormat(db.Document):
-    nwk = db.StringField(required=True)
-    name = db.StringField(required=True)
-
 class TaxonNode(db.Document):
     tax_id = db.StringField(required=True,unique=True)
     name = db.StringField(required=True)
