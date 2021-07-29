@@ -128,7 +128,7 @@ export default {
       this.link.transition(t).attr("d", checked ? this.linkVariable : this.linkConstant);
     },
    info(component) {
-     return function(d){
+     return function(_, d){
         component.getFiles(d.data.taxid)
      }
         },
