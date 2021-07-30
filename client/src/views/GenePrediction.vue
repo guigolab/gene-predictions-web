@@ -4,9 +4,20 @@
     <p>The predictions available on this page have been obtained by using the gene-finding software <b-link to="/geneid">geneid</b-link> and <b-link to="/sgp2">SGP2</b-link>. SGP2 combines geneid predictions with tblastx comparison of a query genome from one species (i.e. human) against an informant genome of another species (i.e. from mouse). </p>
       <b-row>
         <b-col cols="6" md="4" >
+            <div style="display:flex;margin-bottom:15px;">
             <h3>Phylogenetic Tree</h3>
+            <b-button id="popover-tree-target" style="border: none;" variant="outline-info" class="mb-2">
+                <b-icon icon="info-circle-fill" variant="outline-info"></b-icon>      
+            </b-button>
+            <b-popover target="popover-tree-target" triggers="hover" placement="top" variant="info">
+                click over a node to open it, click the button to view children in table
+            </b-popover>
+            </div>
             <div class="tree-viewer">
-            <TreeView class="item" :item="treeData"></TreeView>
+            <TreeView class="item" v-if="treeData" :item="treeData"></TreeView>
+            <div v-else>
+            <b-icon icon="arrow-clockwise" animation="spin" font-scale="4"></b-icon>
+            </div>
             </div>
         </b-col>
         <b-col cols="12" md ="8">
@@ -31,15 +42,15 @@ export default {
     data() {
         return {
             header: config.resources.genePDescription,
-            treeData: Object
+            treeData: null,
         }
     },
     methods: {
            retrieveTaxons() {
-        TaxonNodeDataService.getAll()
+        TaxonNodeDataService.getTree(true)
             .then(response => {
             this.treeData = response.data[0];
-            this.treeData.isOpen = false;
+            console.log(this.treeData)
             })
             .catch(e => {
             console.log(e);
@@ -59,10 +70,10 @@ export default {
 </script>
 <style>
 .tree-viewer {
-    max-height: 600px;
+    max-height: 50%;
     overflow: scroll;
 }
-h3 {
+/* h3 {
 margin-bottom: 50px!important;
-}
+} */
 </style>

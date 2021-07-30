@@ -6,7 +6,7 @@
     </svg>
     </b-col>
   </b-row>
-  <FileListModal :files="files"></FileListModal>
+  <FileListModal :taxonName="taxonName" :files="files"></FileListModal>
 </b-container>
 </template>
 
@@ -22,6 +22,7 @@ export default {
   data() {
     return {
         // color: null,
+        taxonName: "",
         clusterAttr: null,
         link: null,
         linkExtension: null,
@@ -129,14 +130,15 @@ export default {
     },
    info(component) {
      return function(_, d){
-        component.getFiles(d.data.taxid)
+        component.getFiles(d.data.taxid, d.data.name)
      }
         },
 
-    getFiles(taxid){
+    getFiles(taxid, name){
       taxonFileService.getAll(taxid)
             .then(response => {
             this.files  = response.data;
+            this.taxonName = name;
             this.$root.$emit('bv::show::modal', 'file-list-modal')
             })
             .catch(e => {

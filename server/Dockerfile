@@ -11,12 +11,9 @@ ADD . /server
 COPY --from=geneid /usr/local/bin/geneid /geneid-software
 
 RUN pip install -r requirements.txt
-# COPY requirements.txt requirements.txt
 
-# RUN python -m pip install -r requirements.txt
-
-# ENV TAXDUMP_FILE="./services/taxdump.tar.gz"
-# RUN python -c "from ete3 import NCBITaxa; NCBITaxa(taxdump_file='${TAXDUMP_FILE}')"
+ENV TAXDUMP_FILE="./services/taxdump.tar.gz"
+RUN python -c "from ete3 import NCBITaxa; NCBITaxa(taxdump_file='${TAXDUMP_FILE}')"
 
 CMD ["uwsgi", "app.ini"]
 

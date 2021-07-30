@@ -6,6 +6,7 @@ class TaxonNode(db.Document):
     name = db.StringField(required=True)
     has_files = db.BooleanField(default=False)
     description = db.StringField()
+    lineage = db.ListField(db.StringField())
     children = db.ListField(db.LazyReferenceField('self', passthrough=True))
 
 class TaxonFile(db.Document):

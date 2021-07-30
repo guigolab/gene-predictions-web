@@ -1,12 +1,12 @@
 <template>
         <li class="tree-container">
-            <div
-            :class="{bold: isFolder}"
-            @click="toggle"
-            >
-            {{ item.name }}
-            <span v-if="isFolder">[{{ item.isOpen ? '-' : '+' }}]</span>
+            <div class="node-container">
+            <div @click="toggle" :class="{bold: isFolder}">
+            <b-icon v-if="isFolder" :icon="item.isOpen ? 'chevron-double-down': 'chevron-double-right' " variant="outline-info"></b-icon>
+            <span> {{ item.name }}</span>
             </div> 
+            <b-button v-if="isFolder" id="tree-leaves-button" pill variant="outline-secondary" size="sm" @click="toTable"> {{item.leaves}} </b-button>
+            </div>
             <ul v-show="item.isOpen" v-if="isFolder">
             <tree-view
                 class="item"
@@ -19,7 +19,7 @@
 </template>
 <script>
 
-import TaxonNodeDataService from "../services/TaxonNodeDataService";
+// import TaxonNodeDataService from "../services/TaxonNodeDataService";
 
 export default {
     name: 'tree-view',
@@ -33,33 +33,24 @@ export default {
             return this.item.children && this.item.children.length;
           },
           isOpen() {
-              return this.item.isOpen
+            return this.item.isOpen
           }
         },
     methods: {
         toggle() {
             if (this.isFolder) {
-                TaxonNodeDataService.getChildren(this.item.tax_id)
-                    .then(response => {
-                    if(response.data['children'].length > 0) {
-                        this.item.children = response.data['children'].map(child => {
-                            let taxChild = JSON.parse(child);
-                            taxChild.isOpen = false;
-                            return taxChild
-                        })
-                    } 
-                    })
-                    .catch(e => {
-                    console.log(e);
-                    });
                 this.item.isOpen = !this.item.isOpen
             }
-                if(this.item.has_files)
+            else {
                 document.querySelector('#filter-input').value = this.item.name;
-                document.querySelector('#filter-input').dispatchEvent(new Event("change"));
-    },
-      
-}
+                document.querySelector('#filter-input').dispatchEvent(new Event("change"));                           
+            }
+            },
+        toTable() {
+            document.querySelector('#filter-input').value = this.item.name;
+            document.querySelector('#filter-input').dispatchEvent(new Event("change"));      
+        }
+    }
 }
 </script>
 <style>
@@ -69,6 +60,12 @@ export default {
 }
 .bold {
   font-weight: bold;
+}
+.node-container {
+    display: flex;
+}
+#tree-leaves-button {
+    margin-left: 3px;
 }
 ul {
   padding-left: 0.25em;

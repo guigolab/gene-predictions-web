@@ -1,5 +1,8 @@
 <template>
  <b-modal title="File List" id="file-list-modal" >
+    <template #modal-title>
+      {{taxonName}}
+    </template>
       <b-table 
         id="files-table"
         striped
@@ -37,7 +40,7 @@ import taxonFileService from "../../services/TaxonFileService";
 
 export default {
   name: "file-list-modal",
-  props: ['files'],
+  props: ['files', 'taxonName'],
   data() {
     return {
         fields: ["name","type", { key: 'actions', label: '' }, {key: 'download', label: ''}],
@@ -60,11 +63,6 @@ export default {
     },
     mounted() {
     },
-    // computed: {
-    // rows() {
-    //     return this.files.length
-    //     }
-    // },
 };
 
 </script>

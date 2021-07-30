@@ -24,8 +24,8 @@ class TaxonFilesApi(Resource):
         raise InternalServerError
     #delete files of a taxon
     def delete(self,tax_id):
-        taxon = TaxonNode.objects(tax_id=tax_id).first()
-        taxon_files= TaxonFile.objects(taxon = taxon).delete()
+        # taxon = TaxonNode.objects(tax_id=tax_id).first()
+        taxon_files= TaxonFile.objects().delete()
         return '', 200
 
     def post(self,tax_id):
