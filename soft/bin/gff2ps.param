@@ -1,0 +1,57 @@
+# L #
+#nucleotides_x_line=10000
+#major_tickmarks_nucleotides=100
+default_block_spacing_width=0
+frame0_color=darkblue
+frame1_color=darkred
+frame2_color=darkgreen
+
+# G #
+/.*geneid_sites.*/::label=++none++
+/.*geneid_sites.*/::group_line=none
+
+# F #
+first::shape=arrow_end
+terminal::shape=arrow_head
+internal::shape=box
+single::shape=single
+
+start::feature_color=darkgreen
+start::feature_stroke_color=darkgreen
+start::shape=half_circle
+
+acceptor::feature_color=darkyellow
+acceptor::feature_stroke_color=darkyellow
+acceptor::shape=half_diamond
+
+donor::feature_color=darkblue
+donor::feature_stroke_color=darkblue
+donor::shape=half_diamond
+
+stop::feature_color=darkred
+stop::feature_stroke_color=darkred
+stop::shape=half_circle
+
+markov::fill_vector_mode=2_color
+markov::feature_color=darkcyan..darkred
+
+# S #
+geneid_sites::keep_feature_label_space=off
+geneid_sites::unfold_grouped_ungrouped=off
+geneid_sites::unfold_grouped_line=off
+geneid_sites::unfold_ungrouped_line=off
+geneid_sites::vert_align=top
+geneid_sites::source_style=none
+geneid_sites::track_spacing_scale=0.25
+geneid_sites::track_scale=1.5
+Markov::track_scale=0.5
+Markov::track_spacing_scale=0.5
+geneid_exons::track_scale=0.3
+geneid_exons::track_spacing_scale=0
+geneid_exons::source_line=none
+geneid_exons::show_left_label=off
+geneid_exons::vert_align=top
+geneid_exons::range=none
+geneid::range=none
+*::source_line=none
+geneid_v1.1::range=none

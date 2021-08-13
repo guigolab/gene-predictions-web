@@ -7,7 +7,7 @@ class TaxonFileDataService {
   }
 
   download(name) {
-    return download.post(`/file/${name}`);
+    return download.get(`/file/${name}`);
   }
 
   getTracks(name) {

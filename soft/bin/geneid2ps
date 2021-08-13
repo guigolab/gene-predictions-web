@@ -1,0 +1,44 @@
+#!/bin/sh
+# geneid2ps
+# Usage: geneid2ps options fasta_file ps_file 
+# stdout: outputs from geneid
+# stderr: stderr from geneid and gff2ps 
+
+Options=$1
+Seq_file=$2
+PSFILE=$3
+
+BIN=/soft/GeneID/geneid_1.2/bin
+
+GFF2PS_CFDIR="$BIN/"
+
+export GFF2PS_CFDIR
+
+DUMPMARKOVW=/tmp/markovW$$
+DUMPMARKOVC=/tmp/markovC$$
+DUMPREVERSE=/tmp/rc-seq$$   
+DUMPRES=/tmp/res.gff$$
+
+# filtering \r
+perl -npe 's/[\r]//og' $Seq_file > $Seq_file.tmp ;
+mv $Seq_file.tmp $Seq_file ;
+
+echo 'Running GeneId with options = '$Options'' 1>&2 ;
+$BIN/geneid $Options $Seq_file > $DUMPRES;
+
+#echo 'Running MarkovScan(+) with '$Seq_file 1>&2 ; 
+#$BIN/FastaToTbl $Seq_file | gawk -f $BIN/MarkovModel-2.awk 5 $BIN/training.diffmatrix.5.initial $BIN/training.diffmatrix.5.transition 50 20 '+'> $DUMPMARKOVW
+
+#echo 'Running MarkovScan(-) with '$DUMPREVERSE 1>&2 ; 
+#$BIN/rc $Seq_file > $DUMPREVERSE
+#$BIN/FastaToTbl $DUMPREVERSE | gawk -f $BIN/MarkovModel-2.awk 5 $BIN/training.diffmatrix.5.initial $BIN/training.diffmatrix.5.transition 50 20 '-' > $DUMPMARKOVC 
+
+echo 'Running gff2ps...' 1>&2 ; 
+#$BIN/gff2ps $4 -C $BIN/gff2ps.param -- $DUMPMARKOVW $DUMPRES $DUMPMARKOVC > $PSFILE;
+$BIN/gff2ps $4 -C $BIN/gff2ps.param -- $DUMPRES > $PSFILE
+
+# La salida textual de geneid
+cat $DUMPRES;
+
+rm $DUMPRES # $DUMPMARKOVW $DUMPMARKOVC $DUMPREVERSE
+

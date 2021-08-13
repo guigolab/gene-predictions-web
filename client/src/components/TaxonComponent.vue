@@ -65,8 +65,8 @@
 </template>
 
 <script>
-import TaxonNodeDataService from "../services/TaxonNodeDataService";
-import taxonFileService from "../services/TaxonFileService";
+import TaxonNodeDataService from "../services/TaxonNodeDataService"
+import taxonFileService from "../services/TaxonFileService"
 import FileListModal from "./modal/FileListModal.vue"
 export default {
   name: "taxon-list",

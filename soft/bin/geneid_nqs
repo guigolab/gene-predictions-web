@@ -1,0 +1,122 @@
+#!/bin/bash
+
+#######################################
+#
+# modificat el 21-nov-2003 - Oscar
+# --------------------------------
+#
+# la idea es que aixo funcioni en un sistema de cues
+#
+# la cgi sempre crida aixo, i des d'aqui decideixo si es fa grafic o no
+# (obviament, aixo implica canvi en la cgi...)
+#
+#######################################
+
+# geneid2ps
+# stdout: outputs from geneid
+# stderr: stderr from geneid and gff2ps 
+
+do_graphic=$1
+Options=$2
+FAFILE=$3
+PSFILE=$4
+gff_option=$5
+OUTFILE=$6
+ERRFILE=$7
+JPGFILE=$8
+
+# trobem el $$ que tenia a monstre1, per si algu vol fer el seguiment
+# aixo nomes serveix mentre no canvii el format de nom!!!
+final=${OUTFILE##*geneid}
+pidm1=${final%%[^0-9]*}
+QUEUE=/tmp/queue$pidm1
+
+BINGENEID=~gmaster/GeneID/geneid_2002/bin
+BINGFF2PS=/usr/local/molbio/bin
+
+DUMPMARKOVW=/tmp/markovW$pidm1
+DUMPMARKOVC=/tmp/markovC$pidm1
+DUMPREVERSE=/tmp/rc-seq$pidm1
+
+# filtering \r
+perl -npe 's/[\r]//og' $FAFILE > $FAFILE.tmp
+mv $FAFILE.tmp $FAFILE
+
+#echo 'Running MarkovScan(+) with '$FAFILE 1>&2
+#$BIN/FastaToTbl $FAFILE | gawk -f $BIN/MarkovModel-2.awk 5 $BIN/training.diffmatrix.5.initial $BIN/training.diffmatrix.5.transition 50 20 '+'> $DUMPMARKOVW
+
+#echo 'Running MarkovScan(-) with '$DUMPREVERSE 1>&2
+#$BIN/rc $FAFILE > $DUMPREVERSE
+#$BIN/FastaToTbl $DUMPREVERSE | gawk -f $BIN/MarkovModel-2.awk 5 $BIN/training.diffmatrix.5.initial $BIN/training.diffmatrix.5.transition 50 20 '-' > $DUMPMARKOVC 
+
+echo "#QSUB -d" > $QUEUE
+echo "#QSUB -o /dev/null" >> $QUEUE
+echo "#QSUB -eo" >> $QUEUE
+
+if [ $do_graphic = 0 ]
+then
+
+   # quan nomes es geneid, corre a la cua geneid
+   # 1 proces geneid per maquina per monstre2, 3 i 4; mai a monstre1
+   # nice=5 per tot el proces
+   # sense limit de temps de CPU
+
+   echo "#QSUB -r geneid$pidm1" >> $QUEUE
+   echo "#QSUB -q geneid" >> $QUEUE
+
+   echo "echo Running GeneId with options = $Options >$ERRFILE 2>&1" >> $QUEUE
+   echo "$BINGENEID/geneid $Options $FAFILE >$OUTFILE 2>>$ERRFILE" >> $QUEUE
+
+else
+
+   # quan inclou gff2ps, corre a una altra cua
+   # 1 proces gff2ps per maquina per monstre2, 3 i 4; mai a monstre1
+   # nice=5 per tot el proces
+   # sense limit de temps de CPU... per ara...
+
+   echo "#QSUB -r gff2ps$pidm1" >> $QUEUE
+   echo "#QSUB -q gff2ps" >> $QUEUE
+
+   echo "echo Running GeneId with options = $Options >$ERRFILE 2>&1" >> $QUEUE
+   echo "$BINGENEID/geneid $Options $FAFILE >$OUTFILE 2>>$ERRFILE" >> $QUEUE
+
+   echo "echo Running gff2ps $extra_option... >>$ERRFILE 2>&1" >> $QUEUE
+   #$BIN/gff2ps $extra_option -C $BIN/gff2ps.param -- $DUMPMARKOVW $OUTFILE $DUMPMARKOVC > $PSFILE
+   echo "$BINGFF2PS/gff2ps $gff_option $extra_option -C $BINGENEID/gff2ps.param -- $OUTFILE >$PSFILE 2>>$ERRFILE" >> $QUEUE
+
+fi
+
+echo "echo Job $pidm1 done >>$ERRFILE" >>$QUEUE
+
+/usr/local/Install/GenericNQS/bin/qsub $QUEUE >/dev/null
+
+# espera fins que el proces a la cua acabi
+while [[ ! -e $ERRFILE || `tail -1 $ERRFILE` != "Job $pidm1 done" ]]
+do
+   sleep 5
+done
+
+# rm $DUMPMARKOVW $DUMPMARKOVC $DUMPREVERSE
+
+# converteix el ps en jpg si es necessari
+if [ $do_graphic = 1 ]
+then
+   echo "Running convert..." >>$ERRFILE
+   convert -rotate 90 $PSFILE $JPGFILE >>$ERRFILE
+fi
+
+# si hi ha varies imatges, el convert els afegeix l'extensio <.num> despres
+# del .jpg. Aixo es una tocada d'ous per qualsevol programa que interpreti el
+# tipus de fitxer per l'extensio (windows?), aixi que els dono la volta
+tmp=${JPGFILE%.jpg}
+typeset -i num
+num=0
+while [ -e $JPGFILE.$num ]
+do
+   mv $JPGFILE.$num $tmp.$num.jpg
+   let num=num+1
+done
+
+# gzipem el fitxer fasta d'entrada i el postscript de sortida
+gzip $FAFILE $PSFILE
+cp $PSFILE.gz /usr/local/apache2/htdocs/tmp

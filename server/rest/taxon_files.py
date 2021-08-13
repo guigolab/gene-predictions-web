@@ -14,8 +14,11 @@ class TaxonFilesApi(Resource):
     #get files of a taxon
     def get(self,tax_id):
         try:
-            taxon = TaxonNode.objects(tax_id=tax_id).first()
-            taxon_files= TaxonFile.objects(taxon = taxon).to_json()
+            if tax_id:
+                taxon = TaxonNode.objects(tax_id=tax_id).first()
+                taxon_files= TaxonFile.objects(taxon = taxon).to_json()
+            else:
+                taxon_files = TaxonFile.objects().to_json()
             return Response(taxon_files, mimetype="application/json", status=200)
         except ValidationError:
             raise SchemaValidationError
@@ -28,23 +31,23 @@ class TaxonFilesApi(Resource):
         taxon_files= TaxonFile.objects().delete()
         return '', 200
 
-    def post(self,tax_id):
-        try:
-            taxon = service.return_taxon(tax_id)
-            file = request.files.get('file')
-            data = json.loads(request.form['json'])
-            taxon_files = TaxonFile(**data, file=file, taxon = taxon).save()
-            return  201
-        except ValidationError:
-            raise SchemaValidationError
-        except Exception as e:
-            app.logger.error(e)
-        raise InternalServerError
+    # def post(self,tax_id):
+    #     try:
+    #         taxon = service.return_taxon(tax_id)
+    #         file = request.files.get('file')
+    #         data = json.loads(request.form['json'])
+    #         taxon_files = TaxonFile(**data, file=file, taxon = taxon).save()
+    #         return  201
+    #     except ValidationError:
+    #         raise SchemaValidationError
+    #     except Exception as e:
+    #         app.logger.error(e)
+    #     raise InternalServerError
 
 
 class TaxonFileApi(Resource):
 
-    def post(self, name):
+    def get(self, name):
         try:
             taxon_file = TaxonFile.objects(name=name).first()
             file = taxon_file.file.read()
@@ -62,28 +65,28 @@ class TaxonFileApi(Resource):
         file = TaxonFile.objects(name=name).delete()
         return '',200
 
-    def get(self,name):
-        try:
-            tmp_file = "tmp.txt"
-            taxon_file = TaxonFile.objects(name=name).first()
-            to_json={}
-            arr=[{'id': "gene 1", 'start': 10000, 'end': 20000, 'strand': 1}]
-            # with open(tmp_file,'wb') as tmp:
-            #     tmp.write(taxon_file.file.read())
-            #     for rec in GFF.parse(tmp_file):
-            #         for gene in rec.features:
-            #             track={}
-            #             track["id"] = gene.id
-            #             track["start"] = gene.location._start.position
-            #             track["end"] = gene.location._end.position
-            #             track["strand"] = gene.location._strand
-            #         arr.append(track)
-            #     to_json['content'] = arr
-            return Response(json.dumps(arr), mimetype="application/json", status=200)
-        except NotUniqueError:
-            raise EmailAlreadyExistError
-        except ValidationError:
-            raise SchemaValidationError
-        except Exception as e:
-            app.logger.error(e)
-        raise InternalServerError  
+    # def get(self,name):
+    #     try:
+    #         # tmp_file = "tmp.txt"
+    #         # taxon_file = TaxonFile.objects(name=name).first()
+    #         # to_json={}
+    #         # arr=[{'id': "gene 1", 'start': 10000, 'end': 20000, 'strand': 1}]
+    #         # # with open(tmp_file,'wb') as tmp:
+    #         # #     tmp.write(taxon_file.file.read())
+    #         # #     for rec in GFF.parse(tmp_file):
+    #         # #         for gene in rec.features:
+    #         # #             track={}
+    #         # #             track["id"] = gene.id
+    #         # #             track["start"] = gene.location._start.position
+    #         # #             track["end"] = gene.location._end.position
+    #         # #             track["strand"] = gene.location._strand
+    #         # #         arr.append(track)
+    #         # #     to_json['content'] = arr
+    #         # return Response(json.dumps(arr), mimetype="application/json", status=200)
+    #     except NotUniqueError:
+    #         raise EmailAlreadyExistError
+    #     except ValidationError:
+    #         raise SchemaValidationError
+    #     except Exception as e:
+    #         app.logger.error(e)
+    #     raise InternalServerError  

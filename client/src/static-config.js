@@ -20,12 +20,21 @@ module.exports = {
                         {title: "Accuracy", description:`Because of the lack of well annotated large genomic sequences, it is difficult to assess the accuracy of "ab initio" gene finders. We have attempted to analyze the accuracy of geneid in a number of different sets. We believe that in the analysis of large genomic sequences geneid may be superior to other existing tools. A side by side comparison with genscan can be found here.`}
         ],
         predictionOptions: {
-            organism: {title: "Organism: ",
-            options: ["Homo sapiens (human)","Drosophila melanogaster (fruit fly)", "Tetraodon nigroviridis (puffer fish)", "Caenorhabditis elegans (worm)"],
-            active: false},
-            predictionModes: {title: "Prediction mode: ",
-            options: ["Normal mode (signal, exon and gene prediction)","Exon mode (only signals and exons, omitting evidences)"],active: false},
-            dnaStrands: {title: "DNA strand: ",options:["Forward and Reverse","Reverse","Forward"],active: false}
+            predictionModes: [
+                {text:'Normal mode (signal, exon and gene prediction)',value:''},
+                {text:'Exon mode (only signals and exons, omitting evidences)',value:'-o'},
+                {text:'Assembling mode (only assembling evidences)',value:'-O'}
+            ],
+            dnaStrands: [
+                {text:"Forward and Reverse",value:""},
+                {text:"Reverse",value:'-C'},
+                {text:"Forward",value:'-W'}
+            ]
+        },
+        outputOptions: {
+            outputFormat: [{text: 'geneid',value:''},{text: 'GFF',value:'-G'},{text: 'gene including CDS sequence',value:'-D'},{text: 'geneid extended (only genes)',value:'-X'},{text: 'GFF extended (only genes)',value:'-XG'}],
+            signals: [{text: 'Acceptor sites',value:'-a'},{text: 'Donor sites',value:'-d'},{text: 'Start codons',value:'-b'},{text: 'Stop codons',value:'-e'}],
+            exons: [{text: 'First exons',value:'-f'},{text: 'Internal exons',value:'-i'},{text: 'Terminal exons',value:'-t'},{text: 'Single genes',value:'-s'},{text: 'Open reading frames',value:'-zZ'},{text: 'All exons',value:'-x'}]
         },
         phy: "",
         downloadPageTexts: {

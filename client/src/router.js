@@ -6,6 +6,7 @@ import SoftwareDownload from './views/SoftwareDownload.vue'
 import GenePrediction from './views/GenePrediction.vue'
 import GeneIdAccuracy from './views/GeneIdAccuracy.vue'
 import GeneIdTraining from './views/GeneIdTraining.vue'
+import GeneIdFormPage from './views/GeneIdFormPage.vue'
 import TreeOfLife from './views/TreeOfLife.vue'
 import SGP2 from './views/SGP2.vue'
 import GeneId from './views/GeneId.vue'
@@ -61,6 +62,11 @@ export default new Router({
       path: "/tree-of-life",
       name: "tree-of-life",
       component: TreeOfLife
+    },
+    {
+      path: "/geneid-form",
+      name: "geneid-form",
+      component: GeneIdFormPage
     }
   ]
 });

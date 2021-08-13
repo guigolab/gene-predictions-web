@@ -2,7 +2,9 @@ version: '3'
 
 services:
   server:
-    build: ./server
+    build: 
+      context: .
+      dockerfile: ./server/Dockerfile
     container_name: 'server'
     restart: always
     environment: 
@@ -11,6 +13,7 @@ services:
       - "8080"
     volumes:
       - ./server:/server
+      - ./tmp:/tmp
     env_file: 
       - .env
 
@@ -18,8 +21,9 @@ services:
     build: ./client
     container_name:  nginx
     restart: always
-    #  port allows the host machine to link to container
-    # pass 80 from host machine to 80 of the image filesystem
+    volumes:
+      - ./client:/client
+      - node_modules:/client/node_modules
     ports:
         - "80:80"
         
@@ -40,4 +44,4 @@ services:
 volumes:
   app:
   mongodb-data:
-
+  node_modules:

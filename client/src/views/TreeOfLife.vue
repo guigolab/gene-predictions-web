@@ -12,9 +12,9 @@
 
 <script>
 import * as d3 from "d3";
-import TaxonNodeDataService from "../services/TaxonNodeDataService";
 import taxonFileService from "../services/TaxonFileService";
 import FileListModal from "../components/modal/FileListModal.vue"
+import treeService from "../services/TreeService"
 
 
 export default {
@@ -41,7 +41,7 @@ export default {
       this.width = this.$refs.svg.clientWidth
       this.outerRadius = this.width/2
       this.innerRadius = this.outerRadius - 170
-      TaxonNodeDataService.getTree(true)
+      treeService.getTree()
             .then(response => {
                 this.data = response.data[0]
                 this.chart = this.createTree();

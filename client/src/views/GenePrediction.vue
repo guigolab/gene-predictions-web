@@ -35,7 +35,7 @@ import PageHeadingComponent from '../components/PageHeadingComponent.vue';
 import TaxonComponent from '../components/TaxonComponent.vue';
 import TreeView from '../components/TreeViewComponent.vue'
 import config from '../static-config'
-import TaxonNodeDataService from "../services/TaxonNodeDataService";
+import treeService from "../services/TreeService"
 
 export default {
     name: 'gene-prediction',
@@ -46,8 +46,8 @@ export default {
         }
     },
     methods: {
-           retrieveTaxons() {
-        TaxonNodeDataService.getTree(true)
+           getTree() {
+        treeService.getTree()
             .then(response => {
             this.treeData = response.data[0];
             console.log(this.treeData)
@@ -58,7 +58,7 @@ export default {
         },
     },
     mounted(){
-        this.retrieveTaxons()
+        this.getTree()
         // this.test_get()
     },
     components: {
