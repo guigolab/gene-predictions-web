@@ -15,3 +15,8 @@ class TaxonFile(db.Document):
     name = db.StringField(required=True, unique=True)
     file = db.FileField(required=True)
 
+##implementation of geneid model to temporally persist ouput files, removed by client delete request
+class GeneIdResults(db.Document):
+    jpg = db.FileField() 
+    ps = db.FileField()
+    output = db.StringField(required=True)
