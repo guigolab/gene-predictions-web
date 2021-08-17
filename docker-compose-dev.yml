@@ -24,6 +24,7 @@ services:
     volumes:
       - ./client:/client
       - node_modules:/client/node_modules
+      - ./tmp:/tmp
     ports:
         - "80:80"
         

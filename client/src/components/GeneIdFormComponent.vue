@@ -1,4 +1,5 @@
 <template>
+<div>
   <b-form enctype="multipart/form-data" v-if="show" @submit="onSubmit" @reset="onReset">
         <b-form-group label="Try it out" label-size="lg"
         label-class="font-weight-bold pt-0"
@@ -102,9 +103,12 @@
           <b-button type="submit" variant="primary" style="float: inline-end">Submit</b-button>
         </div>
     </b-form>
+    <img v-if="imageSrc" src="/tmp/tmp6gz9ae_d.jpg"/>
+    </div>
 </template>
 <script>
 import geneidService from "../services/GeneIdService"
+// import http from "../http-geneid"
 
 export default {
     name: "gene-id-form",
@@ -121,9 +125,10 @@ export default {
             selectedMode: '',
             selectedOptions: [],
             outputOption: '', //geneid as default value
-            graphicalRap: false
+            graphicalRap: true
             },
             show: true,
+            imageSrc: ''
             // fastaFileURI:'',
             
             
@@ -131,17 +136,21 @@ export default {
     },
     mounted(){
         this.form.selectedParam = this.formOptions.paramFiles[0].value
+        this.form.selectedMode = this.formOptions.predictionOptions.predictionModes[0].value
     },
     methods: {
       onSubmit(event) {
         event.preventDefault()
         var formData = new FormData()
         for (const [key, value] of Object.entries(this.form)) {
-         formData.append(key,value)
+            if (value || value.length>0){
+                formData.append(key,value)
+            }
         }
         console.log(formData);
         geneidService.sendForm(formData)
         .then(response => {
+            this.imageSrc = response.data[2]
             console.log(response)
         })
       },
@@ -162,8 +171,8 @@ export default {
         if (e.target.id === 'gff-file'){
             this.form.gffFile = e.target.files[0]
         }
-      },
-}
+      },    
+    }
 }
 </script>
 <style>

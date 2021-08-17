@@ -30,6 +30,7 @@ class GeneIdServerApi(Resource):
     def post(self):
         try:
             app.logger.info(request.form)
+            app.logger.info(request.files)
             data = request.form
             files = request.files
             # fasta = request.files.getlist('fastaFile')
@@ -37,11 +38,15 @@ class GeneIdServerApi(Resource):
             # app.logger.info(fasta[0].read())
             # app.logger.info(gff[0].read())
             # body = request.get_json()
-            service.launch_geneid(data,files)
+            output_files = service.programs_configs(data,files)
+            list_response = []
+            for file in output_files:
+                list_response.append(file.name) ## we pass the path of the files to the client (an interval scheduler will remove them)
             # file = request.files.get('file')
             # data = json.loads(request.form['json'])
             # taxon_files = TaxonFile(**data, file=file, taxon = taxon).save()
-            return  201
+            app.logger.info(list_response)
+            return  Response(json.dumps(list_response), mimetype="application/json", status=200)
         except ValidationError:
             raise SchemaValidationError
         except Exception as e:

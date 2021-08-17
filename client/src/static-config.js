@@ -21,7 +21,7 @@ module.exports = {
         ],
         predictionOptions: {
             predictionModes: [
-                {text:'Normal mode (signal, exon and gene prediction)',value:''},
+                {text:'Normal mode (signal, exon and gene prediction)', value:'normal'},
                 {text:'Exon mode (only signals and exons, omitting evidences)',value:'-o'},
                 {text:'Assembling mode (only assembling evidences)',value:'-O'}
             ],
