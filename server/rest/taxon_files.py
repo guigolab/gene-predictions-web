@@ -46,7 +46,7 @@ class TaxonFilesApi(Resource):
 
 
 class TaxonFileApi(Resource):
-
+    ##download file by name
     def get(self, name):
         try:
             taxon_file = TaxonFile.objects(name=name).first()

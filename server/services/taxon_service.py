@@ -1,10 +1,8 @@
-from ast import Index
 from logging import error
 from ete3 import NCBITaxa
 from db.models import TaxonNode
 from flask import current_app as app
-import os
-import json
+
 ## create a service to retrieve lineage from taxon_id and create taxon_nodes from that
 ## check http://etetoolkit.org/docs/latest/tutorial/tutorial_ncbitaxonomy.html
 

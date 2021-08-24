@@ -1,10 +1,17 @@
 import http from "../http-common";
 import httpForm from "../http-formdata"
+import download from "../http-download"
+
 
 class GeneDataService {
 
-    getParams(){
-        return http.get('/geneid');   
+    getParams(geneId){
+        if(geneId){
+            return download.get(`/geneid/${geneId}`);
+        }
+        else{
+            return http.get('/geneid')
+        }
     }
 
     sendForm(form) {
