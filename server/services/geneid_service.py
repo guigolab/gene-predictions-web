@@ -12,7 +12,9 @@ GENEID = '/soft/GeneID/geneid_1.2/bin/geneid'
 def create_tempfile(suffix,**kwargs):
     return tempfile.NamedTemporaryFile(suffix='.'+suffix,dir='/tmp',**kwargs)
 
-# def generate(output_files):
+# def generate(geneid_result):
+#     if geneid_result.jpg:
+#         yield geneid_result.jpg
 #     app.logger.info('request started')
 #     for file in output_files:
 #         yield file
@@ -33,11 +35,13 @@ def programs_configs(data,files):
             files[key].save(gff.name)
     for key in data.keys():
         if key == 'fastaText':
-            fasta = create_tempfile('fasta',mode='w+')
-            fasta.write(data[key])
+            fasta = create_tempfile('fasta')
+            fasta.write(data[key].encode())
+            fasta.seek(0)
         elif key == 'gffText':
             gff = create_tempfile('gff')
-            gff.write(data[key])
+            gff.write(data[key].encode())
+            gff.seek(0)
         elif key == 'selectedMode':
             if gff.name:
                 cmd = '-R' if data[key] == 'normal' or data[key] == '-o' else data[key]
@@ -49,12 +53,10 @@ def programs_configs(data,files):
     ##run geneid
     options.append(fasta.name)
     geneid_result.geneid_cmd = ' '.join(options)
-    # geneid_result.param_species
     output = create_tempfile('stdout')
     output.write(launch_geneid(options))
     param.close()
     output.seek(0)
-    # output_files.append(output)
     fasta.close()
     if gff:
         gff.close()
@@ -70,7 +72,8 @@ def programs_configs(data,files):
         jpg.close()
     try:
         with open(output.name, 'r') as output:
-            geneid_result.output = output.read()
+            geneid_result.output = "\n".join(output.readlines())
+            app.logger.info(geneid_result.output)
         geneid_result.save() 
     except Exception as e:
         app.logger.error(e)

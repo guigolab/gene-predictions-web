@@ -12,15 +12,15 @@ import json
 
 class GeneIdServerApi(Resource):
     #get param files for formulary
-    def get(self,file_id=None):
+    def get(self,id=None):
         try:
-            if file_id:
+            if id:
                 # jpg = GeneIdResults.objects().first()
                 for result in GeneIdResults.objects():
-                    if file_id == str(result.ps.grid_id):
+                    if id == str(result.ps.grid_id):
                         file = result.ps.read()
                         content_type = result.ps.content_type
-                    if file_id == str(result.jpg.grid_id):
+                    if id == str(result.jpg.grid_id):
                         file = result.jpg.read()
                         content_type = result.jpg.content_type
                 return Response(file, content_type=content_type, status=200)
@@ -53,3 +53,12 @@ class GeneIdServerApi(Resource):
         except Exception as e:
             app.logger.error(e)
         raise InternalServerError
+
+    def delete(self,id):
+        geneid = GeneIdResults.objects.get(id=id)
+        if geneid.jpg:
+            geneid.jpg.delete()
+        if geneid.ps:
+            geneid.ps.delete()
+        geneid.delete()
+        return '', 200

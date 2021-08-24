@@ -17,6 +17,9 @@ class GeneDataService {
     sendForm(form) {
         return httpForm.post('/geneid',form)
     }
+    delete(geneId) {
+        return http.delete(`/geneid/${geneId}`);
+      }
   
 }
 

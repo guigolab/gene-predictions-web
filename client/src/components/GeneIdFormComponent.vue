@@ -103,7 +103,9 @@
           <b-button type="submit" variant="primary" style="float: inline-end">Submit</b-button>
         </div>
     </b-form>
-    <img v-if="imageSrc" src="/tmp/tmp6gz9ae_d.jpg"/>
+    <div id="output-container">{{output}}</div>
+    <img v-if="imageSrc" :src="imageSrc"/>
+    <b-button v-if="psLink" :href="psLink">Download Postscript File</b-button>
     </div>
 </template>
 <script>
@@ -128,7 +130,10 @@ export default {
             graphicalRap: true
             },
             show: true,
-            imageSrc: ''
+            imageSrc: '',
+            output: '',
+            psLink:''
+            
             // fastaFileURI:'',
             
             
@@ -152,9 +157,11 @@ export default {
         .then(response => {
             // response contains a geneid model
             const geneId = response.data
+            this.output = geneId.output
             if(geneId.jpg){
                 geneidService.getParams(geneId.jpg.$oid).then(response => {
-                    console.log(response)
+                    const urlCreator = window.URL || window.webkitURL
+                    this.imageSrc = urlCreator.createObjectURL(response.data)
                 })
                 //send image as attachment 
                 // and create download button for ps image download
@@ -162,15 +169,18 @@ export default {
             if(geneId.ps){
                   geneidService.getParams(geneId.ps.$oid).then(response => {
                     console.log(response)
-                    const url = window.URL.createObjectURL(new Blob([response.data], { type: { type: 'application/postscript' }}));
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', 'postscript file output');
-                    link.click();
+                    this.psLink = window.URL.createObjectURL(new Blob([response.data], { type: { type: 'application/postscript' }}));
+                    // const link = document.createElement('a');
+                    // link.href = url;
+                    // link.setAttribute('download', 'postscript file output');
+                    // link.click();
                 })
             }
             // this.imageSrc = response.data[2]
-            console.log(response)
+            // console.log(response)
+            geneidService.delete(geneId._id.$oid).then(response=>{
+                console.log(response)
+            })
         })
       },
        onReset(event) {
@@ -197,5 +207,9 @@ export default {
 <style>
 .buttons-form{
     display: block;
+}
+#output-container {
+    white-space: break-spaces;
+    line-height: 1rem;
 }
 </style>
