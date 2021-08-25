@@ -47,10 +47,9 @@ export default {
     },
     methods: {
            getTree() {
-        treeService.getTree()
+        treeService.getTree('root')
             .then(response => {
             this.treeData = response.data[0];
-            console.log(this.treeData)
             })
             .catch(e => {
             console.log(e);

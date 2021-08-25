@@ -2,14 +2,20 @@
   <div ref="taxon-container" class="list row shadow p-3">
     <div class="col-md-12">
         <b-row id="filter-bar">
-           <!-- <b-col>
-            <b-button id="popover-table-target" style="border: none;" variant="outline-info" class="mb-2">
+           <b-col>
+             <div v-if="toTreeLife">
+            <b-button id="popover-table-target" 
+              style="border: none;" 
+              variant="outline-info" 
+              class="mb-2"
+              :to="{name: 'tree-of-life', params: {node: taxonName}}">
                 <b-icon icon="diagram3" variant="outline-info"></b-icon>      
             </b-button>
             <b-popover target="popover-table-target" triggers="hover" placement="top" variant="info">
-                See select species in tree mode
+                See selected species in tree mode
             </b-popover>
-          </b-col> -->
+             </div>
+          </b-col>
           <b-col>
             <b-form-group
             label="Filter"
@@ -74,6 +80,7 @@ export default {
     return {
       selectedTaxon:{"tax_id":null,"name":null},
       taxons: [],
+      rawTaxons: [],
       taxonName: "",
       fields: ["tax_id", "name", { key: 'actions', label: '' }],
       selectMode:"single",
@@ -84,6 +91,7 @@ export default {
       filterOn: [],
       files: null,
       isBusy: false,
+      toTreeLife: false,
       totalRows: 1
     };
   },
@@ -94,7 +102,9 @@ export default {
         retrieveTaxons() {
         TaxonNodeDataService.getAll()
             .then(response => {
-            this.taxons = response.data.filter(taxon => taxon.has_files);
+            this.rawTaxons = response.data
+            //filter taxon to display
+            this.taxons = this.rawTaxons.filter(taxon => taxon.has_files)
             this.totalRows = this.taxons.length
                })  
             .catch(e => {
@@ -114,6 +124,15 @@ export default {
         this.$root.$emit('bv::show::modal', 'file-list-modal', button)
         },
         onFiltered(filteredItems) {
+          if (this.filter.length > 3){
+            this.taxonName = this.filter.charAt(0).toUpperCase() + this.filter.slice(1)
+            console.log(this.taxonName)
+            let index = this.rawTaxons.filter(taxon => taxon.name === this.taxonName)
+            console.log(index)
+            if (index.length > 0){
+              this.toTreeLife = true;
+            }
+          }
         // Trigger pagination to update the number of buttons/pages due to filtering
         this.totalRows = filteredItems.length
         this.currentPage = 1

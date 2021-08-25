@@ -4,19 +4,19 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from config import BaseConfig
 from db import initialize_db
 from rest import initialize_api
-import os
-import glob
+# from db.models import GeneIdResults
 
 # def remove_tmpfiles_job():
-#     files = glob.glob('/tmp/*')
-#     app.logger.info("executing cron job")
-#     app.logger.info(files)
-#     for f in [f for f in (files or [])]:
-#         app.logger.info("removing "+ f)
-#         os.remove(f)
+#     rs = GeneIdResults.objects()
+#     for r in rs:
+#         if r.jpg:
+#             r.jpg.delete()
+#         if r.ps:
+#             r.ps.delete()
+#         app.logger.info("deleting...")
+#         r.delete()
 
-
-# sched = BackgroundScheduler(daemon=True)
+# sched = BackgroundScheduler(daemon=True) ## keep the scheduler for future uses
 # sched.add_job(remove_tmpfiles_job,'interval',seconds=60)
 # sched.start()
 app = Flask(__name__)

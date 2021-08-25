@@ -1,5 +1,6 @@
 <template>
 <b-container fluid>
+  <h2>Tree view of {{node}}</h2>
   <b-row>
     <b-col>
       <svg ref="svg" class="tree-svg">
@@ -19,6 +20,7 @@ import treeService from "../services/TreeService"
 
 export default {
   name: "tree-of-life",
+  props: ['node'],
   data() {
     return {
         // color: null,
@@ -41,7 +43,7 @@ export default {
       this.width = this.$refs.svg.clientWidth
       this.outerRadius = this.width/2
       this.innerRadius = this.outerRadius - 170
-      treeService.getTree()
+      treeService.getTree(this.node)
             .then(response => {
                 this.data = response.data[0]
                 this.chart = this.createTree();

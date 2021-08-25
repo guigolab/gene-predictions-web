@@ -15,6 +15,6 @@ def initialize_routes(api):
 
 	api.add_resource(GeneIdServerApi, '/api/geneid', '/api/geneid/<id>') ##geneid web server
 
-	api.add_resource(TreeApi, '/api/tree','/api/tree/<node>') 
+	api.add_resource(TreeApi,'/api/tree/<node>') 
 
 

@@ -59,8 +59,9 @@ export default new Router({
       component: SGP2Algorithm
     },
     {
-      path: "/tree-of-life",
+      path: "/tree-of-life/:node",
       name: "tree-of-life",
+      props: true,
       component: TreeOfLife
     },
     {

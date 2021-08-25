@@ -13,7 +13,7 @@
            <b-icon icon="house" variant="outline-info"></b-icon>
             HOME 
           </b-nav-item>
-          <b-nav-item  active-class="active" class="nav-link" to="/tree-of-life" >
+          <b-nav-item  active-class="active" class="nav-link" :to="{name: 'tree-of-life', params: {node: 'root'}}">
            <b-icon icon="diagram3" variant="outline-info"></b-icon>
             TREE OF LIFE 
           </b-nav-item> 

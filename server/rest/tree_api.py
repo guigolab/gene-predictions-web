@@ -10,9 +10,9 @@ from errors import InternalServerError, SchemaValidationError, UserNotFoundError
 import json
 
 class TreeApi(Resource):
-    def get(self, node=None):
+    def get(self, node):
         dict={}
-        root = node if node else TaxonNode.objects(tax_id="1").first()
+        root = TaxonNode.objects(name = node).first()
         tree = service.dfs(root,dict)   
         return Response(json.dumps([tree]), mimetype="application/json", status=200)
  
