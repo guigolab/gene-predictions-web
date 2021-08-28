@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <nav-bar-component></nav-bar-component>
-    <div class="content container mt-3">
+    <b-container fluid>
       <router-view />
-    </div>
+    </b-container>
   </div>
 </template>
 

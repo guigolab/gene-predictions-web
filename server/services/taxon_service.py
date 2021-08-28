@@ -58,7 +58,7 @@ def dfs(node, tree):
     tree["name"] = node.name
     tree["taxid"] = node.tax_id   ## should pass client attributes setting in vue model
     tree["has_files"] = node.has_files
-    tree["isOpen"] = False
+    tree["isOpen"] = True
     tree["children"] = []
     if node.children:
         node.children = [lazy_ref.fetch() for lazy_ref in node.children]
@@ -67,8 +67,8 @@ def dfs(node, tree):
             dfs(child, child_dict)
             tree["children"].append(child_dict)
     tree["leaves"] = count_leaves(tree)
-    if len(tree["children"]) == 1:
-        tree["isOpen"] = True
+    # if len(tree["children"]) == 1:
+    #     tree["isOpen"] = True
     return tree
 
 def count_leaves(tree):

@@ -1,7 +1,6 @@
 <template>
-    <b-container>
-            <page-heading-component :header="header"></page-heading-component>
         <b-row>
+            <page-heading-component :header="header"></page-heading-component>
     <b-col>
       <b-button id="popover-target-1" style="border: none;" variant="outline-info" class="mb-2" to="/geneid-training">
         <b-icon icon="gear-wide" variant="outline-info"></b-icon>
@@ -152,7 +151,6 @@
     </div>
     </b-col>
         </b-row>
-    </b-container>
 </template>
 <script>
 import configs from '../static-config'

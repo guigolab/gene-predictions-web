@@ -2,8 +2,8 @@
         <li class="tree-container">
             <div class="node-container">
             <div @click="toggle" :class="{bold: isFolder}">
-            <b-icon v-if="isFolder" :icon="item.isOpen ? 'chevron-double-down': 'chevron-double-right' " variant="outline-info"></b-icon>
-            <span> {{ item.name }}</span>
+            <!-- <b-icon v-if="isFolder" :icon="item.isOpen ? 'chevron-double-down': 'chevron-double-right' " variant="outline-info"></b-icon> -->
+            <span :id="item.name"> {{ item.name }}</span>
             </div> 
             <b-button v-if="isFolder" id="tree-leaves-button" pill variant="outline-secondary" size="sm" @click="toTable"> {{item.leaves}} </b-button>
             </div>
@@ -54,6 +54,7 @@ export default {
 }
 </script>
 <style>
+
 .item {
   cursor: pointer;
   list-style-type: none;
@@ -67,9 +68,53 @@ export default {
 #tree-leaves-button {
     margin-left: 3px;
 }
-ul {
-  padding-left: 0.25em;
+/* ul { */
+  /* padding-left: 0.25em;
   line-height: 1.5em;
-  list-style-type: none;
+  list-style-type: none; */
+/* } */
+
+ul {
+  margin: 0px 0px 0px 0px;
+  list-style: none;
+   padding-left: 0.5em;
+  line-height: 2em;
+  font-family: Arial;
+}
+ul li {
+  font-size: 16px;
+  position: relative;
+}
+ul li:before {
+  position: absolute;
+  left: -15px;
+  top: 0px;
+  content: "";
+  display: block;
+  border-left: 1px solid #ddd;
+  height: 1em;
+  border-bottom: 1px solid #ddd;
+  width: 10px;
+}
+ul li:after {
+  position: absolute;
+  left: -15px;
+  bottom: -7px;
+  content: "";
+  display: block;
+  border-left: 1px solid #ddd;
+  height: 100%;
+}
+ul li.root {
+  margin: 0px 0px 0px 0px;
+}
+ul li.root:before {
+  display: none;
+}
+ul li.root:after {
+  display: none;
+}
+ul li:last-child:after {
+  display: none;
 }
 </style>

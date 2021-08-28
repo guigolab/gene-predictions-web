@@ -1,9 +1,8 @@
 <template>
-  <div ref="taxon-container" class="list row shadow p-3">
-    <div class="col-md-12">
-        <b-row id="filter-bar">
-           <b-col>
-             <div v-if="toTreeLife">
+      <b-col>
+         <div style="display:flex;margin-bottom:15px;">
+            <h3>Available prediction sets</h3>
+            <div v-if="toTreeLife">
             <b-button id="popover-table-target" 
               style="border: none;" 
               variant="outline-info" 
@@ -15,8 +14,8 @@
                 See selected species in tree mode
             </b-popover>
              </div>
-          </b-col>
-          <b-col>
+            </div>
+            <div>
             <b-form-group
             label="Filter"
             label-for="filter-input"
@@ -38,16 +37,14 @@
             </b-input-group-append>
             </b-input-group>
             </b-form-group>
-          </b-col>
-      </b-row>
+            </div>
       <b-table 
         id="taxon-table"
-        striped
+        sticky-header="600px"
+        head-variant="light"
         :items="taxons"
         :busy.sync="isBusy"
         :fields="fields"
-        :per-page="perPage"
-        :current-page="currentPage"
         show-empty
         @filtered="onFiltered"
         :filter="filter"
@@ -60,14 +57,13 @@
         </template>
       </b-table>
       <FileListModal :taxonName="taxonName" :files="files"></FileListModal>
-      <b-pagination
+      <!-- <b-pagination
         v-model="currentPage"
         :total-rows="totalRows"
         :per-page="perPage"
         aria-controls="taxon-table"
-        ></b-pagination>
-    </div>
-  </div>
+        ></b-pagination> -->
+      </b-col>
 </template>
 
 <script>
@@ -86,7 +82,7 @@ export default {
       selectMode:"single",
       currentPage: 1,
       currentModalPage: 1,
-      perPage: 20,
+      perPage: 1000000,
       filter: null,
       filterOn: [],
       files: null,

@@ -1,14 +1,22 @@
 <template>
-<b-container fluid>
-  <h2>Tree view of {{node}}</h2>
   <b-row>
+  <h2>Tree view of {{node}}</h2>
     <b-col>
-      <svg ref="svg" class="tree-svg">
-    </svg>
+      <b-container>
+        <b-row>
+          <b-col>
+            <b-icon v-if="loading" icon="arrow-clockwise" animation="spin" font-scale="4"></b-icon>
+            <svg ref="svg"  class="tree-svg">
+            </svg>
+          </b-col>
+          <!-- <b-col v-else>
+            
+          </b-col> -->
+        </b-row>
+      </b-container>
     </b-col>
-  </b-row>
   <FileListModal :taxonName="taxonName" :files="files"></FileListModal>
-</b-container>
+  </b-row>
 </template>
 
 <script>
@@ -31,8 +39,10 @@ export default {
         outerRadius: 0,
         innerRadius: 0,
         width: 0,
-        data: Object,
-        files: null
+        data: null,
+        files: null,
+        colorDomains: [],
+        loading: true
        
     };
   },
@@ -121,7 +131,8 @@ export default {
         .text(d => d.data.name.replace(/_/g, " ")).on("click", this.info(this))
         .on("mouseover", this.mouseovered(true))
         .on("mouseout", this.mouseovered(false));
-    
+    this.loading = false
+
     return Object.assign(svg.node());
     },
 

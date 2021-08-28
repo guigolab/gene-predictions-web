@@ -1,12 +1,10 @@
 <template>
-    <b-container>
-            <page-heading-component :header="header"></page-heading-component>
     <b-row>
+            <page-heading-component :header="header"></page-heading-component>
     <b-col>
         <FormComponent v-if="form.paramFiles.length > 0" :formOptions="form"/>
     </b-col>
         </b-row>
-    </b-container>
 </template>
 <script>
 import PageHeadingComponent from '../components/PageHeadingComponent.vue'
