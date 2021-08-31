@@ -6,8 +6,8 @@ from flask import current_app as app
 ## create a service to retrieve lineage from taxon_id and create taxon_nodes from that
 ## check http://etetoolkit.org/docs/latest/tutorial/tutorial_ncbitaxonomy.html
 
-def insert_taxons_from_lineage(tax_id):
-        taxa_db = NCBITaxa()
+def insert_taxons_from_lineage(tax_id,taxa_db):
+        # taxa_db = NCBITaxa()
         lineage = taxa_db.get_lineage(tax_id)
         names = taxa_db.get_taxid_translator(lineage)
         lineage_names = [names[taxid] for taxid in lineage]
@@ -37,11 +37,20 @@ def create_children(lineage):
 
 def return_taxon(tax_id):
     taxon = TaxonNode.objects(tax_id=tax_id).first()
+    taxa_db = NCBITaxa()
+    kingdom=""
+    tax_class=""
     if not taxon:
-        lineage = insert_taxons_from_lineage(tax_id) ## we insert every node from species to root around 30
+        lineage = insert_taxons_from_lineage(tax_id,taxa_db) ## we insert every node from species to root around 30
         create_children(lineage)
         taxon = TaxonNode.objects(tax_id=tax_id).first()
-    taxon.update(has_files=True)            
+    if not taxon.children:
+        for key,value in taxa_db.get_rank(taxa_db.get_lineage(tax_id)).items():
+            if value == 'class':
+                tax_class = taxa_db.get_taxid_translator([key])[key]
+            if value == 'kingdom':
+                kingdom =  taxa_db.get_taxid_translator([key])[key]
+    taxon.update(has_files=True, kingdom = kingdom, tax_class = tax_class)            
     return taxon
 
 # def recursive_children(node,tree):
@@ -67,6 +76,8 @@ def dfs(node, tree):
             dfs(child, child_dict)
             tree["children"].append(child_dict)
     tree["leaves"] = count_leaves(tree)
+    # if len(tree['children']) > 1:
+    #     tree["isOpen"] = False
     # if len(tree["children"]) == 1:
     #     tree["isOpen"] = True
     return tree

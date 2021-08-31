@@ -12,7 +12,6 @@
                 click over a node to open it, click the button to view children in table
             </b-popover>
             </div>
-            <b-form-input v-model="nodeBrowser" @change="scrollToNode" placeholder="Enter a species"></b-form-input>
             <div class="tree-viewer">
             <TreeView class="item" v-if="treeData" :item="treeData"></TreeView>
             <div v-else>
@@ -49,13 +48,6 @@ export default {
             .catch(e => {
             console.log(e);
             });
-        },
-        scrollToNode(value){
-            const el = document.getElementById(value);
-            console.log(value)
-            if(el){
-                el.scrollIntoView({behavior: "smooth"});
-            }   
         }
     },
     mounted(){
@@ -76,6 +68,7 @@ export default {
     height: 600px;
     display: inline-block;
     overflow: auto;
+    padding: 15px;
 }
 /* h3 {
 margin-bottom: 50px!important;

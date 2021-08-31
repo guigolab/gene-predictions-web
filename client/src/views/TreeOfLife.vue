@@ -42,7 +42,8 @@ export default {
         data: null,
         files: null,
         colorDomains: [],
-        loading: true
+        loading: true,
+        domains: ""
        
     };
   },
@@ -56,6 +57,8 @@ export default {
       treeService.getTree(this.node)
             .then(response => {
                 this.data = response.data[0]
+                this.domains = this.getDomains(this.data, []).slice(0,9).map(value => value.name)
+                console.log(this.domains)
                 this.chart = this.createTree();
             })
             .catch(e => {
@@ -145,7 +148,19 @@ export default {
      return function(_, d){
         component.getFiles(d.data.taxid, d.data.name)
      }
-        },
+    },
+
+    getDomains(node,domains) {
+      console.log(node.leaves)
+      if(node.children){
+        node.children.forEach(n => {
+          domains = this.getDomains(n,domains)
+          })
+        if (node.children.length > 1)
+          domains.push(node)
+      }
+      return domains.sort((a,b) => b.leaves-a.leaves)
+    },
 
     getFiles(taxid, name){
       taxonFileService.getAll(taxid)
@@ -209,7 +224,7 @@ export default {
     }, 
     color () {
       const color = d3.scaleOrdinal()
-    .domain(["Sarcopterygii","Actinopterygii","Mammalia"])
+    .domain(this.domains)
     .range(d3.schemeCategory10)
     return color
     },

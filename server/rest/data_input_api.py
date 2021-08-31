@@ -13,8 +13,12 @@ class InputDataApi(Resource):
             taxon = service.return_taxon(tax_id)
             file = request.files.get('file')
             data = json.loads(request.form['json'])
-            TaxonFile(**data, file=file, taxon = taxon).save()
-            return  201
+            tax_file = TaxonFile.objects(name=data['name']).first()
+            if tax_file:
+                return "filename already exists", 400
+            else:
+                TaxonFile(**data, file=file, taxon = taxon).save()
+                return  201
         except ValidationError:
             raise SchemaValidationError
         except Exception as e:

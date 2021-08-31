@@ -4,6 +4,9 @@ from . import db
 class TaxonNode(db.Document):
     tax_id = db.StringField(required=True,unique=True)
     name = db.StringField(required=True)
+    tax_class = db.StringField()
+    kingdom = db.StringField()
+
     has_files = db.BooleanField(default=False)
     description = db.StringField()
     lineage = db.ListField(db.StringField())

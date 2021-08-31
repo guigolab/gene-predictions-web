@@ -14,9 +14,9 @@ class TaxonNodesApi(Resource):
 		taxon_nodes = TaxonNode.objects().to_json()
 		return Response(taxon_nodes, mimetype="application/json", status=200)
 
-	def delete(self):
-		taxon_nodes = TaxonNode.objects.delete()
-		return '', 200
+	# def delete(self):
+	# 	taxon_nodes = TaxonNode.objects.delete()
+	# 	return '', 200
  
 # class TaxonNodeApi(Resource):
 

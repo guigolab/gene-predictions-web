@@ -1,35 +1,39 @@
 <template>
       <b-col>
-         <div style="display:flex;margin-bottom:15px;">
-            <h3>Available prediction sets</h3>
+        <b-container fluid>
+          <b-row>
+            <b-col> 
+              <div style="display:flex;margin-bottom:15px;">
+            <h5>Available prediction sets {{filter? "under "+ filter +": "+totalRows:taxons.length}}</h5>
             <div v-if="toTreeLife">
-            <b-button id="popover-table-target" 
-              style="border: none;" 
+            <b-button id="popover-table-target"
+            style="margin-left:5px;"
+            pill
               variant="outline-info" 
               class="mb-2"
               :to="{name: 'tree-of-life', params: {node: taxonName}}">
-                <b-icon icon="diagram3" variant="outline-info"></b-icon>      
+                <!-- <b-icon icon="diagram3" variant="outline-info"></b-icon> -->
+                tree of life view      
             </b-button>
-            <b-popover target="popover-table-target" triggers="hover" placement="top" variant="info">
+            <!-- <b-popover target="popover-table-target" triggers="hover" placement="top" variant="info">
                 See selected species in tree mode
-            </b-popover>
+            </b-popover> -->
              </div>
             </div>
-            <div>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+            <div style="margin-bottom:15px;">
             <b-form-group
-            label="Filter"
-            label-for="filter-input"
-            label-cols-sm="3"
-            label-align-sm="right"
-            label-size="sm"
-            class="mb-0"
+            label-align="right"
             >
-            <b-input-group size="sm">
+            <b-input-group>
                 <b-form-input ref="filter"
                 id="filter-input"
                 v-model="filter"
                 type="search"
-                placeholder="Type to Search"
+                placeholder="Type to search a species,class etc.."
                 >
             </b-form-input>
             <b-input-group-append>
@@ -38,6 +42,10 @@
             </b-input-group>
             </b-form-group>
             </div>
+            </b-col>
+          </b-row>
+        </b-container>
+        
       <b-table 
         id="taxon-table"
         sticky-header="600px"
@@ -49,12 +57,15 @@
         @filtered="onFiltered"
         :filter="filter"
         :filter-included-fields="filterOn"
+        :select-mode="selectMode"
+        selectable
+        @row-selected="info"
       >
-       <template #cell(actions)="row">
+       <!-- <template #cell(actions)="row">
             <b-button size="sm" @click="info(row.item, row.index, $event.target)" class="mr-1">
             Show Files
             </b-button>
-        </template>
+        </template> -->
       </b-table>
       <FileListModal :taxonName="taxonName" :files="files"></FileListModal>
       <!-- <b-pagination
@@ -78,9 +89,8 @@ export default {
       taxons: [],
       rawTaxons: [],
       taxonName: "",
-      fields: ["tax_id", "name", { key: 'actions', label: '' }],
+      fields: ["tax_id", "name", {key:'tax_class',label: 'Class'},"kingdom",{ key: 'actions', label: '' }],
       selectMode:"single",
-      currentPage: 1,
       currentModalPage: 1,
       perPage: 1000000,
       filter: null,
@@ -107,31 +117,46 @@ export default {
             console.log(e);
             });
         },
-       info(item, button) {
-        taxonFileService.getAll(item.tax_id)
+       info(item) {
+         if(item.length>0){
+        taxonFileService.getAll(item[0].tax_id)
             .then(response => {
             this.files  = response.data;
-            this.taxonName = item.name;
+            this.taxonName = item[0].name;
+            const el = document.getElementById(this.taxonName);
+            if(el){
+              Array.from(document.querySelectorAll('.highlight')).forEach((el) => el.classList.remove('highlight'));
+              el.scrollIntoView({behavior: "smooth"});
+              el.classList.add("highlight")
+            }   
+            console.log(item)
             
             })
             .catch(e => {
             console.log(e);
             });
-        this.$root.$emit('bv::show::modal', 'file-list-modal', button)
-        },
+        this.$root.$emit('bv::show::modal', 'file-list-modal')
+        }},
         onFiltered(filteredItems) {
           if (this.filter.length > 3){
             this.taxonName = this.filter.charAt(0).toUpperCase() + this.filter.slice(1)
-            console.log(this.taxonName)
+            const el = document.getElementById(this.taxonName);
+            if(el){
+              Array.from(document.querySelectorAll('.highlight')).forEach((el) => el.classList.remove('highlight'));
+              el.scrollIntoView({behavior: "smooth"});
+              el.classList.add("highlight")
+            }   
             let index = this.rawTaxons.filter(taxon => taxon.name === this.taxonName)
-            console.log(index)
-            if (index.length > 0){
+            if (index.length > 0 && filteredItems.length > 1){
               this.toTreeLife = true;
+            }else {
+              this.toTreeLife = false;
             }
-          }
+          }else {
+              this.toTreeLife = false;
+            }
         // Trigger pagination to update the number of buttons/pages due to filtering
         this.totalRows = filteredItems.length
-        this.currentPage = 1
       },
     },
     computed: {
@@ -148,6 +173,9 @@ export default {
   text-align: left;
   max-width: 750px;
   margin: auto;
+}
+.highlight {
+  background-color: springgreen;
 }
 /* #filter-bar {
     flex-direction: row-reverse;

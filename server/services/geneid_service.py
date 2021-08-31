@@ -52,6 +52,7 @@ def programs_configs(data,files):
             psfile = create_tempfile('ps')
     ##run geneid
     options.append(fasta.name)
+    app.logger.info(options)
     geneid_result.geneid_cmd = ' '.join(options)
     output = create_tempfile('stdout')
     output.write(launch_geneid(options))
@@ -64,7 +65,10 @@ def programs_configs(data,files):
         jpg = create_tempfile('jpg')
         ##run gff2ps
         psfile.write(launch_gff2ps(output))
-        os.system('convert -rotate 90 ' + psfile.name + ' ' + jpg.name) #convert ps to jpg 
+        args = ('convert', '-rotate', '90', psfile.name,jpg.name)
+        # os.system('convert -rotate 90 ' + psfile.name + ' ' + jpg.name) #convert ps to jpg 
+        popen = subprocess.Popen(args, stdout=subprocess.PIPE)
+        popen.wait()
         psfile.seek(0)
         geneid_result.ps.put(psfile, content_type='application/PostScript', filename=psfile.name)
         geneid_result.jpg.put(jpg, content_type='image/jpg', filename=jpg.name)
@@ -87,7 +91,7 @@ def launch_geneid(options):
 
 def launch_gff2ps(output):
     args = (GFF2PS,'-C',GFF2PS_PARAM, output.name)
-    popen = subprocess.Popen(args, stdout=subprocess.PIPE)
+    popen = subprocess.Popen(args, stdout=subprocess.PIPE, shell=True)
     popen.wait()
     return popen.stdout.read()
 
@@ -100,8 +104,9 @@ def geneid_options(data,geneid_model,param):
     options.append('-P')
     options.append(param.name) ##param tmpfile path
     if 'selectedOptions' in data:
-        for opt in data['selectedOptions']:
-            options.append(opt)
+        for value in data.getlist('selectedOptions'):
+            if value:
+                options.extend(value.split(","))
     if 'outputOption' in data:
         options.append(data['outputOption'])
     if 'selectedMode' in data and data['selectedMode'] == '-o':

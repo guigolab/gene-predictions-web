@@ -1,11 +1,15 @@
 <template>
-        <li class="tree-container">
-            <div class="node-container">
+        <li class="tree-container" :id="item.name">
+            <div v-if="item.name !== 'root'" class="node-container">
+            <!-- <div @click="toggle" :class="{bold: isFolder}"> -->
             <div @click="toggle" :class="{bold: isFolder}">
+            {{item.name}}
             <!-- <b-icon v-if="isFolder" :icon="item.isOpen ? 'chevron-double-down': 'chevron-double-right' " variant="outline-info"></b-icon> -->
-            <span :id="item.name"> {{ item.name }}</span>
             </div> 
             <b-button v-if="isFolder" id="tree-leaves-button" pill variant="outline-secondary" size="sm" @click="toTable"> {{item.leaves}} </b-button>
+             <!-- <b-popover target="tree-leaves-button" triggers="hover" placement="top" variant="info">
+                {{item.name}}
+            </b-popover> -->
             </div>
             <ul v-show="item.isOpen" v-if="isFolder">
             <tree-view
@@ -73,7 +77,6 @@ export default {
   line-height: 1.5em;
   list-style-type: none; */
 /* } */
-
 ul {
   margin: 0px 0px 0px 0px;
   list-style: none;
@@ -88,13 +91,14 @@ ul li {
 ul li:before {
   position: absolute;
   left: -15px;
-  top: 0px;
+  top: -17px;
   content: "";
   display: block;
-  border-left: 1px solid #ddd;
+  border-left: 3px solid #17a2b8;
   height: 1em;
-  border-bottom: 1px solid #ddd;
-  width: 10px;
+  border-bottom: 3px solid #17a2b8;
+  width: 15px;
+  height: 33px;
 }
 ul li:after {
   position: absolute;
@@ -102,7 +106,7 @@ ul li:after {
   bottom: -7px;
   content: "";
   display: block;
-  border-left: 1px solid #ddd;
+  border-left: 3px solid #17a2b8;
   height: 100%;
 }
 ul li.root {
