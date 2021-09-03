@@ -12,11 +12,9 @@ RUN npm run build
 
 # production stage
 FROM nginx:stable-alpine
-# remove the default conf
-RUN rm /etc/nginx/conf.d/default.conf
 
 #  copy the nginx.conf in our filesystem into the image filesystem
-COPY nginx.conf /etc/nginx/conf.d
+COPY default.conf.template /etc/nginx/templates/default.conf.template
 
 COPY --from=build-stage /client/dist /usr/share/nginx/html
 
