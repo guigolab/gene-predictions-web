@@ -1,6 +1,6 @@
 FROM guigolab/geneid:1.2 as geneid
 
-FROM python:3.6-stretch
+FROM python:3.6-alpine
 
 WORKDIR /soft
 
@@ -12,21 +12,24 @@ COPY --from=geneid /usr/local/bin/geneid /soft/GeneID/geneid_1.2/bin/
 
 WORKDIR /server
 
-ADD . /server
+ADD ./server /server
 
-RUN apt-get update -y
-RUN apt-get -y install gawk;
+RUN apk --no-cache update
+RUN apk --no-cache add gawk
+RUN apk --no-cache add --virtual build-dependencies musl-dev linux-headers g++
 
 RUN python -m pip install --upgrade pip
 
-RUN apt-get install -y ghostscript libgs-dev
-RUN apt-get install -y libmagickwand-dev imagemagick --fix-missing
+RUN apk --no-cache add ghostscript ghostscript-dev
+RUN apk --no-cache add imagemagick
 
-RUN pip install -r ./server/requirements.txt
+RUN pip install -r requirements.txt
 
-# ENV TAXDUMP_FILE="./server/services/taxdump.tar.gz"
+RUN apk --no-cache del build-dependencies
 
-# RUN python -c "from ete3 import NCBITaxa; NCBITaxa(taxdump_file='${TAXDUMP_FILE}')"
+ENV TAXDUMP_FILE="/server/taxdump.tar.gz"
+
+RUN python -c "from ete3 import NCBITaxa; NCBITaxa(taxdump_file='${TAXDUMP_FILE}')"
 
 CMD ["uwsgi", "app.ini"]
 
