@@ -4,7 +4,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from config import BaseConfig
 from db import initialize_db
 from rest import initialize_api
-# from db.models import GeneIdResults
+from db.models import TaxonFile,TaxonNode
 
 # def remove_tmpfiles_job():
 #     rs = GeneIdResults.objects()
@@ -15,9 +15,18 @@ from rest import initialize_api
 #             r.ps.delete()
 #         app.logger.info("deleting...")
 #         r.delete()
+# def drop_and_remove():
+#     files = TaxonFile.objects()
+#     for f in files:
+#         f.file.delete()
+#         f.delete()
+#     TaxonFile.drop_collection()
+#     taxons = TaxonNode.objects().delete()
+#     TaxonNode.drop_collection() 
+
 
 # sched = BackgroundScheduler(daemon=True) ## keep the scheduler for future uses
-# sched.add_job(remove_tmpfiles_job,'interval',seconds=60)
+# sched.add_job(drop_and_remove,'interval',seconds=30)
 # sched.start()
 app = Flask(__name__)
 CORS(app)

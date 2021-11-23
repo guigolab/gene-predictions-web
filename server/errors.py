@@ -12,6 +12,15 @@ class UserNotFoundError(HTTPException):
 class EmailAlreadyExistError(HTTPException):
     pass
 
+class Unauthorized(HTTPException):
+    pass
+
+class Forbidden(HTTPException):
+    pass
+
+class NotFound(HTTPException):
+    pass
+
 errors = {
 	"InternalServerError": {
         "message": "Oops something wrong",
@@ -25,9 +34,17 @@ errors = {
         "message": "User not found in database",
         "status": 400
     },
-    "EmailAlreadyExistError": {
-        "message": "User with specified email already exists in database",
-        "status": 400
+    "Unauthorized": {
+        "message": "Unauthorized",
+        "status": 401
+    },
+     "Forbidden": {
+        "message": "Forbidden",
+        "status": 403
+    },
+      "NotFound": {
+        "message": "Not Found",
+        "status": 404
     },
 
 }

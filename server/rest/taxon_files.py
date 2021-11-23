@@ -1,7 +1,7 @@
 from os import name
 from flask import Response, request
 from flask import current_app as app
-from db.models import TaxonFile, TaxonNode
+from db.models import Organism, TaxonFile, TaxonNode
 from flask_restful import Resource
 import services.taxon_service as service
 from mongoengine.errors import DoesNotExist, NotUniqueError, ValidationError
@@ -12,14 +12,19 @@ import json
 
 class TaxonFilesApi(Resource):
     #get files of a taxon
-    def get(self,tax_id):
+    def get(self):
         try:
+            params = request.args
+            tax_id = params.get('taxId')
+            type= params.get('type')
             if tax_id:
-                taxon = TaxonNode.objects(tax_id=tax_id).first()
-                taxon_files= TaxonFile.objects(taxon = taxon).to_json()
+                organism = Organism.objects(taxonId=tax_id).first()
+                taxon_files= TaxonFile.objects(organism = organism)
+            elif type:
+                taxon_files = TaxonFile.objects(type=type)
             else:
-                taxon_files = TaxonFile.objects().to_json()
-            return Response(taxon_files, mimetype="application/json", status=200)
+                taxon_files = TaxonFile.objects()
+            return Response(taxon_files.to_json(), mimetype="application/json", status=200)
         except ValidationError:
             raise SchemaValidationError
         except Exception as e:
@@ -61,9 +66,9 @@ class TaxonFileApi(Resource):
             app.logger.error(e)
         raise InternalServerError
     
-    def delete(self,name):
-        file = TaxonFile.objects(name=name).delete()
-        return '',200
+    # def delete(self,name):
+    #     file = TaxonFile.objects(name=name).delete()
+    #     return '',200
 
     # def get(self,name):
     #     try:

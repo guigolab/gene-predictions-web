@@ -3,7 +3,8 @@ import Router from "vue-router";
 import Genome from './views/GenomeBrowser.vue'
 import SGP2Algorithm from './views/SGP2Algorithm.vue'
 import SoftwareDownload from './views/SoftwareDownload.vue'
-import GenePrediction from './views/GenePrediction.vue'
+// import GenePrediction from './views/GenePrediction.vue'
+import HomePage from './views/HomePage.vue'
 import GeneIdAccuracy from './views/GeneIdAccuracy.vue'
 import GeneIdTraining from './views/GeneIdTraining.vue'
 import GeneIdFormPage from './views/GeneIdFormPage.vue'
@@ -19,8 +20,8 @@ export default new Router({
   routes: [
     {
       path: "/",
-      name: "gene-prediction",
-      component: GenePrediction
+      name: "home-page",
+      component: HomePage
     },
     {
       path: "/geneid",

@@ -29,7 +29,7 @@ class GeneIdServerApi(Resource):
                 taxon_names=[]
                 for file in taxon_files:
                     data={}
-                    data['text'] = file.taxon.name ##need to dereference taxon
+                    data['text'] = file.organism.name ##need to dereference taxon
                     data['value'] = file.name
                     taxon_names.append(data)
                 return Response(json.dumps([taxon_names]), mimetype="application/json", status=200)
@@ -43,6 +43,7 @@ class GeneIdServerApi(Resource):
         try:
             data = request.form
             files = request.files
+            app.logger.info("PASSING HERE")
             geneid_result = service.programs_configs(data,files)
             # list_response = []
             # for file in output_files:

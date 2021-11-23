@@ -4,16 +4,16 @@ import App from './App.vue'
 import router from './router'
 import resources from './static-config'
 
-// Import Bootstrap an BootstrapVue CSS files (order is important)
+// Import Bootstrap and BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 Vue.config.productionTip = false
 
 Vue.use(resources)
-// Make BootstrapVue available throughout your project
+// Make BootstrapVue available throughout the project
 Vue.use(BootstrapVue)
-// Optionally install the BootstrapVue icon components plugin
+// BootstrapVue icon components plugin
 Vue.use(IconsPlugin)
 
 new Vue({

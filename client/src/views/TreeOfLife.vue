@@ -1,28 +1,42 @@
 <template>
+ <b-overlay :show="show">
+  <b-breadcrumb style="background-color:white">
+       <b-breadcrumb-item :to="{name: 'home-page',path: '/'}">
+      <b-icon icon="chevron-left" scale="1" shift-v="1" aria-hidden="true"></b-icon>
+        Back
+    </b-breadcrumb-item>
+  </b-breadcrumb>
   <b-row>
-  <h2>Tree view of {{node}}</h2>
     <b-col>
-      <b-container>
-        <b-row>
-          <b-col>
-            <b-icon v-if="loading" icon="arrow-clockwise" animation="spin" font-scale="4"></b-icon>
-            <svg ref="svg"  class="tree-svg">
-            </svg>
-          </b-col>
-          <!-- <b-col v-else>
-            
-          </b-col> -->
-        </b-row>
+      <b-container fluid>
+          <b-row>
+            <b-col cols="2">
+            <div v-for="name in stack"
+            :key="name">
+            <b-button @click="createTree(name)" pill 
+            :variant="secondary">{{name}} 
+            </b-button>
+            </div>
+            </b-col>
+            <b-col cols="8">
+              <h1 style="text-align:center">{{node}}</h1>
+              <svg ref="svg"  class="tree-svg">
+              </svg>
+            </b-col>
+            <b-col cols="2">
+            </b-col>
+          </b-row>
       </b-container>
     </b-col>
-  <FileListModal :taxonName="taxonName" :files="files"></FileListModal>
+  <organism-info-modal :organism="taxon" :imageSrc="imageSrc"></organism-info-modal>
   </b-row>
+</b-overlay>
 </template>
 
 <script>
 import * as d3 from "d3";
-import taxonFileService from "../services/TaxonFileService";
-import FileListModal from "../components/modal/FileListModal.vue"
+import organismsDataService from "../services/OrganismsDataService";
+import OrganismInfoModal from "../components/modal/OrganismInfoModal.vue"
 import treeService from "../services/TreeService"
 
 
@@ -31,8 +45,6 @@ export default {
   props: ['node'],
   data() {
     return {
-        // color: null,
-        taxonName: "",
         clusterAttr: null,
         link: null,
         linkExtension: null,
@@ -41,35 +53,42 @@ export default {
         width: 0,
         data: null,
         files: null,
-        colorDomains: [],
-        loading: true,
-        domains: ""
-       
+        show: false,
+        domains: [],
+        legendDomains: [],
+        taxon: Object,
+        stack: [],
     };
   },
     components:{
-    FileListModal,
+    OrganismInfoModal,
   },
   mounted() {
       this.width = this.$refs.svg.clientWidth
       this.outerRadius = this.width/2
       this.innerRadius = this.outerRadius - 170
-      treeService.getTree(this.node)
-            .then(response => {
-                this.data = response.data[0]
-                this.domains = this.getDomains(this.data, []).slice(0,9).map(value => value.name)
-                console.log(this.domains)
-                this.chart = this.createTree();
-            })
-            .catch(e => {
-            console.log(e);
-            });
-//     window.addEventListener('resize', () => {
-//     this.outerRadius = window.innerWidth/2
-//   });
+      this.createTree(this.node)
      },
   methods: {
-    createTree(){
+    createTree(name){
+      const index = this.stack.indexOf(name)
+      if(index > -1 && this.stack.slice(index).length > 0){
+        this.stack = this.stack.slice(0,index)
+      }
+      this.node = name
+      this.show = true
+      treeService.getTree(name)
+              .then(response => {
+                  this.data = response.data
+                  this.legendDomains = this.getDomains(this.data, []).slice(0,9)
+                  this.domains = this.legendDomains.map(value => value.name)
+                  this.chart = this.createD3Tree();
+              })
+              .catch(e => {
+                console.log(e);
+              });
+    },
+    createD3Tree(){
         const root = d3.hierarchy(this.data, d => d.children)
         .sum(d => d.children ? 0 : 1)
         .sort((a, b) => (a.value - b.value) || d3.ascending(a.data.length, b.data.length));
@@ -134,7 +153,7 @@ export default {
         .text(d => d.data.name.replace(/_/g, " ")).on("click", this.info(this))
         .on("mouseover", this.mouseovered(true))
         .on("mouseout", this.mouseovered(false));
-    this.loading = false
+    this.show = false
 
     return Object.assign(svg.node());
     },
@@ -146,12 +165,16 @@ export default {
     },
    info(component) {
      return function(_, d){
-        component.getFiles(d.data.taxid, d.data.name)
+       if(d.data){
+        component.getData(d.data)
+        }
+        else {
+          component.getData(d)
+        }
      }
     },
 
     getDomains(node,domains) {
-      console.log(node.leaves)
       if(node.children){
         node.children.forEach(n => {
           domains = this.getDomains(n,domains)
@@ -162,16 +185,45 @@ export default {
       return domains.sort((a,b) => b.leaves-a.leaves)
     },
 
-    getFiles(taxid, name){
-      taxonFileService.getAll(taxid)
-            .then(response => {
-            this.files  = response.data;
-            this.taxonName = name;
-            this.$root.$emit('bv::show::modal', 'file-list-modal')
-            })
-            .catch(e => {
-            console.log(e);
-            });
+    getData(taxon){
+      const name = taxon.name || taxon
+      if(name.split(" ").length > 1){
+        organismsDataService.getOrganism(name).then(response => {
+          this.taxon = response.data
+          this.$root.$emit('bv::show::modal', 'organism-info-modal')
+        })
+      }
+      else {
+        if(this.node == name){
+          return
+        }
+        if(!this.stack.includes(this.node)){
+          this.stack.push(this.node)
+        }
+        this.createTree(name)
+      }
+      // organismsDataService.getData()
+      // taxonFileService.getAll(taxon.taxid)
+      //       .then(response => {
+      //       this.files  = response.data;
+      //       if(this.files.length > 0) {
+      //         taxonFileService.download(this.files[0].name).then(response => {
+      //             const urlCreator = window.URL || window.webkitURL
+      //           this.imageSrc = urlCreator.createObjectURL(response.data)
+      //            this.taxon = taxon
+      //           
+      //         })
+      //       }
+      //       else {
+      //         this.imageSrc= ''
+      //         this.taxon = taxon
+      //         this.$root.$emit('bv::show::modal', 'file-list-modal')
+      //       }
+           
+      //       })
+      //       .catch(e => {
+      //       console.log(e);
+      //       });
     },
     mouseovered(active) {
       return function(event, d) {
@@ -185,7 +237,7 @@ export default {
       };
     },
     maxLength(d) {
-    return d.data.length + (d.children ? d3.max(d.children, this.maxLength) : 0);
+      return d.data.length + (d.children ? d3.max(d.children, this.maxLength) : 0);
     },
     setRadius(d, y0, k) {
         d.radius = (y0 += d.data.length) * k;
@@ -194,39 +246,37 @@ export default {
     setColor(d) {
         var name = d.data.name;
         d.color = this.color().domain().indexOf(name) >= 0 ? this.color()(name) : d.parent ? d.parent.color : null;
-        // console.log(d.color)
-
         if (d.children){
            d.children.forEach((item) => {
              this.setColor(item)});
-        }
+          }
     },
     linkVariable(d) {
-    return this.linkStep(d.source.x, d.source.radius, d.target.x, d.target.radius);
+      return this.linkStep(d.source.x, d.source.radius, d.target.x, d.target.radius);
     },
     linkConstant(d) {
-    return this.linkStep(d.source.x, d.source.y, d.target.x, d.target.y);
+      return this.linkStep(d.source.x, d.source.y, d.target.x, d.target.y);
     },
     linkExtensionVariable(d) {
-    return this.linkStep(d.target.x, d.target.radius, d.target.x, this.innerRadius);
+      return this.linkStep(d.target.x, d.target.radius, d.target.x, this.innerRadius);
     },
     linkExtensionConstant(d) {
-    return this.linkStep(d.target.x, d.target.y, d.target.x, this.innerRadius);
+      return this.linkStep(d.target.x, d.target.y, d.target.x, this.innerRadius);
     },
     linkStep(startAngle, startRadius, endAngle, endRadius) {
-    const c0 = Math.cos(startAngle = (startAngle - 90) / 180 * Math.PI);
-    const s0 = Math.sin(startAngle);
-    const c1 = Math.cos(endAngle = (endAngle - 90) / 180 * Math.PI);
-    const s1 = Math.sin(endAngle);
-    return "M" + startRadius * c0 + "," + startRadius * s0
-        + (endAngle === startAngle ? "" : "A" + startRadius + "," + startRadius + " 0 0 " + (endAngle > startAngle ? 1 : 0) + " " + startRadius * c1 + "," + startRadius * s1)
-        + "L" + endRadius * c1 + "," + endRadius * s1;
+      const c0 = Math.cos(startAngle = (startAngle - 90) / 180 * Math.PI);
+      const s0 = Math.sin(startAngle);
+      const c1 = Math.cos(endAngle = (endAngle - 90) / 180 * Math.PI);
+      const s1 = Math.sin(endAngle);
+      return "M" + startRadius * c0 + "," + startRadius * s0
+          + (endAngle === startAngle ? "" : "A" + startRadius + "," + startRadius + " 0 0 " + (endAngle > startAngle ? 1 : 0) + " " + startRadius * c1 + "," + startRadius * s1)
+          + "L" + endRadius * c1 + "," + endRadius * s1;
     }, 
-    color () {
+    color() {
       const color = d3.scaleOrdinal()
-    .domain(this.domains)
-    .range(d3.schemeCategory10)
-    return color
+      .domain(this.domains)
+      .range(d3.schemeCategory10)
+      return color
     },
     radialCluster(){
      return d3.cluster()
@@ -235,22 +285,25 @@ export default {
     },
     legend(svg){
       const g = svg
-    .selectAll("g")
-    .data(this.color().domain())
-    .join("g")
-      .attr("transform", (d, i) => `translate(${-this.outerRadius},${-this.outerRadius + i * 20})`);
+        .selectAll("g").text('').attr('fill',null).attr('stroke',null)
+        .data(this.color().domain())
+        .join("g")
+        .attr("transform", (d, i) => `translate(${-this.outerRadius},${-this.outerRadius + i * 20})`);
+        g.append("rect")
+        .attr("width", 18)
+        .attr("height", 18)
+        .attr("fill", this.color());
 
-  g.append("rect")
-      .attr("width", 18)
-      .attr("height", 18)
-      .attr("fill", this.color());
-
-  g.append("text")
-      .attr("x", 24)
-      .attr("y", 9)
-      .attr("dy", "0.35em")
-      .text(d => d);
-},
+        g.append("text")
+        .attr("x", 24)
+        .attr("y", 9)
+        .attr("dy", "0.35em")
+        .attr("class","legend-text")
+        .text(d =>d +' ('+ this.legendDomains.find(value => value.name === d).rank +')')
+        .on("click", this.info(this))
+        .on("mouseover", this.mouseovered(true))
+        .on("mouseout", this.mouseovered(false));
+    },
   },
   computed: {
     
@@ -262,13 +315,14 @@ export default {
 </script>
 
 <style>
-.leaves-class {
+.leaves-class, .legend-text {
   cursor: pointer;
   font-size: 14px;
 }
 .tree-svg {
     width: inherit;
     height: 100%;
+    overflow: visible;
 }
 text {
   font-size: 14px;
