@@ -53,6 +53,8 @@
                                 v-model="form.selectedParam"
                                 class="mb-3"
                                 :options="formOptions.paramFiles"
+                                value-field="name"
+                                text-field="organism"
                             >
                             </b-form-select>
                             <label for="predmode-checkbox">select a prediction mode </label>
@@ -151,7 +153,7 @@ export default {
         }
     },
     mounted(){
-        this.form.selectedParam = this.formOptions.paramFiles[0].value
+        this.form.selectedParam = this.formOptions.paramFiles[0].name
         this.form.selectedMode = this.formOptions.predictionOptions.predictionModes[0].value
     },
     computed: {
@@ -168,39 +170,39 @@ export default {
         event.preventDefault()
         var formData = new FormData()
         for (const [key, value] of Object.entries(this.form)) {
-            console.log(value)
             if (value){
                 formData.append(key,value)
             }
         }
         geneidService.sendForm(formData)
         .then(response => {
-            // response contains a geneid model
+            // response contains a geneid model object
             const geneId = response.data
             this.output = geneId.output
-            if(geneId.jpg){
-                geneidService.getParams(geneId.jpg.$oid).then(response => {
-                    const urlCreator = window.URL || window.webkitURL
-                    this.imageSrc = urlCreator.createObjectURL(response.data)
-                })
-                //send image as attachment 
-                // and create download button for ps image download
-            }
-            if(geneId.ps){
-                  geneidService.getParams(geneId.ps.$oid).then(response => {
-                    console.log(response)
-                    this.psLink = window.URL.createObjectURL(new Blob([response.data], { type: { type: 'application/postscript' }}));
-                    // const link = document.createElement('a');
-                    // link.href = url;
-                    // link.setAttribute('download', 'postscript file output');
-                    // link.click();
-                })
-            }
-            // this.imageSrc = response.data[2]
-            // console.log(response)
-            geneidService.delete(geneId._id.$oid).then(response=>{
-                console.log(response)
-            })
+            console.log(geneId)
+            // if(geneId.jpg){
+            //     geneidService.getParams(geneId.jpg.$oid).then(response => {
+            //         const urlCreator = window.URL || window.webkitURL
+            //         this.imageSrc = urlCreator.createObjectURL(response.data)
+            //     })
+            //     //send image as attachment 
+            //     // and create download button for ps image download
+            // }
+            // if(geneId.ps){
+            //       geneidService.getParams(geneId.ps.$oid).then(response => {
+            //         console.log(response)
+            //         this.psLink = window.URL.createObjectURL(new Blob([response.data], { type: { type: 'application/postscript' }}));
+            //         // const link = document.createElement('a');
+            //         // link.href = url;
+            //         // link.setAttribute('download', 'postscript file output');
+            //         // link.click();
+            //     })
+            // }
+            // // this.imageSrc = response.data[2]
+            // // console.log(response)
+            // geneidService.delete(geneId._id.$oid).then(response=>{
+            //     console.log(response)
+            // })
         })
       },
        onReset(event) {

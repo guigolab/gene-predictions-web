@@ -22,7 +22,7 @@ class Organism(db.Document):
     taxon_lineage = db.ListField(db.LazyReferenceField(TaxonNode))
 
 class TaxonFile(db.Document):
-    organism = db.ReferenceField(Organism, required=True)
+    organism = db.LazyReferenceField(Organism, required=True)
     type = db.EnumField(FileType, default=FileType.GFF)
     name = db.StringField(required=True, unique=True)
     file = db.FileField(required=True)

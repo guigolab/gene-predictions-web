@@ -41,10 +41,12 @@ class GeneIdServerApi(Resource):
 
     def post(self):
         try:
+        
             data = request.form
             files = request.files
             app.logger.info("PASSING HERE")
             geneid_result = service.programs_configs(data,files)
+            app.logger.info(geneid_result.to_json())
             # list_response = []
             # for file in output_files:
             #     list_response.append(file.name) ## we pass the path of the files to the client (an interval scheduler will remove them)

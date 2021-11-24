@@ -9,7 +9,7 @@
 <script>
 import PageHeadingComponent from '../components/PageHeadingComponent.vue'
 import FormComponent from '../components/GeneIdFormComponent.vue'
-import geneidService from "../services/GeneIdService";
+import fileService from "../services/TaxonFileService";
 import config from '../static-config'
 
 export default {
@@ -28,8 +28,8 @@ export default {
         FormComponent
     },
     mounted() {
-        geneidService.getParams().then(response => {
-            this.form.paramFiles = response.data[0]
+        fileService.getAll({type: 'param'}).then(response => {
+            this.form.paramFiles = response.data
         })
     }
 }

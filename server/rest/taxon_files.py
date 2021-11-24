@@ -24,7 +24,14 @@ class TaxonFilesApi(Resource):
                 taxon_files = TaxonFile.objects(type=type)
             else:
                 taxon_files = TaxonFile.objects()
-            return Response(taxon_files.to_json(), mimetype="application/json", status=200)
+            json_resp = []            
+            for file in taxon_files:
+                json_file = json.loads(file.to_json())
+                organism = file.organism.fetch()
+                json_file['organism'] = organism.name
+                json_resp.append(json_file)
+            app.logger.info(json_resp)
+            return Response(json.dumps(json_resp), mimetype="application/json", status=200)
         except ValidationError:
             raise SchemaValidationError
         except Exception as e:
