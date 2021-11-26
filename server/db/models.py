@@ -33,6 +33,7 @@ class TaxonFile(db.Document):
 class GeneIdResults(db.Document):
     jpg = db.FileField() 
     ps = db.FileField()
+    run_time = db.StringField()
     output = db.StringField()
     geneid_cmd = db.StringField()
     param_species = db.StringField()

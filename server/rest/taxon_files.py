@@ -3,6 +3,7 @@ from flask import Response, request
 from flask import current_app as app
 from db.models import Organism, TaxonFile, TaxonNode
 from flask_restful import Resource
+from mongoengine.queryset.visitor import Q
 import services.taxon_service as service
 from mongoengine.errors import DoesNotExist, NotUniqueError, ValidationError
 from errors import InternalServerError, SchemaValidationError, UserNotFoundError, EmailAlreadyExistError
@@ -17,7 +18,9 @@ class TaxonFilesApi(Resource):
             params = request.args
             tax_id = params.get('taxId')
             type= params.get('type')
-            if tax_id:
+            if tax_id and type:
+                app.logger.info(TaxonFile.objects(Q(organism__taxonId = tax_id) & Q(type=type)))
+            elif tax_id:
                 organism = Organism.objects(taxonId=tax_id).first()
                 taxon_files= TaxonFile.objects(organism = organism)
             elif type:
@@ -30,7 +33,6 @@ class TaxonFilesApi(Resource):
                 organism = file.organism.fetch()
                 json_file['organism'] = organism.name
                 json_resp.append(json_file)
-            app.logger.info(json_resp)
             return Response(json.dumps(json_resp), mimetype="application/json", status=200)
         except ValidationError:
             raise SchemaValidationError

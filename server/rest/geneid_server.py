@@ -4,18 +4,19 @@ from db.models import TaxonFile,GeneIdResults
 from flask_restful import Resource
 from flask import send_file
 import services.geneid_service as service
-from mongoengine.errors import ValidationError
-from errors import InternalServerError, SchemaValidationError
+from mongoengine.errors import ValidationError, DoesNotExist
+from errors import InternalServerError, SchemaValidationError, NotFound
 import json
 
 
 
 class GeneIdServerApi(Resource):
     #get param files for formulary
-    def get(self,id=None):
+    def get(self,id):
         try:
-            if id:
-                # jpg = GeneIdResults.objects().first()
+            # jpg = GeneIdResults.objects().first()
+            result_model = GeneIdResults.objects(id = id).first()
+            if not result_model:
                 for result in GeneIdResults.objects():
                     if id == str(result.ps.grid_id):
                         file = result.ps.read()
@@ -25,23 +26,16 @@ class GeneIdServerApi(Resource):
                         content_type = result.jpg.content_type
                 return Response(file, content_type=content_type, status=200)
             else:
-                taxon_files = TaxonFile.objects(type="param")
-                taxon_names=[]
-                for file in taxon_files:
-                    data={}
-                    data['text'] = file.organism.name ##need to dereference taxon
-                    data['value'] = file.name
-                    taxon_names.append(data)
-                return Response(json.dumps([taxon_names]), mimetype="application/json", status=200)
-        except ValidationError:
-            raise SchemaValidationError
+                app.logger.info(result_model.to_json())
+                return Response(result_model.to_json(),mimetype="application/json", status=200)
+        except DoesNotExist:
+            raise NotFound
         except Exception as e:
             app.logger.error(e)
         raise InternalServerError
 
     def post(self):
         try:
-        
             data = request.form
             files = request.files
             app.logger.info("PASSING HERE")

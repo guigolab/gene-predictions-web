@@ -1,5 +1,5 @@
 import os
-import subprocess
+import subprocess, time
 import tempfile
 from db.models import TaxonFile,GeneIdResults
 from flask import current_app as app
@@ -34,39 +34,13 @@ def programs_configs(data,files):
     else:
         gff = None
     if 'selectedMode' in data.keys() and gff and gff.name:
-        # if gff and gff.name:
         app.logger.info('SELECT MODE IS')
         app.logger.info(data['selectedMode'])
         cmd = '-R' if data['selectedMode'] == 'normal' or data['selectedMode'] == '-o' else data['selectedMode']
         options.extend([cmd, gff.name])
-        # else:
-        #     options.append(data['selectedMode'])
-    if 'graphicalRap' in data.keys():
+    if 'graphicalRap' in data.keys() and data['graphicalRap']:
         psfile = create_tempfile('ps')
-    # for key in files.keys():
-    #     if key == 'fastaFile':
-    #         fasta = create_tempfile('fasta')
-    #         files[key].save(fasta.name)
-    #     elif key == 'gffFile':
-    #         gff = create_tempfile('gff')
-    #         files[key].save(gff.name)
-    # for key in data.keys():
-    #     if key == 'fastaText':
-    #         fasta = create_tempfile('fasta')
-    #         fasta.write(data[key].encode())
-    #         fasta.seek(0)
-    #     elif key == 'gffText':
-    #         gff = create_tempfile('gff')
-    #         gff.write(data[key].encode())
-    #         gff.seek(0)
-    #     elif key == 'selectedMode':
-    #         if gff and gff.name:
-    #             cmd = '-R' if data[key] == 'normal' or data[key] == '-o' else data[key]
-    #             options.extend([cmd, gff.name])
-    #         else:
-    #             options.append(data[key])
-    #     elif key == 'graphicalRap':
-    #         psfile = create_tempfile('ps')
+
     ##run geneid
     app.logger.info(options)
     fasta.seek(0)
@@ -74,7 +48,8 @@ def programs_configs(data,files):
     geneid_result.geneid_cmd = ' '.join(options)
     output = create_tempfile('stdout')
     app.logger.info('before launching geneid')
-    output.write(launch_geneid(options))
+    output.write(launch_geneid(options,geneid_result))
+    app.logger.info(geneid_result.to_json())
     param.close()
     output.seek(0)
     fasta.close()
@@ -85,10 +60,10 @@ def programs_configs(data,files):
         ##run gff2ps
         psfile.write(launch_gff2ps(output))
         app.logger.info('AFTER GFF2PS')
-        args = ('convert', '-rotate', '90', psfile.name, jpg.name)
-        # os.system('convert -rotate 90 ' + psfile.name + ' ' + jpg.name) #convert ps to jpg 
-        popen = subprocess.Popen(args, stdout=subprocess.PIPE)
-        popen.wait()
+        # args = ('convert', '-rotate', '90', psfile.name, jpg.name)
+        os.system('convert -rotate 90 ' + psfile.name + ' ' + jpg.name) #convert ps to jpg 
+        # subprocess.Popen(args, stdout=subprocess.PIPE)
+        # popen.wait()
         psfile.seek(0)
         geneid_result.ps.put(psfile, content_type='application/PostScript', filename=psfile.name)
         geneid_result.jpg.put(jpg, content_type='image/jpg', filename=jpg.name)
@@ -102,19 +77,20 @@ def programs_configs(data,files):
         app.logger.error(e)
     return geneid_result
     
-def launch_geneid(options):
+def launch_geneid(options, result):
     app.logger.info("LAUNCHING GENEID...")
-    app.logger.info(options)
+    start_time = time.time()
     ##should check if works on windows machines
     popen = subprocess.Popen(tuple(options), stdout=subprocess.PIPE)
-    popen.wait()
+    # popen.wait()
+    result.run_time = str(time.time() - start_time)
     return popen.stdout.read()
 
 def launch_gff2ps(output):
     args = (GFF2PS,'-C',GFF2PS_PARAM, output.name)
     app.logger.info("LAUNCHING GFF2PS...")
     popen = subprocess.Popen(args, stdout=subprocess.PIPE)
-    popen.wait()
+    # popen.wait()
     return popen.stdout.read()
 
 def geneid_options(data,geneid_model,param):

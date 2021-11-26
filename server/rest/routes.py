@@ -15,7 +15,7 @@ def initialize_routes(api):
 	api.add_resource(TaxonFileApi, '/api/files/<name>') ##download file by name
 	api.add_resource(TaxonFilesApi, '/api/files') ## get all files of a taxon
 
-	api.add_resource(GeneIdServerApi, '/api/geneid', '/api/geneid/<id>') ##geneid web server
+	api.add_resource(GeneIdServerApi, '/api/geneid','/api/geneid/<id>') ##geneid web server
 
 	api.add_resource(TreeApi,'/api/tree/<node>') 
 
