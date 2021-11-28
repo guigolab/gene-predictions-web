@@ -1,7 +1,7 @@
 import os
 import subprocess, time
 import tempfile
-from db.models import TaxonFile,GeneIdResults
+from db.models import TaxonFile,GeneIdResults, ResultFiles
 from flask import current_app as app
 
 GFF2PS = '/soft/GeneID/geneid_1.2/bin/gff2ps'
@@ -15,7 +15,6 @@ def programs_configs(data,files):
     geneid_result = GeneIdResults()
     param = create_tempfile('param')
     options = geneid_options(data,geneid_result,param)
-    app.logger.info(data.keys())
     if 'fastaFile' in files.keys():
         app.logger.info('fastafile')
         fasta = create_tempfile('fasta')
@@ -38,18 +37,20 @@ def programs_configs(data,files):
         app.logger.info(data['selectedMode'])
         cmd = '-R' if data['selectedMode'] == 'normal' or data['selectedMode'] == '-o' else data['selectedMode']
         options.extend([cmd, gff.name])
-    if 'graphicalRap' in data.keys() and data['graphicalRap']:
-        psfile = create_tempfile('ps')
-
+    psfile = create_tempfile('ps') if 'graphicalRap' in data.keys() and data['graphicalRap'] else None
     ##run geneid
-    app.logger.info(options)
     fasta.seek(0)
     options.append(fasta.name)
     geneid_result.geneid_cmd = ' '.join(options)
     output = create_tempfile('stdout')
-    app.logger.info('before launching geneid')
-    output.write(launch_geneid(options,geneid_result))
-    app.logger.info(geneid_result.to_json())
+    result = launch_geneid(options)
+    if result:
+        output.write(result)
+    else:
+        return 
+    app.logger.info('AFTER GENEID')
+    # output.seek(0)
+    # app.logger.info(output.read())
     param.close()
     output.seek(0)
     fasta.close()
@@ -65,33 +66,62 @@ def programs_configs(data,files):
         # subprocess.Popen(args, stdout=subprocess.PIPE)
         # popen.wait()
         psfile.seek(0)
-        geneid_result.ps.put(psfile, content_type='application/PostScript', filename=psfile.name)
-        geneid_result.jpg.put(jpg, content_type='image/jpg', filename=jpg.name)
+        ps_file = ResultFiles(file=psfile, type='application/PostScript', name = psfile.name).save()
+        jpg_file = ResultFiles(file=jpg, type='image/jpg', name=jpg.name).save()
+        geneid_result.ps = ps_file
+        geneid_result.jpg = jpg_file
+        # geneid_result.ps.put(psfile, content_type='application/PostScript', filename=psfile.name)
+        # geneid_result.jpg.put(jpg, content_type='image/jpg', filename=jpg.name)
         psfile.close()
         jpg.close()
     try:
-        with open(output.name, 'r') as output:
-            geneid_result.output = "\n".join(output.readlines())
+        if os.path.getsize(output.name) >= 15000000:
+            output_file = ResultFiles(file = output, type='text/plain', name = output.name).save()
+            geneid_result.output_file = output_file
+        else:
+            with open(output.name, 'r') as output:
+                geneid_result.output = "\n".join(output.readlines())
+                # app.logger.info(len(geneid_result.output.encode('utf-8')))
+                # if len(geneid_result.output.encode('utf-8')) >= 15000000:
+                #     geneid_result.output_file.put(output, content_type='')
         geneid_result.save() 
     except Exception as e:
         app.logger.error(e)
     return geneid_result
     
-def launch_geneid(options, result):
+def launch_geneid(options):
     app.logger.info("LAUNCHING GENEID...")
-    start_time = time.time()
+    # start_time = time.time()
+    # process = subprocess.check_output(tuple(options), stdout=subprocess.PIPE,  stderr=subprocess.STDOUT)
     ##should check if works on windows machines
-    popen = subprocess.Popen(tuple(options), stdout=subprocess.PIPE)
+    popen = subprocess.Popen(tuple(options), stdout=subprocess.PIPE,  stderr=subprocess.STDOUT)
+    ouput, error = popen.communicate()
+    # app.logger.info(ouput)
+    if ouput:
+        return ouput
+    elif error:
+        return error
+    else:
+        return 
+    # while not popen.poll():
+    #     console
     # popen.wait()
-    result.run_time = str(time.time() - start_time)
-    return popen.stdout.read()
+    # result.run_time = str(time.time() - start_time)
+    # return popen.stdout.read()
+    # popen.wait()
 
 def launch_gff2ps(output):
     args = (GFF2PS,'-C',GFF2PS_PARAM, output.name)
     app.logger.info("LAUNCHING GFF2PS...")
     popen = subprocess.Popen(args, stdout=subprocess.PIPE)
-    # popen.wait()
-    return popen.stdout.read()
+    ouput, error = popen.communicate()
+    # app.logger.info(ouput)
+    if ouput:
+        return ouput
+    elif error:
+        return error
+    else:
+        return 
 
 def geneid_options(data,geneid_model,param):
     options= []

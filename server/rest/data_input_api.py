@@ -1,6 +1,6 @@
 from flask import request, Response
 from flask import current_app as app
-from db.models import TaxonFile,TaxonNode,Organism
+from db.models import GeneIdResults, TaxonFile,TaxonNode,Organism
 from flask_restful import Resource
 import services.taxon_service as service
 from mongoengine.errors import ValidationError
@@ -43,4 +43,5 @@ class InputDataApi(Resource):
         TaxonNode.drop_collection()
         Organism.drop_collection()
         TaxonFile.drop_collection()
+        GeneIdResults.drop_collection()
         return 200

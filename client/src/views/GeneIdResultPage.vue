@@ -3,11 +3,12 @@
         <page-heading-component :header="header"></page-heading-component>
     <b-col>
     <p> command: {{result.geneid_cmd}} </p>
-    <p> exec time: {{result.run_time}}
+    <!-- <p> exec time: {{result.run_time}} -->
     <div id="output-container">{{result.output}}</div>
     <p>{{message}}</p>
     <img v-if="imageSrc" :src="imageSrc"/>
-    <b-button v-if="result.ps" @click="downloadFile(result.ps.$oid)" :href="psLink">Download Postscript File</b-button>
+    <b-button v-if="result.output_file" @click="downloadFile(result.output_file.$oid)">Download Output File</b-button>
+    <b-button v-if="result.ps" @click="downloadFile(result.ps.$oid)">Download Postscript File</b-button>
     </b-col>
         </b-row>
 </template>
@@ -52,10 +53,11 @@ export default {
     methods: {
         downloadFile(fileId){
             geneidService.downloadFile(fileId).then(response => {
+                console.log(response)
                 const url = window.URL.createObjectURL(new Blob([response.data], { type: { type: 'application/postscript' }}));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', 'postscript file output');
+                link.setAttribute('download', 'file output');
                 link.click();
             })
         }

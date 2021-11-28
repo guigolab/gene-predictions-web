@@ -6,7 +6,7 @@ import download from "../http-download"
 class GeneDataService {
 
     downloadFile(id){
-        return download.get(`/geneid/${id}`);
+        return download.get(`/results/${id}`);
     }
     getResult(id){
         return http.get(`/geneid/${id}`)

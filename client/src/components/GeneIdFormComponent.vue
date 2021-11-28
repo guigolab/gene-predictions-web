@@ -3,7 +3,7 @@
     <b-container>
         <b-row>
             <b-col>
-                <b-form enctype="multipart/form-data" v-if="show" @submit="onSubmit" @reset="onReset">
+                <b-form enctype="multipart/form-data" novalidate v-if="show" @submit="onSubmit" @reset="onReset">
                     <b-form-group label="Try it out" label-size="lg"
                     label-class="font-weight-bold pt-0"
                     class="mb-0"
@@ -14,10 +14,12 @@
                         <label for="textarea-fasta">Paste your FASTA sequence here</label>
                             </b-col>
                             <b-col>
-                        <b-form-textarea id="textarea-fasta" v-model="form.fastaText" :state="fastaText" :disabled="Boolean(form.fastaFile)" rows="3"
+                        <b-form-textarea id="textarea-fasta"
+                        :required="!Boolean(form.fastaText) && !Boolean(form.fastaFile)"
+                        v-model="form.fastaText" :state="fastaFileSize" :disabled="Boolean(form.fastaFile)" rows="3"
                         >
                         </b-form-textarea>
-                            <b-form-invalid-feedback :state="fastaText">Maximum sequence size for plots: 5,000 bps</b-form-invalid-feedback>
+                            <b-form-invalid-feedback v-if="form.fastaText" :state="fastaFileSize">Maximum sequence size for plots: 150,000 bps</b-form-invalid-feedback>
                             </b-col>
                         </b-form-row>
                         <b-form-row class="row-field">
@@ -27,13 +29,16 @@
                             <b-col>
                         <b-form-file
                         @change="onFileChange"
+                        :required="!Boolean(form.fastaText) && !Boolean(form.fastaFile)"
                         :disabled="Boolean(form.fastaText)"
-                        accept=".fasta"
+                        accept=".fasta, .fa"
                         id="fasta-file"
+                        :state="fastaFileSize"
                         v-model="form.fastaFile"
                         drop-placeholder="Drop fasta file here..."
                         >
                         </b-form-file>
+                        <b-form-invalid-feedback v-if="form.fastaFile" :state="fastaFileSize">Maximum sequence size for plots: 150,000 bps</b-form-invalid-feedback>
                             </b-col>
                         </b-form-row>
                         <b-form-row class="row-field">
@@ -173,7 +178,7 @@
                     </b-form-group>
                     <div class="buttons-form">
                         <b-button type="reset" variant="danger">Reset</b-button>
-                        <b-button type="submit" variant="primary" style="float: inline-end">Submit</b-button>
+                        <b-button :disabled="!fastaSubmitted" type="submit" variant="primary" style="float: inline-end">Submit</b-button>
                     </div>
                 </b-form>
             </b-col>
@@ -204,7 +209,8 @@ export default {
             graphicalRap: true
             },
             show: true,
-            loading: false,    
+            loading: false,
+            fileSize : 0,  
         }
     },
     mounted(){
@@ -212,17 +218,32 @@ export default {
         this.form.selectedMode = this.formOptions.predictionOptions.predictionModes[0].value
     },
     computed: {
-        fastaText(){
-            // return (this.form.fastaText && this.form.fastaText.lenght <= 5000) ? null : this.form.graphicalRap ? false : null
-            return this.form.fastaText ? this.form.fastaText.lenght <= 5000 && this.form.graphicalRap ? true : false : null
+        fastaSubmitted(){
+            return this.form.fastaText || this.form.fastaFile
+        },
+        fastaFileSize(){
+            return this.graphicalRap && this.form.fastaFile ? this.fileSize < 15000000 ? true : false : null
+        },
+        fastaTextSize(){
+            return this.graphicalRap && this.form.fastaText ? new Blob([this.form.fastaText]).size < 15000000 ? true : false : null
+
         },
         graphicalRap(){
-            return this.form.graphicalRap ? (this.form.outputOption === '-G' ? true : false) : null
-        }
+            // return this.form.graphicalRap ? (this.form.outputOption === '-G' ? true : false) : null
+            return this.form.graphicalRap ? this.form.outputOption === '-G' ? true: false : null
+        },
+        // checkSize(){
+        //     return this.graphicalRap ? this.fastaSubmitted && (this.fileSize < 15000000 || new Blob([this.form.fastaText]).size < 15000000) ? true : false : null
+        // },
+
+        
+
     },
     methods: {
       onSubmit(event) {
         event.preventDefault()
+        // this.validateForm()
+        
         this.loading = true
         var formData = new FormData()
         if(this.form.exons.length > 0 || this.form.signals.length > 0){
@@ -240,15 +261,33 @@ export default {
         .then(response => {
             // response contains a geneid model object
             const geneId = response.data
+            console.log(geneId)
             this.$router.push({ name: 'geneid-result', params: { resultId: geneId._id.$oid }})
         })
       },
+    //   validateForm(){
+    //       if (this.form.fastaText || this.form.fastaFile){
+    //           if(this.form.graphicalRap){
+
+    //           }
+    //       }else{
+
+    //           return false
+    //       }
+    //       if(this.form.graphicalRap && (this.fileSize < 15000000 || new Blob([this.form.fastaText]).size < 15000000)){
+
+    //       }
+    //   },
        onReset(event) {
         event.preventDefault()
         // Reset our form values
         Object.keys(this.form).forEach(key => {
             if (key !== 'outputOption'){
-                this.form[key] = null
+                if(Array.isArray(this.form[key])){
+                    this.form[key] = []
+                }else{
+                    this.form[key] = null
+                }
             }
         })
         // Trick to reset/clear native browser form validation state
@@ -259,6 +298,8 @@ export default {
       },
       onFileChange(e) {
         if(e.target.id === 'fasta-file'){
+            console.log(e)
+            this.fileSize = e.target.files[0].size
             this.form.fastaFile = e.target.files[0]
         } 
         if (e.target.id === 'gff-file'){
