@@ -16,22 +16,7 @@ class GeneIdServerApi(Resource):
     #get param files for formulary
     def get(self,id):
         try:
-            # jpg = GeneIdResults.objects().first()
             result_model = GeneIdResults.objects(id = id).first()
-            # app.logger.info(result_model.to_json())
-            # if not result_model:
-            #     app.logger.info(GeneIdResults.jpg.__dict__)
-            #     # file = GeneIdResults.objects(Q(ps__grid_id = id) | Q(jpg__grid_id = id) | Q(output_file__grid_id = id))
-            #     # app.logger.info(file.to_json())
-            #     for result in GeneIdResults.objects():
-            #         if id == str(result.ps.grid_id):
-            #             file = result.ps.read()
-            #             content_type = result.ps.content_type
-            #         if id == str(result.jpg.grid_id):
-            #             file = result.jpg.read()
-            #             content_type = result.jpg.content_type
-            #     return Response(file, content_type=content_type, status=200)
-            # else:
             return Response(result_model.to_json(),mimetype="application/json", status=200)
         except DoesNotExist:
             raise NotFound

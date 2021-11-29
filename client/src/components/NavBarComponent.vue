@@ -17,15 +17,15 @@
            <b-icon icon="diagram3" variant="outline-info"></b-icon>
             TREE OF LIFE 
           </b-nav-item> 
-          <b-nav-item class="nav-link" to="/geneid" >
-          <b-icon icon="binoculars" variant="outline-info"></b-icon>
-            GENEID
-          </b-nav-item>
-          <b-nav-item class="nav-link" to="/geneid-training" >
+          <b-nav-item class="nav-link" to="/geneid-form" >
           <b-icon icon="gear-wide" variant="outline-info"></b-icon>
+            GENEID WEB SERVER
+          </b-nav-item>
+          <!-- <b-nav-item class="nav-link" to="/geneid-training" > -->
+          <!-- <b-icon icon="gear-wide" variant="outline-info"></b-icon>
             GENEID TRAINING
-          </b-nav-item>    
-          <b-nav-item class="nav-link" to="/geneid-accuracy" >
+          </b-nav-item>     -->
+          <!-- <b-nav-item class="nav-link" to="/geneid-accuracy" >
           <b-icon icon="eyeglasses" variant="outline-info"></b-icon>
             GENEID ACCURACY
           </b-nav-item>    
@@ -44,7 +44,7 @@
           <b-nav-item active-class="active" class="nav-link" to="/software-download" >
         <b-icon icon="download" variant="outline-info"></b-icon>
            DOWNLOADS
-          </b-nav-item>  
+          </b-nav-item>   -->
       </b-nav>
     </div>
     </b-sidebar>
