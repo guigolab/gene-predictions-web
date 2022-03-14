@@ -31,25 +31,31 @@ class TaxonNode(db.Document):
             {'fields':('name','taxid'), 'unique':True}
         ]
     }
-#data container
-class Organism(db.Document):
-    name = db.StringField(required=True,unique=True)
-    taxid = db.StringField(required=True)
-    taxon_lineage = db.ListField(db.LazyReferenceField(TaxonNode))
-    meta = {
-          'indexes': [
-            {'fields':('name','taxid'), 'unique':True}
-        ]
-    }
+
 #file model (GFF, FASTA and PARAM)
 class TaxonFile(db.Document):
     taxid = db.StringField(required=True)
     type = db.EnumField(FileType)
     name = db.StringField(required=True, unique=True)
     file = db.FileField(required=True)
+    description = db.StringField()
     meta = {
           'indexes': [
             {'fields':['taxid'], 'unique':True}
+        ]
+    }
+
+#data container
+class Organism(db.Document):
+    name = db.StringField(required=True,unique=True)
+    taxid = db.StringField(required=True)
+    taxon_lineage = db.ListField(db.LazyReferenceField(TaxonNode))
+    param_files = db.ListField(db.LazyReferenceField(TaxonFile))
+    gffs = db.ListField(db.LazyReferenceField(TaxonFile))
+    fastas = db.ListField(db.LazyReferenceField(TaxonFile))
+    meta = {
+          'indexes': [
+            {'fields':('name','taxid'), 'unique':True}
         ]
     }
 ##implementation of geneid model to temporally persist ouput files, removed by client delete request

@@ -32,7 +32,7 @@ const mutations= {
         Object.assign(state.geneidForm, demoForm)
     }
 }
-const actions= {
+const actions = {
     getParams(context){
         context.commit('getParams')
     },

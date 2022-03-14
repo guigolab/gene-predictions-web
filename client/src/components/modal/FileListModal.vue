@@ -1,9 +1,22 @@
 <template>
- <b-modal title="File List" id="file-list-modal" >
-    <template #modal-title>
-      {{taxonName}}
-    </template>
-      <b-table 
+   <b-modal :size="size" id="data-modal" scrollable :title="organism +' '+model">
+      
+      <table-component
+      :items="data"
+      :fields="fields"
+      >
+        
+        
+        <template #cell(download)="row">
+          <b-button @click="downloadFile(row.item)">Download file</b-button>
+        </template>
+        <!-- <template #cell(actions)="row">
+            <b-button size="sm" :to="{name: 'genome-browser', params: {fileName: row.item.name}}" class="mr-1">
+            Visualize Genome
+            </b-button> 
+        </template>  -->
+      </table-component>
+      <!-- <b-table 
         id="files-table"
         striped
         hover
@@ -19,36 +32,35 @@
         selectable
         @row-selected="downloadFile"
       >
-      <!-- <template #cell(actions)="row">
-            <b-button size="sm" :to="{name: 'genome-browser', params: {fileName: row.item.name}}" class="mr-1">
-            Visualize Genome
-            </b-button> 
-        </template> -->
+  
         
-        <!-- <b-pagination
+       <b-pagination
         v-model="currentPage"
         :total-rows="rows"
         :per-page="perPage"
         aria-controls="files-table"
-        ></b-pagination> -->
-      </b-table>
+        ></b-pagination> 
+      </b-table> -->
     </b-modal>
 </template>
 
 <script>
 import taxonFileService from "../../services/TaxonFileService";
+import TableComponent from "../base/TableComponent.vue";
+
 
 export default {
   name: "file-list-modal",
-  props: ['files', 'taxonName'],
+  props: ['data', 'organism', 'model'],
   data() {
     return {
-        fields: ["name","type", { key: 'actions', label: '' }, {key: 'download', label: ''}],
-        currentPage: 1,
-        perPage: 5,
-        selectMode:"single",
+        fields: [
+          "name","type", 
+          {key: 'download', label: ''}
+        ],
     };
   },
+  components: { TableComponent },
     methods: {
         downloadFile(item) {
             taxonFileService.download(item[0].name)

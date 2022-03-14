@@ -34,7 +34,14 @@ class InputDataApi(Resource):
         organism = organism_service.get_or_create_organism(taxid)
         if not organism:
             raise NotFound
-        TaxonFile(taxid=taxid, file = request.files['file'], name=filename[0], type=FileType[filetype.upper()]).save()
+        saved_file = TaxonFile(taxid=taxid, file = request.files['file'], name=filename[0], type=FileType[filetype.upper()]).save()
+        if saved_file.type == FileType.PARAM:
+            organism.param_files.append(saved_file)
+        elif saved_file.type == FileType.GFF:
+            organism.gffs.append(saved_file)
+        else:
+            organism.fasta.append(saved_file)
+        organism.save()
         return 201
 
     def delete(self):

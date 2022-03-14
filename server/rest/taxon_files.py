@@ -1,10 +1,9 @@
-from os import name
 from flask import Response, request
 from flask import current_app as app
 from db.models import Organism, TaxonFile, TaxonNode
 from flask_restful import Resource
 from mongoengine.queryset.visitor import Q
-import services.taxon_service as service
+# import services.taxon_service as service
 from mongoengine.errors import DoesNotExist, NotUniqueError, ValidationError
 from errors import InternalServerError, SchemaValidationError, UserNotFoundError, EmailAlreadyExistError
 import json
@@ -14,36 +13,39 @@ import json
 class TaxonFilesApi(Resource):
     #get files of a taxon
     def get(self):
-        try:
-            params = request.args
-            tax_id = params.get('taxId')
-            type= params.get('type')
-            if tax_id and type:
-                app.logger.info(TaxonFile.objects(Q(organism__taxonId = tax_id) & Q(type=type)))
-            elif tax_id:
-                organism = Organism.objects(taxonId=tax_id).first()
-                taxon_files= TaxonFile.objects(organism = organism)
-            elif type:
-                taxon_files = TaxonFile.objects(type=type)
-            else:
-                taxon_files = TaxonFile.objects()
-            json_resp = []            
-            for file in taxon_files:
-                json_file = json.loads(file.to_json())
-                organism = file.organism.fetch()
-                json_file['organism'] = organism.name
-                json_resp.append(json_file)
-            return Response(json.dumps(json_resp), mimetype="application/json", status=200)
-        except ValidationError:
-            raise SchemaValidationError
-        except Exception as e:
-            app.logger.error(e)
-        raise InternalServerError
+        # try:
+        args = request.args
+        if 'ids' in args.keys():
+            ids = args['ids'].split(',')
+            return Response(TaxonFile.objects(id__in=ids).to_json())
+            # tax_id = params.get('taxId')
+            # type= params.get('type')
+            # if tax_id and type:
+            #     app.logger.info(TaxonFile.objects(Q(organism__taxonId = tax_id) & Q(type=type)))
+            # elif tax_id:
+            #     organism = Organism.objects(taxonId=tax_id).first()
+            #     taxon_files= TaxonFile.objects(organism = organism)
+            # elif type:
+            #     taxon_files = TaxonFile.objects(type=type)
+            # else:
+        #     #     taxon_files = TaxonFile.objects()
+        #     json_resp = []            
+        #     for file in taxon_files:
+        #         json_file = json.loads(file.to_json())
+        #         organism = file.organism.fetch()
+        #         json_file['organism'] = organism.name
+        #         json_resp.append(json_file)
+        #     return Response(json.dumps(json_resp), mimetype="application/json", status=200)
+        # except ValidationError:
+        #     raise SchemaValidationError
+        # except Exception as e:
+        #     app.logger.error(e)
+        # raise InternalServerError
     #delete files of a taxon
-    def delete(self,tax_id):
-        # taxon = TaxonNode.objects(tax_id=tax_id).first()
-        taxon_files= TaxonFile.objects().delete()
-        return '', 200
+    # def delete(self,tax_id):
+    #     # taxon = TaxonNode.objects(tax_id=tax_id).first()
+    #     taxon_files= TaxonFile.objects().delete()
+    #     return '', 200
 
     # def post(self,tax_id):
     #     try:

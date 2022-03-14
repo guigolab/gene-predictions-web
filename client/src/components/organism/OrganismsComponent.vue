@@ -14,7 +14,6 @@
         :custom-fields="customFields"
         :id="tableId"
         :sticky-header="stickyHeader"
-        @row-selected="onRowSelected"
         :selectable="hasToken"
         :selectMode="'multi'"
         
@@ -28,18 +27,20 @@
           >
           </b-form-select>
         </template>
-
         <template #head(data)>
-          <b-badge variant="warning">Reads</b-badge>
-          <b-badge variant="primary">Assemblies</b-badge>
+          <b-badge variant="warning">param</b-badge>
+          <b-badge variant="primary">gff</b-badge>
+          <b-badge variant="success">fasta</b-badge>
         </template>
         <template #cell(data)="data">
-            <b-badge style="cursor:pointer" v-if="data['item'].experiments.length" @click.stop="getData(data['item'], 'experiments')" pill variant="warning">{{data['item'].experiments.length}}</b-badge>
-            <b-badge style="cursor:pointer" v-if="data['item'].assemblies.length" @click.stop="getData(data['item'], 'assemblies')" pill variant="primary">{{data['item'].assemblies.length}}</b-badge>
+            <b-badge style="cursor:pointer" v-if="data['item'].param_files.length" @click.stop="getFiles(data['item'], 'param_files')" pill variant="warning">{{data['item'].param_files.length}}</b-badge>
+            <b-badge style="cursor:pointer" v-if="data['item'].gffs.length" @click.stop="getFiles(data['item'], 'gffs')" pill variant="primary">{{data['item'].gffs.length}}</b-badge>
+            <b-badge style="cursor:pointer" v-if="data['item'].fastas.length" @click.stop="getFiles(data['item'], 'fastas')" pill variant="success">{{data['item'].fastas.length}}</b-badge>
         </template>
       </table-component>
       </div>
       <pagination-component :per-page="perPage" :page-options="pageOptions" :total-rows="totalRows" :current-page="currentPage" :table-id="tableId"/>
+    <file-list-modal :data="data" :model="model" :organism="organism" />
     </b-container>
 </template>
 
@@ -51,12 +52,13 @@ import FilterComponent from '../base/FilterComponent.vue';
 import PaginationComponent from '../base/PaginationComponent.vue';
 import {mapFields} from '../../utils/helper'
 import TreeBreadCrumbComponent from '../taxon/TreeBreadCrumbComponent.vue';
+import FileListModal from '../modal/FileListModal.vue';
 
 export default {
   components: 
     {
       BBadge,TableComponent,PaginationComponent,FilterComponent,
-      TreeBreadCrumbComponent
+      TreeBreadCrumbComponent,FileListModal
     },
   computed: {
     ...mapFields({
@@ -78,7 +80,11 @@ export default {
       fields: [
         {key: 'taxid', label: 'TaxId',sortable: true},
         {key: 'name',label:'Name',sortable: true},
+        {key: 'data'},
       ],
+      organism: null,
+      model: '',
+      data:[]
     }
   },
   methods: {
@@ -113,6 +119,25 @@ export default {
         const params = {offset: fromParam , limit: ctx.perPage, sortColumn: ctx.sortBy, sortOrder: ctx.sortDesc,taxName: this.taxName}
         this.defaultSearch(params,callback)
       }
+    },
+    getFiles(organism, model){
+      this.$store.dispatch('portal/showLoading')
+      console.log(organism)
+      const ids = organism[model].map(dt => {return dt.$oid})
+      console.log(ids)
+      portalService.getData({model:model,ids:ids.join()})
+      .then(response => {
+        console.log(response.data)
+        this.data = response.data
+        this.model = model
+        this.organism = organism.name
+        this.$bvModal.show('data-modal')
+        this.$store.dispatch('portal/hideLoading')
+      })
+      .catch(e => {
+          console.log(e)
+         this.$store.dispatch('portal/hideLoading')
+      })
     },
   }
 }
