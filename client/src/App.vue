@@ -1,29 +1,51 @@
 <template>
   <div id="app">
     <nav-bar-component></nav-bar-component>
-    <b-container fluid>
-      <router-view />
+    <b-overlay :show="loading">
+    <b-container fluid class="router-container">
+      <b-row>
+        <b-col lg="4">
+          <bread-crumb-component/>
+        </b-col>
+      </b-row>
+      <b-row>
+        <b-col lg="1"/>
+        <b-col lg="10">
+          <b-container fluid class="router-container">
+              <router-view />
+          </b-container>
+        </b-col>
+        <b-col lg="1"/>
+      </b-row>
     </b-container>
+    </b-overlay>
   </div>
 </template>
 
 <script>
-// import { Slide } from 'vue-burger-menu'
-import NavBarComponent from './components/NavBarComponent.vue'
+import NavBarComponent from './components/base/NavBarComponent.vue'
+import BreadCrumbComponent from './components/base/BreadCrumbComponent.vue';
 
 export default {
   name: "app",
+  computed: {
+    loading(){
+      return this.$store.getters['portal/getState'].loading
+    }
+  },
   components: {
         // Slide,
     NavBarComponent,
-
+    BreadCrumbComponent
     }
 
 };
 </script>
 <style>
-  h1 {
-    text-align: center;
-    font-family: Raleway;
+  .router-container {
+    padding: 15px;
+  }
+  .row{
+    margin-bottom: 10px;
   }
 </style>

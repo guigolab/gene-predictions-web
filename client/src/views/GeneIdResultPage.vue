@@ -1,7 +1,31 @@
 <template>
     <b-row>
     <b-col>
-    <div class="accordion" role="tablist">
+        <b-card v-if="imageSrc && result.ps" :img-src="imageSrc" img-alt="ggff2ps" img-left>
+            <b-row>
+                <b-button-toolbar aria-label="Toolbar with button groups and dropdown menu">
+                    <b-button-group class="mx-1">
+                    <b-button>Download PS image</b-button>
+                    <b-button>Download result</b-button>
+                    </b-button-group>
+                </b-button-toolbar>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <b-card-text>
+                        <strong>command: </strong>{{result.geneid_cmd}}
+                    </b-card-text>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <b-card-text>
+                        <strong>runnning time: </strong>{{result.run_time}}
+                    </b-card-text>
+                </b-col>
+            </b-row>
+        </b-card>
+    <!-- <div class="accordion" role="tablist">
         <b-card v-if="!result.output_file" no-body class="mb-1">
             <b-card-header header-tag="header" class="p-1" role="tab">
                 <b-button block v-b-toggle.result-output variant="info">Result Output</b-button>
@@ -18,7 +42,7 @@
             </b-card-header>
             <b-collapse id="result-output" accordion="output" visible role="tabpanel">
                 <b-card-body id="output-container">
-                    The result has been loaded into a file as its size is over 15Mb
+                    The result has been saved into a file as its size is over 15Mb
                     <b-button v-if="result.output_file" @click="downloadFile(result.output_file.$oid)">Download Output File</b-button>
                 </b-card-body>
             </b-collapse>
@@ -42,10 +66,11 @@
                 <b-card-body>
                     <p>Command: {{result.geneid_cmd}}</p>
                     <p>Species: {{result.param_species}}</p>
+                    <p>Runtime: {{result.run_time}}</p>
                 </b-card-body>
             </b-collapse>
         </b-card>
-    </div>
+    </div> -->
     <!-- <p> command: {{result.geneid_cmd}} </p>
     <p> exec time: {{result.run_time}} </p>
      <div id="output-container">{{result.output}}</div>
@@ -75,7 +100,6 @@ export default {
     mounted() {
          geneidService.getResult(this.resultId).then(response => {
             this.result = response.data
-            console.log(this.result)
             return response.data
         })
         .then(result => {
@@ -99,7 +123,7 @@ export default {
                 const url = window.URL.createObjectURL(new Blob([response.data], { type: { type: 'application/postscript' }}));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', 'file output');
+                link.setAttribute('download', 'output.ps');
                 link.click();
             })
         }

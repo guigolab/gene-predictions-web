@@ -27,6 +27,10 @@ services:
       - ./tmp:/tmp
     ports:
         - "80:80"
+    environment:
+        - API_HOST=server
+        - API_PORT=8080
+
         
   mongodb:
     image: mongo:latest

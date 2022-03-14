@@ -1,39 +1,22 @@
 <template>
     <b-row>
-            <page-heading-component :header="header"></page-heading-component>
-    <b-col>
-        <FormComponent v-if="form.paramFiles.length > 0" :formOptions="form"/>
-    </b-col>
-        </b-row>
+        <b-col>
+            <gene-id-form-component/>
+        </b-col>
+    </b-row>
 </template>
 <script>
-import PageHeadingComponent from '../components/PageHeadingComponent.vue'
-import FormComponent from '../components/GeneIdFormComponent.vue'
-import fileService from "../services/TaxonFileService";
-import config from '../static-config'
+import GeneIdFormComponent from '../components/GeneIdFormComponent.vue'
+// import fileService from "../services/TaxonFileService";
 
 export default {
-    data(){
-        return {
-            header: "geneid web Server",
-            form: {
-                predictionOptions: config.resources.predictionOptions,
-                outputOptions: config.resources.outputOptions,
-                paramFiles: [],
-            }
-        }
-    },
-  components: {
-        PageHeadingComponent,
-        FormComponent
+    components: {
+        GeneIdFormComponent
     },
     mounted() {
-        fileService.getAll({type: 'param'}).then(response => {
-            this.form.paramFiles = response.data
-        })
+        if(this.$store.getters['form/params'].length === 0){
+            this.$store.dispatch('form/getParams')  
+        }
     }
 }
 </script>
-<style>
-
-</style>

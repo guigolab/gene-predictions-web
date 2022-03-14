@@ -1,4 +1,4 @@
-FROM guigolab/geneid:1.2 as geneid
+FROM guigolab/geneid:1.4.5 as geneid
 
 FROM python:3.6-stretch
 

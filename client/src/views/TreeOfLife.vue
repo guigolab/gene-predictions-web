@@ -1,44 +1,22 @@
 <template>
- <b-overlay :show="show">
-  <b-breadcrumb style="background-color:white">
-       <b-breadcrumb-item :to="{name: 'home-page',path: '/'}">
-      <b-icon icon="chevron-left" scale="1" shift-v="1" aria-hidden="true"></b-icon>
-        Back
-    </b-breadcrumb-item>
-  </b-breadcrumb>
   <b-row>
     <b-col>
-      <b-container fluid>
+      <b-container>
           <b-row>
-            <b-col cols="2">
-            <div v-for="name in stack"
-            :key="name">
-            <b-button @click="createTree(name)" pill 
-            :variant="secondary">{{name}} 
-            </b-button>
-            </div>
-            </b-col>
-            <b-col cols="8">
+            <b-col style="min-height:600px">
               <h1 style="text-align:center">{{node}}</h1>
-              <svg ref="svg"  class="tree-svg">
-              </svg>
-            </b-col>
-            <b-col cols="2">
+              <!-- <svg ref="legend"/> -->
+                <svg ref="svg"  class="tree-svg"/>
             </b-col>
           </b-row>
       </b-container>
     </b-col>
-  <organism-info-modal :organism="taxon" :imageSrc="imageSrc"></organism-info-modal>
   </b-row>
-</b-overlay>
 </template>
 
 <script>
 import * as d3 from "d3";
-import organismsDataService from "../services/OrganismsDataService";
-import OrganismInfoModal from "../components/modal/OrganismInfoModal.vue"
-import treeService from "../services/TreeService"
-
+import portalService from "../services/DataPortalService";
 
 export default {
   name: "tree-of-life",
@@ -48,64 +26,67 @@ export default {
         clusterAttr: null,
         link: null,
         linkExtension: null,
-        outerRadius: 0,
-        innerRadius: 0,
-        width: 0,
         data: null,
-        files: null,
-        show: false,
         domains: [],
         legendDomains: [],
-        taxon: Object,
         stack: [],
     };
   },
-    components:{
-    OrganismInfoModal,
+  computed: {
+    width(){
+      return this.$refs.svg.clientWidth
+    },
+    outerRadius(){
+      return this.width/2
+    },
+    innerRadius(){
+      return this.outerRadius - this.outerRadius/3
+    },
+    windowSize(){
+      return this.width <= 450 ? -this.width : -this.outerRadius
+    },
+    legendPosition(){
+      return this.width <= 450 ? -(this.width + this.outerRadius) : -this.outerRadius
+    }
   },
-  mounted() {
-      this.width = this.$refs.svg.clientWidth
-      this.outerRadius = this.width/2
-      this.innerRadius = this.outerRadius - 170
-      this.createTree(this.node)
-     },
+  watch: {
+    node: function(node){
+      this.getTree(node)
+    }
+  },
+  created(){
+    this.getTree(this.node)
+  },
   methods: {
-    createTree(name){
-      const index = this.stack.indexOf(name)
-      if(index > -1 && this.stack.slice(index).length > 0){
-        this.stack = this.stack.slice(0,index)
-      }
-      this.node = name
-      this.show = true
-      treeService.getTree(name)
-              .then(response => {
-                  this.data = response.data
-                  this.legendDomains = this.getDomains(this.data, []).slice(0,9)
-                  this.domains = this.legendDomains.map(value => value.name)
-                  this.chart = this.createD3Tree();
-              })
-              .catch(e => {
-                console.log(e);
-              });
+    getTree(node){
+      this.$store.commit('portal/setField', {value: true, label: 'loading'})
+      portalService.getTree(node)
+      .then(response => {
+          this.data = response.data
+          this.legendDomains = this.getDomains(this.data, []).slice(0,9)
+          this.domains = this.legendDomains.map(value => value.name)
+          this.$store.commit('portal/setBreadCrumb', {value: {text: node, to: {name: 'tree-of-life', params:{node: node}}}})
+          if(this.data){
+            this.chart = this.createD3Tree();
+            this.$store.commit('portal/setField', {value: false, label: 'loading'})
+          }
+      })
     },
     createD3Tree(){
-        const root = d3.hierarchy(this.data, d => d.children)
-        .sum(d => d.children ? 0 : 1)
-        .sort((a, b) => (a.value - b.value) || d3.ascending(a.data.length, b.data.length));
-    var cluster = this.radialCluster();
-    cluster(root);
-    this.setRadius(root, root.data.length = 0, this.innerRadius / this.maxLength(root));
-    this.setColor(root);
-  
-    const svg = d3.select(this.$refs.svg)
-        .attr("viewBox", [-this.outerRadius, -this.outerRadius, this.width, this.width])
-        .attr("font-family", "sans-serif")
-        .attr("font-size", 10);
-  
-    // svg.append("g")
-    //     .call(this.legend);
-  
-    svg.append("style").text(`
+      const root = d3.hierarchy(this.data, d => d.children)
+      .sum(d => d.children ? 0 : 1)
+      .sort((a, b) => (a.value - b.value) || d3.ascending(a.data.length, b.data.length));
+      var cluster = this.radialCluster();
+      cluster(root);
+      this.setRadius(root, root.data.length = 0, this.innerRadius / this.maxLength(root));
+      this.setColor(root);
+    
+      const svg = d3.select(this.$refs.svg)
+          .attr("viewBox", [-this.outerRadius, this.windowSize, this.width, this.width])
+          .attr("font-family", "sans-serif")
+          .attr("font-size", 10);
+    
+      svg.append("style").text(`
   
   .link--active {
     stroke: #000 !important;
@@ -188,42 +169,15 @@ export default {
     getData(taxon){
       const name = taxon.name || taxon
       if(name.split(" ").length > 1){
-        organismsDataService.getOrganism(name).then(response => {
-          this.taxon = response.data
-          this.$root.$emit('bv::show::modal', 'organism-info-modal')
-        })
+        this.$router.push({name:'organism-details', params: {name: name}})
       }
       else {
         if(this.node == name){
           return
         }
-        if(!this.stack.includes(this.node)){
-          this.stack.push(this.node)
-        }
-        this.createTree(name)
+        this.$router.push({name:'tree-of-life', params: {node: name}})
       }
-      // organismsDataService.getData()
-      // taxonFileService.getAll(taxon.taxid)
-      //       .then(response => {
-      //       this.files  = response.data;
-      //       if(this.files.length > 0) {
-      //         taxonFileService.download(this.files[0].name).then(response => {
-      //             const urlCreator = window.URL || window.webkitURL
-      //           this.imageSrc = urlCreator.createObjectURL(response.data)
-      //            this.taxon = taxon
-      //           
-      //         })
-      //       }
-      //       else {
-      //         this.imageSrc= ''
-      //         this.taxon = taxon
-      //         this.$root.$emit('bv::show::modal', 'file-list-modal')
-      //       }
-           
-      //       })
-      //       .catch(e => {
-      //       console.log(e);
-      //       });
+    
     },
     mouseovered(active) {
       return function(event, d) {
@@ -288,10 +242,10 @@ export default {
         .selectAll("g").text('').attr('fill',null).attr('stroke',null)
         .data(this.color().domain())
         .join("g")
-        .attr("transform", (d, i) => `translate(${-this.outerRadius},${-this.outerRadius + i * 20})`);
+        .attr("transform", (d, i) => `translate(${-this.outerRadius},${this.legendPosition + i * 20})`);
         g.append("rect")
-        .attr("width", 18)
-        .attr("height", 18)
+        .attr("width", 15)
+        .attr("height", 15)
         .attr("fill", this.color());
 
         g.append("text")
@@ -303,31 +257,22 @@ export default {
         .on("click", this.info(this))
         .on("mouseover", this.mouseovered(true))
         .on("mouseout", this.mouseovered(false));
+      
     },
-  },
-  computed: {
-    
-    },
-    output() {
-    }
-
+  }
 };
 </script>
 
 <style>
 .leaves-class, .legend-text {
   cursor: pointer;
-  font-size: 14px;
+  font-size: 0.8rem;
+  /* font-size: inherit; */
 }
 .tree-svg {
     width: inherit;
     height: 100%;
+    /* max-width: 100%; */
     overflow: visible;
 }
-text {
-  font-size: 14px;
-}
-/* g {
-  transform: translate(-350px,-0px);
-} */
 </style>

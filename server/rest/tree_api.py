@@ -1,12 +1,24 @@
 # from rest.taxon_files import TaxonFilesApi
 import services.taxon_service as service
 from flask import Response
-from flask import current_app as app
 from db.models import TaxonNode
 from flask_restful import Resource
 # from mongoengine.errors import DoesNotExist, NotUniqueError, ValidationError
 # from errors import InternalServerError, SchemaValidationError, UserNotFoundError, EmailAlreadyExistError
 import json
+
+TaxonPipeline = [
+	{"$lookup":
+		{"from": "taxon_node",
+		"localField": "children",
+		"foreignField": "_id",
+		"as": "children",
+		}
+	},
+	{"$project": 
+		{"_id":0}
+	}
+]
 
 class TreeApi(Resource):
     def get(self, node):
@@ -17,7 +29,8 @@ class TreeApi(Resource):
 
 class TaxNodesApi(Resource):
     def get(self,name):
-        tax_node = TaxonNode.objects(name = name).first()
-        json_resp = json.loads(tax_node.to_json())
-        json_resp['children'] = [lazy_ref.fetch().to_json() for lazy_ref in tax_node.children]
-        return Response(json.dumps(json_resp), mimetype="application/json", status=200)
+        tax_node = TaxonNode.objects(name=name).aggregate(*TaxonPipeline).next()
+        tax_node['isOpen'] = True
+        for node in tax_node['children']:
+            node['isOpen'] = False
+        return Response(json.dumps(tax_node, default=str), mimetype="application/json", status=200)

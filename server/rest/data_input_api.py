@@ -1,47 +1,59 @@
+import imp
 from flask import request, Response
 from flask import current_app as app
-from db.models import GeneIdResults, TaxonFile,TaxonNode,Organism
+from db.models import  TaxonFile,TaxonNode,Organism,GeneIdResults,GeneIdStats,FileType
 from flask_restful import Resource
-import services.taxon_service as service
-from mongoengine.errors import ValidationError
-from errors import InternalServerError, SchemaValidationError
+from errors import  NotFound, SchemaValidationError,Unauthorized,RecordAlreadyExistError
 import json
+import os
+from services import organism_service
+
+API_KEY = os.getenv('SECRET_KEY')
+REQUIRED_PARAMS=['taxid','API_KEY']
 
 class InputDataApi(Resource):
+
+## add file replace here (PUT)
     def post(self):
-        try:
-            file = request.files.get('file')
-            data = json.loads(request.form.get('json'))
-            app.logger.info(data)
-            app.logger.info(file)
-            organism = service.create_data(int(data['taxid']))
-            type = data['file']['type']
-            if TaxonFile.objects(name = data['file']['name']).first():
-                return "filename already exists", 400
-            elif type.lower() != 'gff':
-                tax_file = TaxonFile(name = data['file']['name'], file = file, organism = organism, type=type.lower()).save()
-                return Response(tax_file.to_json(), mimetype="application/json", status=200)
-            # app.logger.info(request.files)
-            # data = request.__dict__
-            # organism = service.create_data(data)
-            # taxon = service.return_taxon(tax_id)
-            # file = request.files.get('file')
-            # data = json.loads(request.form['json'])
-            # tax_file = TaxonFile.objects(name=data['name']).first()
-            # if tax_file:
-            #     return "filename already exists", 400
-            # else:
-            #     TaxonFile(**data, file=file, taxon = taxon).save()
-            #     return  201
-        except ValidationError:
+        req = request.json if request.is_json else request.form
+        if not request.files or not 'file' in request.files.keys() \
+             or not all(key in REQUIRED_PARAMS for key in req.keys()):
             raise SchemaValidationError
-        except Exception as e:
-            app.logger.error(e)
-        raise InternalServerError
-    
+        if req['API_KEY'] != API_KEY:
+            raise Unauthorized
+        taxid = req['taxid']
+        file_values= request.files['file'].filename.split('.')
+        filetype= file_values[-1]
+        if not filetype in [type.value for type in FileType]:
+            raise SchemaValidationError
+        filename = file_values[0:-1]
+        app.logger.info(filetype)
+        app.logger.info(filename)
+        if len(TaxonFile.objects(name=filename)) > 0:
+            raise RecordAlreadyExistError
+        organism = organism_service.get_or_create_organism(taxid)
+        if not organism:
+            raise NotFound
+        TaxonFile(taxid=taxid, file = request.files['file'], name=filename[0], type=FileType[filetype.upper()]).save()
+        return 201
+
     def delete(self):
-        TaxonNode.drop_collection()
-        Organism.drop_collection()
-        TaxonFile.drop_collection()
-        GeneIdResults.drop_collection()
+        req = request.args
+        app.logger.info(req)
+        if 'API_KEY' in req.keys() and req['API_KEY'] == API_KEY:
+            TaxonNode.drop_collection()
+            Organism.drop_collection()
+            for tax_file in TaxonFile.objects(file__ne=None):
+                tax_file.file.delete()
+            TaxonFile.drop_collection()
+            # for result in GeneIdResults.objects(ps__ne=None):
+            #     result.ps.delete()
+            # for result in GeneIdResults.objects(jpg__ne=None):
+            #     result.jpg.delete()  
+            GeneIdResults.drop_collection()
+            GeneIdStats.drop_collection()
+            for entry in os.scandir('/tmp'):
+                os.remove(entry)
+        else:
+            raise Unauthorized
         return 200

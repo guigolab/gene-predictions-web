@@ -14,6 +14,9 @@ class OrganismsDataService {
   getOrganism(name) {
     return http.get(`/root_organisms/${name}`)
   }
+  deleteAll(){
+    return http.delete('/input')
+  }
 }
 
 export default new OrganismsDataService();

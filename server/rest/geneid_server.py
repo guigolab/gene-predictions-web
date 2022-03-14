@@ -1,6 +1,6 @@
 from flask import Response, request
 from flask import current_app as app
-from db.models import ResultFiles,GeneIdResults
+from db.models import GeneIdResults,GeneIdStats
 from flask_restful import Resource
 from flask import send_file
 import services.geneid_service as service
@@ -26,11 +26,23 @@ class GeneIdServerApi(Resource):
 
     def post(self):
         try:
+            # app.logger.info(request)
+            # app.logger.info(request.__dict__)
+            app.logger.info(request)
+            app.logger.info(request.remote_addr)
+            app.logger.info(request.url_root)
+            app.logger.info(request.access_route)
             data = request.form
             files = request.files
             app.logger.info("PASSING HERE")
             geneid_result = service.programs_configs(data,files)
             if geneid_result:
+                #create stat object
+                if geneid_result.ps:
+                    gff2ps=True
+                else:
+                    gff2ps=False
+                # stats = GeneIdStats(ip=request.remote_addr,run_time=geneid_result.geneid_cmd,gff2ps=gff2ps)
                 # app.logger.info(geneid_result.to_json())
             # list_response = []
             # for file in output_files:
@@ -54,14 +66,14 @@ class GeneIdServerApi(Resource):
         return '', 200
 
 
-class ResultFilesApi(Resource):
-    def get(self, id):
-        try:
-            file = ResultFiles.objects(id=id).first()
-            app.logger.info(file)
-            return Response(file.file.read(), content_type=file.type, status=200)
-        except DoesNotExist:
-            raise NotFound
-        except Exception as e:
-            app.logger.error(e)
-        raise InternalServerError
+# class ResultFilesApi(Resource):
+#     def get(self, id):
+#         try:
+#             file = ResultFiles.objects(id=id).first()
+#             app.logger.info(file)
+#             return Response(file.file.read(), content_type=file.type, status=200)
+#         except DoesNotExist:
+#             raise NotFound
+#         except Exception as e:
+#             app.logger.error(e)
+#         raise InternalServerError

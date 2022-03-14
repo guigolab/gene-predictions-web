@@ -15,6 +15,9 @@ class EmailAlreadyExistError(HTTPException):
 class Unauthorized(HTTPException):
     pass
 
+class RecordAlreadyExistError(HTTPException):
+    pass
+
 class Forbidden(HTTPException):
     pass
 
@@ -26,6 +29,10 @@ errors = {
         "message": "Oops something wrong",
         "status": 500
     },
+    "RecordAlreadyExistError": {
+         "message": "record already exists",
+         "status": 400
+     },
      "SchemaValidationError": {
          "message": "Required fields missing",
          "status": 400
@@ -35,7 +42,7 @@ errors = {
         "status": 400
     },
     "Unauthorized": {
-        "message": "Unauthorized",
+        "message": "The API_KEY is necessary or its value is wrong'",
         "status": 401
     },
      "Forbidden": {

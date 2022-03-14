@@ -6,6 +6,10 @@ from db import initialize_db
 from rest import initialize_api
 from db.models import TaxonFile,TaxonNode
 
+#TODO
+#implement log tracking and usage statistics (running time, average fasta size etc.)
+
+
 # def remove_tmpfiles_job():
 #     rs = GeneIdResults.objects()
 #     for r in rs:
