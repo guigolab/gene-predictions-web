@@ -9,38 +9,37 @@ import os
 from services import organism_service
 
 API_KEY = os.getenv('SECRET_KEY')
-REQUIRED_PARAMS=['taxid','API_KEY']
+REQUIRED_PARAMS=['taxid','API_KEY','type']
 
 class InputDataApi(Resource):
 
 ## add file replace here (PUT)
     def post(self):
         req = request.json if request.is_json else request.form
+        app.logger.info(req['type'])
         if not request.files or not 'file' in request.files.keys() \
-             or not all(key in REQUIRED_PARAMS for key in req.keys()):
+             or not all(key in REQUIRED_PARAMS for key in req.keys()) \
+                 or not req['type'] in [enum.value for enum in FileType]:
             raise SchemaValidationError
         if req['API_KEY'] != API_KEY:
             raise Unauthorized
+        type = req['type']
         taxid = req['taxid']
-        file_values= request.files['file'].filename.split('.')
-        filetype= file_values[-1]
-        if not filetype in [type.value for type in FileType]:
-            raise SchemaValidationError
-        filename = file_values[0:-1]
-        app.logger.info(filetype)
-        app.logger.info(filename)
+        filename= request.files['file'].filename
         if len(TaxonFile.objects(name=filename)) > 0:
             raise RecordAlreadyExistError
         organism = organism_service.get_or_create_organism(taxid)
         if not organism:
             raise NotFound
-        saved_file = TaxonFile(taxid=taxid, file = request.files['file'], name=filename[0], type=FileType[filetype.upper()]).save()
+        saved_file = TaxonFile(taxid=taxid, file = request.files['file'], name=filename, type=FileType[type.upper()]).save()
         if saved_file.type == FileType.PARAM:
             organism.param_files.append(saved_file)
+        elif saved_file.type == FileType.FASTA:
+            organism.fastas.append(saved_file)
         elif saved_file.type == FileType.GFF:
             organism.gffs.append(saved_file)
         else:
-            organism.fasta.append(saved_file)
+            raise SchemaValidationError
         organism.save()
         return 201
 

@@ -63,12 +63,13 @@ export default {
   components: { TableComponent },
     methods: {
         downloadFile(item) {
-            taxonFileService.download(item[0].name)
+            console.log(item)
+            taxonFileService.download(item.name)
             .then(response => {
                 const url = window.URL.createObjectURL(new Blob([response.data], { type: { type: 'text/plain;charset=utf-8' }}));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', item[0].name);
+                link.setAttribute('download', item.name);
                 link.click();
             })
         },    

@@ -4,13 +4,11 @@ FROM python:3.6-stretch
 
 WORKDIR /soft
 
-COPY ./soft/bin/* /soft/GeneID/geneid_1.2/bin/
+COPY ./soft/bin/* /soft/GeneID/bin/
 
-COPY ./soft/param/* /soft/GeneID/geneid_1.2/
+COPY --from=geneid /usr/local/bin/geneid /soft/GeneID/bin/
 
-COPY --from=geneid /usr/local/bin/geneid /soft/GeneID/geneid_1.2/bin/
-
-RUN chmod u+x  /soft/GeneID/geneid_1.2/bin/geneid
+RUN chmod u+x  /soft/GeneID/bin/
 
 WORKDIR /server
 

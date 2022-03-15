@@ -4,9 +4,9 @@ import tempfile
 from db.models import TaxonFile,GeneIdResults
 from flask import current_app as app
 
-GFF2PS = '/soft/GeneID/geneid_1.2/bin/gff2ps'
-GFF2PS_PARAM= '/soft/GeneID/geneid_1.2/bin/gff2ps.param'
-GENEID = '/soft/GeneID/geneid_1.2/bin/geneid'
+GFF2PS = '/soft/GeneID/bin/gff2ps'
+GFF2PS_PARAM= '/soft/GeneID/bin/gff2ps.param'
+GENEID = '/soft/GeneID/bin/geneid'
 
 def create_tempfile(suffix,**kwargs):
     return tempfile.NamedTemporaryFile(suffix='.'+suffix,dir='/tmp',**kwargs)

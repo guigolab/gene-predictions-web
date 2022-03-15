@@ -7,7 +7,6 @@ class TaxonFileDataService {
       params: params
     })
   }
-
   download(name) {
     return download.get(`/files/${name}`);
   }

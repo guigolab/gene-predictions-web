@@ -41,7 +41,8 @@ class TaxonFile(db.Document):
     description = db.StringField()
     meta = {
           'indexes': [
-            {'fields':['taxid'], 'unique':True}
+            'taxid',
+            'name',
         ]
     }
 
