@@ -147,7 +147,6 @@ export default {
       fields: [
         {key: 'tax_id', label: 'NCBI taxid',sortable: true},
         {key: 'name',label:'Species',sortable: true},
-        {key:'catalan_common_name', label: 'Catalan Name',sortable: true},
         {key:'common_name', label: 'Common name', sortable: true},
         // {key: 'kingdom',label:'Kingdom', sortable: true,
         // formatter: (value, key, item) => {

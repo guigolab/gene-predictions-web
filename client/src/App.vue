@@ -3,6 +3,7 @@
     <nav-bar-component></nav-bar-component>
     <b-overlay :show="loading">
     <b-container fluid class="router-container">
+
       <b-row>
         <b-col lg="4">
           <bread-crumb-component/>
@@ -25,6 +26,7 @@
 <script>
 import NavBarComponent from './components/base/NavBarComponent.vue'
 import BreadCrumbComponent from './components/base/BreadCrumbComponent.vue';
+// import AlertComponent from './components/base/AlertComponent.vue';
 
 export default {
   name: "app",
@@ -36,7 +38,8 @@ export default {
   components: {
         // Slide,
     NavBarComponent,
-    BreadCrumbComponent
+    BreadCrumbComponent,
+    // AlertComponent
     }
 
 };

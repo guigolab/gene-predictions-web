@@ -1,5 +1,6 @@
 import os
 from db.models import TaxonNode
+from flask import current_app as app
 
 NODE_LIMIT = int(os.getenv('MAX_NODES'))
 
@@ -18,7 +19,9 @@ def bfs(root,nodes):
 
 def dfs(stack, tree, max_level):
     node, level = stack.pop(0)
+    app.logger.info(node.to_json())
     tree["name"] = node.name
+    tree["taxid"] = node.taxid
     tree["isOpen"] = True
     tree["children"] = []
     tree['rank'] = node.rank

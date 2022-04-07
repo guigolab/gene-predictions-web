@@ -1,5 +1,5 @@
 # from rest.taxon_files import TaxonFilesApi
-import services.taxon_service as service
+import services.tree_service as service
 from flask import Response
 from db.models import TaxonNode
 from flask_restful import Resource

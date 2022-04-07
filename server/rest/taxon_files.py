@@ -1,13 +1,14 @@
-from flask import Response, request
+from flask import Response, request, send_file
 from flask import current_app as app
-from db.models import Organism, TaxonFile, TaxonNode
+from db.models import TaxonFile, TaxonNode, TaxaFile
 from flask_restful import Resource
 from mongoengine.queryset.visitor import Q
 # import services.taxon_service as service
 from mongoengine.errors import DoesNotExist, NotUniqueError, ValidationError
-from errors import InternalServerError, SchemaValidationError, UserNotFoundError, EmailAlreadyExistError
-import json
+from errors import InternalServerError, NotFound, SchemaValidationError, Unauthorized, EmailAlreadyExistError
+import os
 
+API_KEY = os.getenv('SECRET_KEY')
 
 
 class TaxonFilesApi(Resource):
@@ -15,9 +16,10 @@ class TaxonFilesApi(Resource):
     def get(self):
         # try:
         args = request.args
-        if 'ids' in args.keys():
-            ids = args['ids'].split(',')
-            return Response(TaxonFile.objects(id__in=ids).to_json())
+        if 'taxid' in args.keys():
+            taxid = args['taxid']
+            return Response(TaxaFile.objects(taxid=taxid).to_json())
+        
             # tax_id = params.get('taxId')
             # type= params.get('type')
             # if tax_id and type:
@@ -65,21 +67,31 @@ class TaxonFileApi(Resource):
     ##download file by name
     def get(self, name):
         try:
-            taxon_file = TaxonFile.objects(name=name).first()
-            file = taxon_file.file.read()
-            content_type = taxon_file.file.content_type
-            return Response(file, content_type=content_type, status=200)
-        except NotUniqueError:
-            raise EmailAlreadyExistError
+            taxon_file = TaxaFile.objects(name=name).first()
+            file = taxon_file.file
+            mimetype = taxon_file.mimetype
+            # content_type = taxon_file.file.content_type
+            return send_file(file, mimetype=mimetype)
+            # return Response(file, content_type=content_type, status=200)
         except ValidationError:
             raise SchemaValidationError
         except Exception as e:
             app.logger.error(e)
         raise InternalServerError
     
-    # def delete(self,name):
-    #     file = TaxonFile.objects(name=name).delete()
-    #     return '',200
+    def delete(self,name):
+        req = request.args
+        if 'API_KEY' in req.keys() and req['API_KEY'] == API_KEY:
+            file = TaxonFile.objects(name=name).first()
+            if not file:
+                raise NotFound
+            taxon = TaxonNode(taxid=file.taxid).first()
+            app.logger.info()   
+            file.file.delete()
+            file.delete()
+            return name + 'correctly deleted', 200
+        else:
+            raise Unauthorized
 
     # def get(self,name):
     #     try:

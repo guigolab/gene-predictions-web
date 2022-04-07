@@ -7,8 +7,10 @@ import store from './store'
 // Import Bootstrap and BootstrapVue CSS files (order is important)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import { VuePlugin } from 'vuera'
 
 Vue.config.productionTip = false
+Vue.use(VuePlugin)
 
 // Make BootstrapVue available throughout the project
 Vue.use(BootstrapVue)

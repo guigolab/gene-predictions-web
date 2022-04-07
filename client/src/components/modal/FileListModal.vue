@@ -1,5 +1,5 @@
 <template>
-   <b-modal :size="size" id="data-modal" scrollable :title="organism +' '+model">
+   <b-modal size="xl" id="data-modal" scrollable :title="organism +' '+model">
       
       <table-component
       :items="data"
@@ -55,7 +55,7 @@ export default {
   data() {
     return {
         fields: [
-          "name","type", 
+          "name", 
           {key: 'download', label: ''}
         ],
     };
@@ -63,19 +63,20 @@ export default {
   components: { TableComponent },
     methods: {
         downloadFile(item) {
-            console.log(item)
+            this.$bvModal.hide('data-modal')
+            this.$store.dispatch('portal/showLoading')
             taxonFileService.download(item.name)
             .then(response => {
                 const url = window.URL.createObjectURL(new Blob([response.data], { type: { type: 'text/plain;charset=utf-8' }}));
                 const link = document.createElement('a');
                 link.href = url;
                 link.setAttribute('download', item.name);
+                this.$store.dispatch('portal/hideLoading')
                 link.click();
+                
             })
         },    
-    },
-    mounted() {
-    },
+    }
 };
 
 </script>

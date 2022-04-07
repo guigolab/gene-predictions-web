@@ -17,3 +17,14 @@ def get_or_create_organism(taxid):
         organism = Organism(taxid = taxid, name= species['scientificName'], taxon_lineage = taxon_lineage).save()
         taxon_service.leaves_counter(taxon_lineage)
     return organism
+
+
+def delete_organisms(taxids):
+    organisms_to_delete = Organism.objects(taxid__in=taxids)
+    deleted_organisms=list()
+    for organism in organisms_to_delete:
+        taxon_service.delete_taxons(organism.taxon_lineage)
+        name = organism.organism
+        organism.delete()
+        deleted_organisms.append(name)
+    return deleted_organisms

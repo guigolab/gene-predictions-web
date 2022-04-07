@@ -14,6 +14,7 @@ flask-apscheduler = "*"
 lxml = "*"
 requests = "*"
 flask-jwt-extended = "*"
+pyfaidx = "*"
 
 [dev-packages]
 

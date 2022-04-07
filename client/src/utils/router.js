@@ -25,10 +25,21 @@ export default new Router({
       redirect: {name: 'tree-of-life', params: {node: 'Eukaryota'}}
     },
     {
+      path: '/jbrowse',
+      component: () => import(/* webpackPrefetch: true */ '../views/JBrowse.vue')
+      
+    },
+    {
       path: "/tree-of-life/:node",
       name: "tree-of-life",
       props: true,
       component: () => import(/* webpackPrefetch: true */ '../views/TreeOfLife.vue')
+    },
+    {
+      path: "/browser",
+      name: "igv",
+      props: true,
+      component: () => import(/* webpackPrefetch: true */ '../views/IGVBrowserComponent.vue')
     },
     {
       path: "/geneid-form",

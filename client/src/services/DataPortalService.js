@@ -26,8 +26,13 @@ class DataPortalService {
     getTaxonChildren(name) {
         return base.get(`/taxons/${name}`)
     }
-    getData(params){
-        return base.get('/files', {
+    // getData(model, params){
+    //     return base.get('/files', {
+    //         params:params
+    //     })
+    // }
+    getFiles(model,params){
+        return base.get(`/${model}`, {
             params:params
         })
     }

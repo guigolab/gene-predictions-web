@@ -9,7 +9,7 @@
 <script>
 
 // import GenomeBrowserComponent from '../components/GenomeBrowserComponent.vue'
-import IGVBrowserComponent from '../components/IGVBrowserComponent.vue';
+import IGVBrowserComponent from './IGVBrowserComponent.vue';
 import PageHeadingComponent from '../components/PageHeadingComponent.vue';
 import taxonFileService from "../services/TaxonFileService";
 

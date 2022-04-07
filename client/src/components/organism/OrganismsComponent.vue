@@ -18,24 +18,23 @@
         :selectMode="'multi'"
         
         >
-        <template #head(trackingSystem)>
-          <b-form-select
-            id="status-select"
-            v-model="selectedStatus"
-            :options="statuses"
-            size="sm"
-          >
-          </b-form-select>
-        </template>
-        <template #head(data)>
+        <template #head(param)>
           <b-badge variant="warning">param</b-badge>
+        </template>
+        <template #head(gff)>
           <b-badge variant="primary">gff</b-badge>
+        </template>
+        <template #head(fasta)>
           <b-badge variant="success">fasta</b-badge>
         </template>
-        <template #cell(data)="data">
-            <b-badge style="cursor:pointer" v-if="data['item'].param_files.length" @click.stop="getFiles(data['item'], 'param_files')" pill variant="warning">{{data['item'].param_files.length}}</b-badge>
-            <b-badge style="cursor:pointer" v-if="data['item'].gffs.length" @click.stop="getFiles(data['item'], 'gffs')" pill variant="primary">{{data['item'].gffs.length}}</b-badge>
-            <b-badge style="cursor:pointer" v-if="data['item'].fastas.length" @click.stop="getFiles(data['item'], 'fastas')" pill variant="success">{{data['item'].fastas.length}}</b-badge>
+        <template #cell(param)="data">
+            <b-badge style="cursor:pointer" v-if="data['item'].param_files.length" @click.stop="getFiles(data['item'], 'parameters')" pill variant="warning">{{data['item'].param_files.length}}</b-badge>
+        </template>
+        <template #cell(gff)="data">
+            <b-badge style="cursor:pointer" v-if="data['item'].gffs.length" @click.stop="getFiles(data['item'], 'annotations')" pill variant="primary">{{data['item'].gffs.length}}</b-badge>
+        </template>        
+        <template #cell(fasta)="data">
+            <b-badge style="cursor:pointer" v-if="data['item'].fastas.length" @click.stop="getFiles(data['item'], 'genomes')" pill variant="success">{{data['item'].fastas.length}}</b-badge>
         </template>
       </table-component>
       </div>
@@ -80,7 +79,9 @@ export default {
       fields: [
         {key: 'taxid', label: 'TaxId',sortable: true},
         {key: 'name',label:'Name',sortable: true},
-        {key: 'data'},
+        {key: 'param'},
+        {key: 'gff'},
+        {key: 'fasta'}
       ],
       organism: null,
       model: '',
@@ -122,10 +123,7 @@ export default {
     },
     getFiles(organism, model){
       this.$store.dispatch('portal/showLoading')
-      console.log(organism)
-      const ids = organism[model].map(dt => {return dt.$oid})
-      console.log(ids)
-      portalService.getData({model:model,ids:ids.join()})
+      portalService.getFiles(model,{taxid:organism.taxid})
       .then(response => {
         console.log(response.data)
         this.data = response.data
@@ -139,6 +137,7 @@ export default {
          this.$store.dispatch('portal/hideLoading')
       })
     },
+    
   }
 }
 </script>

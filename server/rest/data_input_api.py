@@ -1,7 +1,7 @@
 import imp
 from flask import request, Response
 from flask import current_app as app
-from db.models import  TaxonFile,TaxonNode,Organism,GeneIdResults,GeneIdStats,FileType
+from db.models import  TaxaFile, TaxonFile,TaxonNode,Organism,GeneIdResults,GeneIdStats,FileType
 from flask_restful import Resource
 from errors import  NotFound, SchemaValidationError,Unauthorized,RecordAlreadyExistError
 import json
@@ -13,6 +13,8 @@ REQUIRED_PARAMS=['taxid','API_KEY','type']
 
 class InputDataApi(Resource):
 
+
+## separate file input logics
 ## add file replace here (PUT)
     def post(self):
         req = request.json if request.is_json else request.form
@@ -26,7 +28,7 @@ class InputDataApi(Resource):
         type = req['type']
         taxid = req['taxid']
         filename= request.files['file'].filename
-        if len(TaxonFile.objects(name=filename)) > 0:
+        if TaxonFile.objects(name=filename).first():
             raise RecordAlreadyExistError
         organism = organism_service.get_or_create_organism(taxid)
         if not organism:
@@ -45,13 +47,15 @@ class InputDataApi(Resource):
 
     def delete(self):
         req = request.args
-        app.logger.info(req)
         if 'API_KEY' in req.keys() and req['API_KEY'] == API_KEY:
             TaxonNode.drop_collection()
             Organism.drop_collection()
             for tax_file in TaxonFile.objects(file__ne=None):
                 tax_file.file.delete()
             TaxonFile.drop_collection()
+            for file in TaxaFile.objects(file__ne=None):
+                file.file.delete()
+            TaxaFile.drop_collection()
             # for result in GeneIdResults.objects(ps__ne=None):
             #     result.ps.delete()
             # for result in GeneIdResults.objects(jpg__ne=None):
