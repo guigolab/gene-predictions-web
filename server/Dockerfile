@@ -1,24 +1,24 @@
-FROM guigolab/geneid:1.4.5 as geneid
+# FROM guigolab/geneid:1.4.5 as geneid
 
 FROM python:3.6-stretch
 
-WORKDIR /soft
+# WORKDIR /soft
 
-COPY ./soft/bin/* /soft/GeneID/bin/
+# COPY ./soft/bin/* /soft/GeneID/bin/
 
-COPY --from=geneid /usr/local/bin/geneid /soft/GeneID/bin/
+# COPY --from=geneid /usr/local/bin/geneid /soft/GeneID/bin/
 
-RUN chmod u+x  /soft/GeneID/bin/
+# RUN chmod u+x  /soft/GeneID/bin/
 
 WORKDIR /server
 
 ADD ./server /server
 
-RUN apt-get update -qq && apt-get install -y \
-    gawk \
-    ghostscript \
-    libgs-dev \
-    imagemagick
+# RUN apt-get update -qq && apt-get install -y \
+#     gawk \
+#     ghostscript \
+#     libgs-dev \
+#     imagemagick
 
 # RUN apk --no-cache update
 # RUN apk --no-cache add gawk

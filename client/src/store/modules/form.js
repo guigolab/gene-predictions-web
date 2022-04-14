@@ -1,5 +1,5 @@
-import fileService from '../../services/TaxonFileService'
 import {demoForm} from '../../static-config'
+import portalService from '../../services/DataPortalService'
 
 const state = () => ({
     geneidForm:{
@@ -24,7 +24,8 @@ const mutations= {
         state.geneidForm[payload.label] = payload.value
     },
     getParams(state){
-        fileService.getAll({type: 'param'}).then(response => {
+        portalService.getFiles('parameters')
+        .then(response => {
             state.params = response.data
         })
     },

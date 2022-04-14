@@ -5,20 +5,17 @@ const base = http.base
 class DataPortalService {
 
     getOrganisms(params) {
-        return base.get("/root_organisms", {
+        return base.get("/organisms", {
         params: params
         })
     }
     getFilteredOrganisms(params){
-        return base.get("/root_organisms/search", {
+        return base.get("/organisms/search", {
         params: params
         })
     }
     getOrganism(name) {
-        return base.get(`/root_organisms/${name}`)
-    }
-    getSample(accession) {
-        return base.get(`/organisms/${accession}`)
+        return base.get(`/organisms/${name}`)
     }
     getTree(node){
         return base.get(`/tree/${node}`);    

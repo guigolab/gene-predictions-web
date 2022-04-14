@@ -19,11 +19,6 @@ def parse_taxon(xml):
     return lineage
 
 
-
-
-
-
-
 #aggregation pipeline returns unordered list of taxon lineage
 def sort_lineage(lineage):
     values_obj=dict()

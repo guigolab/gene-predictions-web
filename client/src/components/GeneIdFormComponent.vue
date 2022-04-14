@@ -269,10 +269,17 @@ export default {
         this.loading = true
         var formData = new FormData()
         if(this.fastaFile){
-            formData.append('fastaFile', this.fastaFile)
+            formData.append('fasta', this.fastaFile)
+        }
+        else{
+             const blob = new Blob([this.fastaText], { type: 'text/plain' })
+             formData.append('fasta', new File([blob], "input.fasta", {type: "text/plain"}))
         }
         if(this.gffFile){
-            formData.append('gffFile', this.gffFile)
+            formData.append('evidences', this.gffFile)
+        }else if(this.gffText){
+             const blob = new Blob([this.gffText], { type: 'text/plain' })
+             formData.append('evidences', new File([blob], "evidences.gff3", {type: "text/plain"}))
         }
         if(this.exons.length > 0 || this.signals.length > 0){
             const options = this.exons.concat(this.signals)

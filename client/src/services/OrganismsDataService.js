@@ -2,17 +2,17 @@ import http from "../http-common";
 
 class OrganismsDataService {
   getOrganisms(params) {
-      return http.get("/root_organisms", {
+      return http.get("/organisms", {
         params: params
       })
     }
   getFilteredOrganisms(params){
-    return http.get("/root_organisms/search", {
+    return http.get("/organisms/search", {
       params: params
     })
   }
   getOrganism(name) {
-    return http.get(`/root_organisms/${name}`)
+    return http.get(`/organisms/${name}`)
   }
   deleteAll(){
     return http.delete('/input')

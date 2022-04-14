@@ -24,10 +24,13 @@
     "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
     "@vue/cli-plugin-babel": "^4.1.0",
     "@vue/cli-plugin-eslint": "^4.1.0",
     "@vue/cli-service": "^4.1.0",
     "babel-eslint": "^10.0.3",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
     "deepmerge": "^4.2.2",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",

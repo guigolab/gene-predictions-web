@@ -8,6 +8,7 @@
         
         
         <template #cell(download)="row">
+          {{row.item}}
           <b-button @click="downloadFile(row.item)">Download file</b-button>
         </template>
         <!-- <template #cell(actions)="row">

@@ -1,8 +1,9 @@
 import os
 import subprocess, time
 import tempfile
-from db.models import TaxonFile,GeneIdResults
+from db.models import GeneIdResults
 from flask import current_app as app
+import shutil
 
 GFF2PS = '/soft/GeneID/bin/gff2ps'
 GFF2PS_PARAM= '/soft/GeneID/bin/gff2ps.param'
@@ -10,6 +11,52 @@ GENEID = '/soft/GeneID/bin/geneid'
 
 def create_tempfile(suffix,**kwargs):
     return tempfile.NamedTemporaryFile(suffix='.'+suffix,dir='/tmp',**kwargs)
+
+def parse_params(data, files):
+    #parse files
+    try:
+        geneid_result = GeneIdResults()
+        options = list()
+        options.append(GENEID)
+        fasta = create_tempfile('fasta')
+        files['fasta'].save(fasta.name)
+        if 'evidences' in files.keys():
+            gff = create_tempfile('gff')
+            files['evidences'].save(gff.name)
+        else:
+            gff = None
+        app.logger.info(data)
+        param = create_tempfile('param')
+        param_file = TaxaFile.objects(name=data['param']).first()
+        geneid_result.param_species = param_file.organism ## name field is required
+        param.write(param_file.file.read())
+        options.append('-3P')
+        options.append(param.name) ##param tmpfile path
+        if 'options' in data:
+            for value in data.getlist('options'):
+                if value:
+                    options.extend(value.split(","))
+        if 'output' in data:
+            options.append(data['output'])
+        if 'mode' in data and data['mode'] == '-o':
+            options.append(data['mode'])  
+        if 'mode' in data.keys() and gff and gff.name:
+            cmd = '-R' if data['mode'] == 'normal' or data['mode'] == '-o' else data['mode']
+            options.extend([cmd, gff.name])
+            fasta.seek(0)
+        options.append(fasta.name)
+        geneid_result.geneid_cmd = ' '.join(options)
+        output = create_tempfile('stdout')
+        launch_geneid(options, output, geneid_result)
+        output.seek(0)
+        app.logger.info(geneid_result.run_time)
+    except Exception as e:
+        app.logger.info(e)
+        shutil.rmtree('/tmp') 
+
+    #parse data
+
+
 
 def programs_configs(data,files):
     geneid_result = GeneIdResults()

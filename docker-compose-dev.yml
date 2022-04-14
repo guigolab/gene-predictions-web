@@ -13,7 +13,7 @@ services:
       - "8080"
     volumes:
       - ./server:/server
-      - ./tmp:/tmp
+      - static-vol:/server/static
     env_file: 
       - .env
 
@@ -24,7 +24,7 @@ services:
     volumes:
       - ./client:/client
       - node_modules:/client/node_modules
-      - ./tmp:/tmp
+      - static-vol:/var/www/statics
     ports:
         - "80:80"
     environment:
@@ -48,5 +48,6 @@ services:
 
 volumes:
   app:
+  static-vol:
   mongodb-data:
   node_modules:

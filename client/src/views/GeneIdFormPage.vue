@@ -13,7 +13,7 @@ export default {
     components: {
         GeneIdFormComponent
     },
-    mounted() {
+    created() {
         if(this.$store.getters['form/params'].length === 0){
             this.$store.dispatch('form/getParams')  
         }

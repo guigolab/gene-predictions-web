@@ -17,7 +17,7 @@ export default {
             return this.$store.getters['portal/getState'].tree
         }
     },
-    mounted(){
+    created(){
         if(this.tree === null){
             this.$store.commit('portal/setTree',{value: 'Eukaryota'})
         }

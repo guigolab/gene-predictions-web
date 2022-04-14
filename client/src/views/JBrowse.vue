@@ -1,20 +1,30 @@
 <template>
   <div>
-    <h1>I'm a Vue component</h1>
     <j-browse/>
   </div>
 </template>
 
 <script>
 import '@fontsource/roboto'
+// import {ReactInVue} from 'vuera'
+import JBrowse from '../utils/jBrowse.js'
+
+// const JBrowse = ReactInVue(View)
 // import {
 //   JBrowseLinearGenomeView,
 // } from '@jbrowse/react-linear-genome-view'
 
-  import jBrowse from '../utils/jBrowse.jsx'
+
 
   export default {
+    deta(){
+      return{
+        state:null
+      }
+    },
+    components: {
+       'j-browse': JBrowse
+    },
 
-    components: { 'j-browse': jBrowse},
   }
 </script>
