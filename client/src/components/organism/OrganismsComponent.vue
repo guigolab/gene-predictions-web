@@ -19,22 +19,27 @@
         
         >
         <template #head(param)>
-          <b-badge variant="warning">param</b-badge>
+          <b-badge variant="warning">ParamFiles</b-badge>
         </template>
         <template #head(gff)>
-          <b-badge variant="primary">gff</b-badge>
+          <b-badge variant="primary">Annotations</b-badge>
         </template>
         <template #head(fasta)>
-          <b-badge variant="success">fasta</b-badge>
+          <b-badge variant="success">Genomes</b-badge>
+        </template>
+        <template #cell(actions)='row'>
+          <b-link class="actions-link"  @click="toGenomeBrowser(row.item.name)">
+          <b-icon-search :id="row.item.taxid"></b-icon-search>
+          </b-link>
         </template>
         <template #cell(param)="data">
-            <b-badge style="cursor:pointer" v-if="data['item'].param_files.length" @click.stop="getFiles(data['item'], 'parameters')" pill variant="warning">{{data['item'].param_files.length}}</b-badge>
+            <b-badge style="cursor:pointer" v-if="data['item'].param_files.length" @click.stop="getFiles(data['item'], 'param_files')" pill variant="warning">{{data['item'].param_files.length}}</b-badge>
         </template>
         <template #cell(gff)="data">
-            <b-badge style="cursor:pointer" v-if="data['item'].gffs.length" @click.stop="getFiles(data['item'], 'annotations')" pill variant="primary">{{data['item'].gffs.length}}</b-badge>
+            <b-badge style="cursor:pointer" v-if="data['item'].annotations.length" @click.stop="getFiles(data['item'], 'annotations')" pill variant="primary">{{data['item'].annotations.length}}</b-badge>
         </template>        
         <template #cell(fasta)="data">
-            <b-badge style="cursor:pointer" v-if="data['item'].fastas.length" @click.stop="getFiles(data['item'], 'genomes')" pill variant="success">{{data['item'].fastas.length}}</b-badge>
+            <b-badge style="cursor:pointer" v-if="data['item'].genomes.length" @click.stop="getFiles(data['item'], 'genomes')" pill variant="success">{{data['item'].genomes.length}}</b-badge>
         </template>
       </table-component>
       </div>
@@ -45,7 +50,7 @@
 
 <script>
 import portalService from "../../services/DataPortalService"
-import {BBadge } from 'bootstrap-vue'
+import {BBadge,BIconSearch,BLink } from 'bootstrap-vue'
 import TableComponent from '../base/TableComponent.vue';
 import FilterComponent from '../base/FilterComponent.vue';
 import PaginationComponent from '../base/PaginationComponent.vue';
@@ -57,8 +62,10 @@ export default {
   components: 
     {
       BBadge,TableComponent,PaginationComponent,FilterComponent,
-      TreeBreadCrumbComponent,FileListModal
+      TreeBreadCrumbComponent,FileListModal,BIconSearch,
+      BLink
     },
+
   computed: {
     ...mapFields({
       fields: ['filter','perPage', 'taxName','totalRows','currentPage'],
@@ -81,7 +88,9 @@ export default {
         {key: 'name',label:'Name',sortable: true},
         {key: 'param'},
         {key: 'gff'},
-        {key: 'fasta'}
+        {key: 'fasta'},
+        {key: 'actions', label:''}
+
       ],
       organism: null,
       model: '',
@@ -137,7 +146,12 @@ export default {
          this.$store.dispatch('portal/hideLoading')
       })
     },
-    
+    toGenomeBrowser(name){
+      portalService.getOrganism(name)
+      .then(response => {
+        console.log(response)
+      })
+    }
   }
 }
 </script>

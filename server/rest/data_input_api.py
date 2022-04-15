@@ -1,4 +1,3 @@
-import imp
 from flask import request, Response
 from flask import current_app as app
 from db.models import  Annotation, FileStorage, FileModel, Genome, ParamFile,TaxonNode,Organism,GeneIdResults,GeneIdStats
@@ -65,3 +64,9 @@ class InputDataApi(Resource):
         else:
             raise Unauthorized
         return 200
+
+class FilesUploadApi(Resource):
+    def post(self):
+        file = request.files['file']
+        file.save(os.path.join(app.root_path,'static', file.filename))
+        return 201,file.filename

@@ -14,24 +14,24 @@ TaxonPipeline = [
 
 OrganismPipeline = [
 	{"$lookup":
-		{"from": "secondary_organism",
-		"localField": "records",
+		{"from": "genome",
+		"localField": "genomes",
 		"foreignField": "_id",
-		"as": "records",
+		"as": "genomes",
 		}
 	},
 	{"$lookup":
-		{"from": "experiment",
-		"localField": "experiments",
+		{"from": "annotation",
+		"localField": "annotations",
 		"foreignField": "_id",
-		"as": "experiments",
+		"as": "annotations",
 		}
 	},
 	{"$lookup":
-		{"from": "assembly",
+		{"from": "param_file",
 		"localField": "assemblies",
-		"foreignField": "_id",
-		"as": "assemblies",
+		"foreignField": "param_files",
+		"as": "param_files",
 		}
 	},
 	{"$lookup":
@@ -43,10 +43,10 @@ OrganismPipeline = [
 	},
 	{"$project": 
 		{"_id":0, 
-		"records": {"_id":0,"assemblies":0,"experiments":0,"specimens":0, "created":0},
 		"taxon_lineage" : {"_id":0,"children":0},
-		"assemblies" : {"_id":0},
-		"experiments": {"_id":0}
+		"genomes" : {"_id":0},
+		"annotations": {"_id":0, "created":0},
+		"param_files":{"_id":0}
 		}
 	}
 ]

@@ -2,20 +2,31 @@
    <b-modal size="xl" id="data-modal" scrollable :title="organism +' '+model">
       
       <table-component
+      stacked
       :items="data"
-      :fields="fields"
       >
-        
-        
         <template #cell(download)="row">
           {{row.item}}
-          <b-button @click="downloadFile(row.item)">Download file</b-button>
+        <b-button @click="downloadFile(row.item)">Download file</b-button>
         </template>
-        <!-- <template #cell(actions)="row">
-            <b-button size="sm" :to="{name: 'genome-browser', params: {fileName: row.item.name}}" class="mr-1">
-            Visualize Genome
-            </b-button> 
-        </template>  -->
+        <template #cell(fastaLocation)="row">
+          <a :href="row.item['fastaLocation']">{{row.item['fastaLocation']}}</a>
+        </template>
+        <template #cell(faiLocation)="row">
+          <a :href="row.item['faiLocation']">{{row.item['faiLocation']}}</a>
+        </template> 
+        <template #cell(gziLocation)="row">
+          <a :href="row.item['gziLocation']">{{row.item['gziLocation']}}</a>
+        </template> 
+        <template #cell(gffGzLocation)="row">
+          <a :href="row.item['gffGzLocation']">{{row.item['gffGzLocation']}}</a>
+        </template> 
+        <template #cell(tabIndexLocation)="row">
+          <a :href="row.item['tabIndexLocation']">{{row.item['tabIndexLocation']}}</a>
+        </template> 
+        <template #cell(paramLocation)="row">
+          <a :href="row.item['paramLocation']">{{row.item['paramLocation']}}</a>
+        </template> 
       </table-component>
       <!-- <b-table 
         id="files-table"

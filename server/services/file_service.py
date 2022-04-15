@@ -1,5 +1,7 @@
-from db.models import Annotation, FileStorage, Genome, ParamFile
+from db.models import Annotation, Genome, ParamFile
+from services import organism_service
 
+GENERAL_PARAMS = ['name','taxid']
 GENOME_LOCATIONS = ['fastaLocation','faiLocation','gziLocation']
 ANNOTATION_LOCATIONS = ['gffGzLocation','tabIndexLocation','targetGenome','evidenceSource']
 PARAM_FILE_LOCATIONS = ['paramLocation']
@@ -30,6 +32,14 @@ def organism_handler(model, file, organism):
     organism.save()
     return organism
 
+def reference_handler(model, organism):
+    if model == 'genomes':
+        return organism.genomes
+    elif model == 'annotations':
+        return organism.annotations
+    else:
+        return organism.param_files
+
 def location_handler(model):
     if model == 'genomes':
         return GENOME_LOCATIONS 
@@ -44,9 +54,36 @@ def create_file_model(params, model):
     saved_file_model = model(**params).save()
     return saved_file_model
 
-def store_file(params):
-    file_to_store = params['file']
-    name = file_to_store.filename
-    #mimetype here
-    file_obj = FileStorage(name=name, file=file_to_store).save()
-    return file_obj
+def payload_parser(request, model):
+    params = dict(**request.json) if request.is_json else dict(**request.form)
+    error_keys=validate_params(params, GENERAL_PARAMS+location_handler(model))
+    if error_keys:
+        return error_keys
+    model_obj = model_handler(model)
+    ##pop taxid from payload dict
+    taxid = params.pop('taxid')
+    organism = organism_service.get_or_create_organism(taxid)
+    saved_file_object=create_file_model(params,model_obj)
+    updated_organism = organism_handler(model,saved_file_object,organism)
+    if updated_organism:
+        return saved_file_object.to_json()
+    else:
+        return list()
+
+def search_by_taxid(request, model):
+    args = request.args
+    if 'taxid' in args.keys():
+        taxid = args['taxid']
+        organism = organism_service.get_or_create_organism(taxid)
+        model_obj = model_handler(model)
+        ids = [ref.id for ref in reference_handler(model,organism)]
+        return  model_obj.objects(id__in=ids).exclude('id').to_json()
+    else:
+        return []
+#manage file deletion and organism and taxon deletion cascade
+def delete_file(name,model):
+    model_obj = model_handler(model)
+    file_obj = model_obj.objects(name=name).first()
+
+    
+

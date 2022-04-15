@@ -78,23 +78,41 @@ class FileModel(db.Document):
         ]
     }
 
-class Genome(FileModel):
+class Genome(db.Document):
+    name = db.StringField(required=True,unique=True)
     fastaLocation = db.StringField(required=True,unique=True)
     faiLocation = db.StringField(required=True,unique=True)
     gziLocation = db.StringField(required=True,unique=True) 
-    chromAlias = db.StringField(required=True,unique=True)
+    chromAlias = db.StringField()
+    meta = {
+        'indexes': [
+            'name'
+        ]
+    }
    
-class Annotation(FileModel):
+class Annotation(db.Document):
+    name = db.StringField(required=True,unique=True)
     gffGzLocation = db.StringField(required=True,unique=True)
     tabIndexLocation = db.StringField(required=True,unique=True)
     targetGenome = db.StringField(required=True)
     lengthTreshold = db.StringField()
     evidenceSource = db.StringField()
     created = db.DateTimeField(default=datetime.datetime.utcnow)
+    meta = {
+        'indexes': [
+            'name'
+        ]
+    }
 
-class ParamFile(FileModel):
+class ParamFile(db.Document):
+    name = db.StringField(required=True,unique=True)
     paramLocation = db.StringField(required=True,unique=True)
     created = db.DateTimeField(default=datetime.datetime.utcnow)
+    meta = {
+        'indexes': [
+            'name'
+        ]
+    }
 
 class Organism(db.Document):
     name = db.StringField(required=True,unique=True)

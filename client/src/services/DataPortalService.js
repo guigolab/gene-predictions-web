@@ -29,7 +29,7 @@ class DataPortalService {
     //     })
     // }
     getFiles(model,params){
-        return base.get(`/${model}`, {
+        return base.get(`files/${model}`, {
             params:params
         })
     }
