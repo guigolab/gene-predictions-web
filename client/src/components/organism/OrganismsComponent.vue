@@ -84,13 +84,12 @@ export default {
       isBusy: false,
       stickyHeader: '70vh',
       fields: [
+        {key: 'actions', label:''},
         {key: 'taxid', label: 'TaxId',sortable: true},
         {key: 'name',label:'Name',sortable: true},
         {key: 'param'},
         {key: 'gff'},
-        {key: 'fasta'},
-        {key: 'actions', label:''}
-
+        {key: 'fasta'}
       ],
       organism: null,
       model: '',
@@ -146,12 +145,7 @@ export default {
          this.$store.dispatch('portal/hideLoading')
       })
     },
-    toGenomeBrowser(name){
-      portalService.getOrganism(name)
-      .then(response => {
-        console.log(response)
-      })
-    }
+  
   }
 }
 </script>

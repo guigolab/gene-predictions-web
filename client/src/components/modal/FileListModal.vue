@@ -2,13 +2,10 @@
    <b-modal size="xl" id="data-modal" scrollable :title="organism +' '+model">
       
       <table-component
-      stacked
-      :items="data"
+        stacked
+        :items="data"
+        :fields="fields"
       >
-        <template #cell(download)="row">
-          {{row.item}}
-        <b-button @click="downloadFile(row.item)">Download file</b-button>
-        </template>
         <template #cell(fastaLocation)="row">
           <a :href="row.item['fastaLocation']">{{row.item['fastaLocation']}}</a>
         </template>
@@ -26,7 +23,12 @@
         </template> 
         <template #cell(paramLocation)="row">
           <a :href="row.item['paramLocation']">{{row.item['paramLocation']}}</a>
-        </template> 
+        </template>
+        <template v-if="model !== 'param_files'" #cell(actions)="row">
+          <b-link class="actions-link" @click="toGenomeBrowser(organism,row.item)">
+            Genome browser <b-icon-search/>
+          </b-link>
+        </template>
       </table-component>
       <!-- <b-table 
         id="files-table"
@@ -59,20 +61,18 @@
 <script>
 import taxonFileService from "../../services/TaxonFileService";
 import TableComponent from "../base/TableComponent.vue";
-
+import portalService from "../../services/DataPortalService"
+import {BIconSearch,BLink } from 'bootstrap-vue'
 
 export default {
   name: "file-list-modal",
   props: ['data', 'organism', 'model'],
-  data() {
-    return {
-        fields: [
-          "name", 
-          {key: 'download', label: ''}
-        ],
-    };
+  computed:{
+    fields(){
+        return this.data.length ? Object.keys(this.data[0]).concat(['actions']):[]
+    }
   },
-  components: { TableComponent },
+  components: { TableComponent,BLink ,BIconSearch},
     methods: {
         downloadFile(item) {
             this.$bvModal.hide('data-modal')
@@ -87,7 +87,75 @@ export default {
                 link.click();
                 
             })
-        },    
+        },   
+      toGenomeBrowser(name, item){
+        portalService.getOrganism(name)
+        .then(response => {
+            const organism = response.data
+            const assemblyName = item.targetGenome ? item.targetGenome : item.name
+            console.log(item)
+            console.log(assemblyName)
+            console.log(organism.genomes)
+            // get assembly objet
+            const assemblyObj = organism.genomes.filter(el => el.name === assemblyName)[0]
+            const annotations = organism.annotations.filter(el => el.targetGenome === assemblyName)
+            const assemblyView = {
+              name : assemblyName,
+              sequence: {
+                type: 'ReferenceSequenceTrack',
+                trackId: assemblyName,
+                adapter: {
+                  type: 'BgzipFastaAdapter',
+                  fastaLocation: {
+                    uri: assemblyObj.fastaLocation,
+                    locationType: 'UriLocation',
+                  },
+                  faiLocation: {
+                    uri: assemblyObj.faiLocation,
+                    locationType: 'UriLocation',
+                  },
+                  gziLocation: {
+                    uri: assemblyObj.gziLocation,
+                    locationType: 'UriLocation',
+                  },
+                },
+              },
+              aliases: [assemblyName]
+            }
+            this.$store.commit('jbrowse/setAssembly', assemblyView)
+            const tracks = []
+            annotations.forEach(ann => {
+              tracks.push({
+                type: 'FeatureTrack',
+                trackId: ann.name,
+                name: ann.name,
+                assemblyNames: [assemblyName],
+                category: ['Annotation'],
+                adapter: {
+                  type: 'Gff3TabixAdapter',
+                gffGzLocation: {
+                  uri: ann.gffGzLocation,
+                  locationType: 'UriLocation',
+                  },
+                index: {
+                  location: {
+                    uri: ann.tabIndexLocation,
+                    locationType: 'UriLocation'
+                  }
+                }
+                }
+              })
+            })
+            this.$store.commit('jbrowse/setTracks', tracks)
+
+
+            this.$router.push({name:'jbrowse', params:{assemblyName:assemblyName}})
+            //load into vuex state
+            //and push to jbrowse vies
+            //
+            //load from assembly
+        })
+    } 
     }
 };
 

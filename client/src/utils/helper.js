@@ -1,3 +1,7 @@
+import {
+  createViewState,
+} from '@jbrowse/react-linear-genome-view'
+
 export function mapCheckListFields(options) {
     const object = {};
     for (let x = 0; x < options.fields.length; x++) {
@@ -29,6 +33,7 @@ export function mapFields(options) {
     }
     return object;
 }
+
 export function showConfirmationModal(bvModal,description){
     // return a promise
     return bvModal.msgBoxConfirm(description, {
@@ -42,4 +47,12 @@ export function showConfirmationModal(bvModal,description){
         hideHeaderClose: false,
         centered: true
         })
+}
+
+export function createView(assembly,tracks){
+  return createViewState({
+    assembly,
+    tracks
+  })
+
 }

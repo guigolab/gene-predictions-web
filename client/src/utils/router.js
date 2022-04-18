@@ -25,8 +25,10 @@ export default new Router({
       redirect: {name: 'tree-of-life', params: {node: 'Eukaryota'}}
     },
     {
-      path: '/jbrowse',
-      component: () => import(/* webpackPrefetch: true */ '../views/JBrowse.vue')
+      path: '/jbrowse/:assemblyName',
+      name: 'jbrowse',
+      component: () => import(/* webpackPrefetch: true */ '../views/JBrowse.vue'),
+      props:true
       
     },
     {

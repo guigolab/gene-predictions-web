@@ -18,30 +18,6 @@ const state = () => ({
           uri: 'http://localhost/files/Bos_taurus.ARS-UCD1.2.dna.toplevel.fa.gz.gzi',
           locationType: 'UriLocation',
         },
-        // fastaLocation: {
-        //   uri: 'http://ftp.ensembl.org/pub/current_fasta/aquila_chrysaetos_chrysaetos/dna_index/Aquila_chrysaetos_chrysaetos.bAquChr1.2.dna.toplevel.fa.gz',
-        //   locationType: 'UriLocation',
-        // },
-        // faiLocation: {
-        //   uri: 'http://ftp.ensembl.org/pub/current_fasta/aquila_chrysaetos_chrysaetos/dna_index/Aquila_chrysaetos_chrysaetos.bAquChr1.2.dna.toplevel.fa.gz.fai',
-        //   locationType: 'UriLocation',
-        // },
-        // gziLocation: {
-        //   uri: 'http://ftp.ensembl.org/pub/current_fasta/aquila_chrysaetos_chrysaetos/dna_index/Aquila_chrysaetos_chrysaetos.bAquChr1.2.dna.toplevel.fa.gz.gzi',
-        //   locationType: 'UriLocation',
-        // },
-        // fastaLocation: {
-        //   uri: 'https://s3.amazonaws.com/jbrowse.org/genomes/GRCh38/fasta/GRCh38.fa.gz',
-        //   locationType: 'UriLocation',
-        // },
-        // faiLocation: {
-        //   uri: 'https://s3.amazonaws.com/jbrowse.org/genomes/GRCh38/fasta/GRCh38.fa.gz.fai',
-        //   locationType: 'UriLocation',
-        // },
-        // gziLocation: {
-        //   uri: 'https://s3.amazonaws.com/jbrowse.org/genomes/GRCh38/fasta/GRCh38.fa.gz.gzi',
-        //   locationType: 'UriLocation',
-        // },
       },
     },
     aliases: ['hg38'],
@@ -150,11 +126,11 @@ const state = () => ({
         },
       ],
     },
-   }
+   },
 })
 const mutations= {
     setAssembly(state, payload){
-        state.assembly = {...payload}
+      state.assembly = {...payload}
     },
     setTracks(state, payload){
         state.tracks = [...payload]

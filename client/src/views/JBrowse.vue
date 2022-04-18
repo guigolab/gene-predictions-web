@@ -1,30 +1,28 @@
 <template>
+
   <div>
-    <j-browse/>
+    <h2>{{assemblyName}}</h2>
+    <j-browse :assemblyName="assemblyName" :assembly="assembly" :tracks="tracks"/>
   </div>
 </template>
 
 <script>
 import '@fontsource/roboto'
-// import {ReactInVue} from 'vuera'
 import JBrowse from '../utils/jBrowse.js'
 
-// const JBrowse = ReactInVue(View)
-// import {
-//   JBrowseLinearGenomeView,
-// } from '@jbrowse/react-linear-genome-view'
-
-
-
   export default {
-    deta(){
-      return{
-        state:null
-      }
-    },
+    props:['assemblyName'],
     components: {
        'j-browse': JBrowse
     },
+    computed:{
+      assembly(){
+        return this.$store.getters['jbrowse/assembly']
+      },
+      tracks(){
+        return this.$store.getters['jbrowse/tracks']
+      }
+    }
 
   }
 </script>
