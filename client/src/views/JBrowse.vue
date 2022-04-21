@@ -2,12 +2,12 @@
 
   <div>
     <h2>{{assemblyName}}</h2>
-    <j-browse :assemblyName="assemblyName" :assembly="assembly" :tracks="tracks"/>
+    <j-browse :assemblyName="assemblyName" :defaultSession="defaultSession" :assembly="assembly" :tracks="tracks"/>
   </div>
 </template>
 
 <script>
-import '@fontsource/roboto'
+// import '@fontsource/roboto'
 import JBrowse from '../utils/jBrowse.js'
 
   export default {
@@ -21,6 +21,9 @@ import JBrowse from '../utils/jBrowse.js'
       },
       tracks(){
         return this.$store.getters['jbrowse/tracks']
+      },
+      defaultSession(){
+        return this.$store.getters['jbrowse/defaultSession']
       }
     }
 

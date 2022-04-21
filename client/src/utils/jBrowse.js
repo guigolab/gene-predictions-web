@@ -12,17 +12,42 @@ export default class JBrowse extends React.Component {
     this.state = {
         assembly: this.props.assembly,
         assemblyName: this.props.assemblyName,
-        tracks: this.props.tracks
+        tracks: this.props.tracks,
+        defaultSession: this.props.defaultSession
     }
   }
   render() {
+    const configuration = {
+      "theme" :{
+        "palette": {
+          "primary": {
+            "main": "#311b92"
+          },
+          "secondary": {
+            "main": "#0097a7"
+          },
+          "tertiary": {
+            "main": "#f57c00"
+          },
+          "quaternary": {
+            "main": "#d50000"
+          }
+        }
+      },
+      "logoPath":{
+        "uri": "<%= BASE_URL %>favicon.ico"
+      }
+    }
     const {assembly} = this.state
     const {tracks} = this.state
     const {assemblyName} = this.state
+    const {defaultSession} = this.state
     console.log(assemblyName)
     const state = createViewState({
       assembly,
-      tracks
+      tracks,
+      configuration,
+      defaultSession
     })
     return (
       <JBrowseLinearGenomeView viewState={state} />

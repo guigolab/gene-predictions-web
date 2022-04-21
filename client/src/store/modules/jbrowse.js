@@ -21,16 +21,6 @@ const state = () => ({
       },
     },
     aliases: ['hg38'],
-    // refNameAliases: {
-    //   adapter: {
-    //     type: 'RefNameAliasAdapter',
-    //     location: {
-    //         // uri: 'http://ftp.ebi.ac.uk/pub/databases/ena/assembly/GCA_901/GCA_901699/GCA_901699155.2_sequence_report.txt',
-    //         uri: 'https://s3.amazonaws.com/jbrowse.org/genomes/GRCh38/hg38_aliases.txt',
-    //         locationType: 'UriLocation',
-    //     },
-    //   },
-    // },
    },
    tracks: [
     {
@@ -38,7 +28,6 @@ const state = () => ({
         trackId: 'BTaurus',
         name: 'Bos Taurus Geneid',
         assemblyNames: ['GRCh38'],
-        // assemblyNames: ['bStrTur1.1'],
         category: ['Annotation'],
         adapter: {
           type: 'Gff3TabixAdapter',
@@ -59,7 +48,6 @@ const state = () => ({
         trackId: 'BMutus',
         name: 'Bos Mutus Geneid',
         assemblyNames: ['GRCh38'],
-        // assemblyNames: ['bStrTur1.1'],
         category: ['Annotation'],
         adapter: {
           type: 'Gff3TabixAdapter',
@@ -75,27 +63,6 @@ const state = () => ({
           },
         },
       },
-    // {
-    //     type: 'FeatureTrack',
-    //     trackId: 'ncbi_refseq_109_hg38',
-    //     name: 'NCBI RefSeq (GFF3Tabix)',
-    //     // assemblyNames: ['GRCh38'],
-    //     assemblyNames: ['bStrTur1.1'],
-    //     category: ['Annotation'],
-    //     adapter: {
-    //       type: 'Gff3TabixAdapter',
-    //       gffGzLocation: {
-    //         uri: 'https://s3.amazonaws.com/jbrowse.org/genomes/GRCh38/ncbi_refseq/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.sorted.gff.gz',
-    //         locationType: 'UriLocation',
-    //       },
-    //       index: {
-    //         location: {
-    //           uri: 'https://s3.amazonaws.com/jbrowse.org/genomes/GRCh38/ncbi_refseq/GCA_000001405.15_GRCh38_full_analysis_set.refseq_annotation.sorted.gff.gz.tbi',
-    //           locationType: 'UriLocation',
-    //         },
-    //       },
-    //     },
-    //   },
    ],
    defaultSession: {
     name: 'My session',

@@ -99,6 +99,7 @@ export default {
             // get assembly objet
             const assemblyObj = organism.genomes.filter(el => el.name === assemblyName)[0]
             const annotations = organism.annotations.filter(el => el.targetGenome === assemblyName)
+            const sessionTracks = []
             const assemblyView = {
               name : assemblyName,
               sequence: {
@@ -122,6 +123,17 @@ export default {
               },
               aliases: [assemblyName]
             }
+            sessionTracks.push({
+              type: 'ReferenceSequenceTrack',
+              configuration: assemblyName,
+              displays: [
+                {
+                  type: 'LinearReferenceSequenceDisplay',
+                  configuration:
+                    `${assemblyName}-LinearReferenceSequenceDisplay`,
+                },
+              ],
+            })
             this.$store.commit('jbrowse/setAssembly', assemblyView)
             const tracks = []
             annotations.forEach(ann => {
@@ -145,10 +157,27 @@ export default {
                 }
                 }
               })
+              sessionTracks.push({
+                type: 'FeatureTrack',
+                configuration: ann.name,
+                displays: [
+                  {
+                    type: 'LinearBasicDisplay',
+                    configuration: `${ann.name}-LinearBasicDisplay`,
+                  },
+                ]
+              })
             })
             this.$store.commit('jbrowse/setTracks', tracks)
-
-
+               const defaultSession = {
+                name: 'new session',
+                view: {
+                  id: 'linearGenomeView',
+                  type: 'LinearGenomeView',
+                  tracks: sessionTracks
+                }
+              }
+            this.$store.commit('jbrowse/setDefaultSession', defaultSession)
             this.$router.push({name:'jbrowse', params:{assemblyName:assemblyName}})
             //load into vuex state
             //and push to jbrowse vies

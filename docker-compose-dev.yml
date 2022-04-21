@@ -13,7 +13,7 @@ services:
       - "8080"
     volumes:
       - ./server:/server
-      - static-vol:/server/static
+      - taxon-files:/server/static
     env_file: 
       - .env
 
@@ -24,7 +24,7 @@ services:
     volumes:
       - ./client:/client
       - node_modules:/client/node_modules
-      - static-vol:/var/www/statics
+      - taxon-files:/var/www/statics
     ports:
         - "80:80"
     environment:
@@ -48,6 +48,6 @@ services:
 
 volumes:
   app:
-  static-vol:
+  taxon-files:
   mongodb-data:
   node_modules:
