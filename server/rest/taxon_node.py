@@ -14,22 +14,3 @@ class TaxonNodesApi(Resource):
 		taxon_nodes = TaxonNode.objects().to_json()
 		return Response(taxon_nodes, mimetype="application/json", status=200)
 
-	# def delete(self):
-	# 	taxon_nodes = TaxonNode.objects.delete()
-	# 	return '', 200
- 
-# class TaxonNodeApi(Resource):
-
-# 	def get(self, tax_id):
-# 		try:
-# 			taxon_node = TaxonNode.objects(tax_id=tax_id).first()
-# 			###fetch references
-# 			children_dict = {}
-# 			children_dict['children'] = [lazy_ref.fetch().to_json() for lazy_ref in taxon_node.children]
-# 			return Response(json.dumps(children_dict), mimetype="application/json", status=200)
-# 		except DoesNotExist:
-# 			raise UserNotFoundError
-
-# 	def delete(self, tax_id):
-# 		taxonNode = TaxonNode.objects.get(tax_id=tax_id).delete()
-# 		return '', 200

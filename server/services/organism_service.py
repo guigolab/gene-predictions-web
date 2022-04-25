@@ -14,7 +14,7 @@ def get_or_create_organism(taxid):
         lineage = utils.parse_taxon(taxon_xml)
         species = lineage[0]
         taxon_lineage = taxon_service.create_taxons_from_lineage(lineage)
-        organism = Organism(taxid = taxid, name= species['scientificName'], taxon_lineage = taxon_lineage).save()
+        organism = Organism(taxid = taxid, name = species['scientificName'], taxon_lineage = taxon_lineage).save()
         taxon_service.leaves_counter(taxon_lineage)
     return organism
 

@@ -16,10 +16,10 @@
            <b-icon icon="diagram3" variant="outline-info"></b-icon>
             TREE OF LIFE 
           </b-nav-item> 
-          <b-nav-item class="nav-link" to="/geneid-form" >
+          <!-- <b-nav-item class="nav-link" to="/geneid-form" >
           <b-icon icon="gear-wide" variant="outline-info"></b-icon>
             GENEID WEB SERVER
-          </b-nav-item>
+          </b-nav-item> -->
       </b-nav>
     </div>
     </b-sidebar>

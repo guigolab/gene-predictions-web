@@ -22,11 +22,6 @@ class OrganismApi(Resource):
 	def get(self,name):
 		try:
 			organism = Organism.objects(name=name).aggregate(*pipelines.OrganismPipeline).next()
-			# response = json.loads(organism.to_json())
-			# # response['taxon_lineage'] = [json.loads(lazy_ref.fetch().to_json()) for lazy_ref in organism.taxon_lineage]
-			# response['files'] = FileModel.objects(taxid=organism.taxid).as_pymongo()
-			# app.logger.info(response)
-			# response['samples'] = [json.loads(lazy_ref.fetch().to_json()) for lazy_ref in organism.samples]
 			return Response(json.dumps(organism),mimetype="application/json", status=200)
 		except DoesNotExist:
 			raise NotFound
