@@ -24,24 +24,24 @@ export default new Router({
       path: '/tree-of-life',
       redirect: {name: 'tree-of-life', params: {node: 'Eukaryota'}}
     },
-    {
-      path: '/jbrowse/:assemblyName',
-      name: 'jbrowse',
-      component: () => import(/* webpackPrefetch: true */ '../views/JBrowse.vue'),
-      props:true
+    // {
+    //   path: '/jbrowse/:assemblyName',
+    //   name: 'jbrowse',
+    //   component: () => import(/* webpackPrefetch: true */ '../views/JBrowse.vue'),
+    //   props:true
       
+    // },
+    {
+      path: "/organisms/:name",
+      name: "organism-details",
+      props: true,
+      component: () => import(/* webpackPrefetch: true */ '../views/OrganismDetailsPage.vue')
     },
     {
       path: "/tree-of-life/:node",
       name: "tree-of-life",
       props: true,
       component: () => import(/* webpackPrefetch: true */ '../views/TreeOfLife.vue')
-    },
-    {
-      path: "/browser",
-      name: "igv",
-      props: true,
-      component: () => import(/* webpackPrefetch: true */ '../views/IGVBrowserComponent.vue')
     },
     {
       path: "/geneid-form",

@@ -11,18 +11,17 @@
           </b-row>
       </b-container>
     </b-col>
-    <file-list-modal :organism="organism" :data="files" model="Files"/>
+    <!-- <file-list-modal :organism="organism" :data="files" model="Files"/> -->
   </b-row>
 </template>
 
 <script>
 import * as d3 from "d3";
 import portalService from "../services/DataPortalService";
-import fileService from "../services/TaxonFileService"
-import FileListModal from '../components/modal/FileListModal.vue';
+// import fileService from "../services/TaxonFileService"
+// import FileListModal from '../components/modal/FileListModal.vue';
 
 export default {
-  components: { FileListModal },
   name: "tree-of-life",
   props: ['node'],
   data() {
@@ -175,19 +174,7 @@ export default {
     getData(taxon){
       const name = taxon.name || taxon
       if(name.split(" ").length > 1){
-        this.$store.dispatch('portal/showLoading')
-        console.log(taxon)
-        fileService.getAll({taxid: taxon.taxid})
-        .then(response => {
-          this.organism = name
-          this.files = response.data
-          this.$store.dispatch('portal/hideLoading')
-          this.$bvModal.show('data-modal')
-        })
-        .catch(e => {
-          console.log(e)
-          this.$store.dispatch('portal/hideLoading')
-        })
+        this.$router.push({name:'organism-details', params: {name: name}})
       }
       else {
         if(this.node == name){

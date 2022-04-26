@@ -10,6 +10,7 @@ export default class JBrowse extends React.Component {
   constructor(props){
     super(props);
     this.state = {
+        assemblyName: this.props.assemblyName,
         assembly: this.props.assembly,
         tracks: this.props.tracks,
         defaultSession: this.props.defaultSession
@@ -37,8 +38,9 @@ export default class JBrowse extends React.Component {
         "uri": "<%= BASE_URL %>favicon.ico"
       }
     }
-    const {assembly,tracks,defaultSession} = this.state
-    const state = createViewState({
+    var {assembly,tracks,defaultSession,assemblyName} = this.state
+    console.log(assemblyName)
+    var state = createViewState({
       assembly,
       tracks,
       configuration,

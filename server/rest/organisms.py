@@ -1,5 +1,5 @@
 import services.search_service as service
-from utils import pipelines
+from utils import pipelines,utils
 from flask import Response, request
 from db.models import Organism, FileModel
 from flask_restful import Resource
@@ -22,6 +22,7 @@ class OrganismApi(Resource):
 	def get(self,name):
 		try:
 			organism = Organism.objects(name=name).aggregate(*pipelines.OrganismPipeline).next()
+			utils.sort_lineage(organism['taxon_lineage']) #sort lineage (aggregation pipeline returns unordered list)
 			return Response(json.dumps(organism),mimetype="application/json", status=200)
 		except DoesNotExist:
 			raise NotFound

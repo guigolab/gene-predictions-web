@@ -1,7 +1,6 @@
 <template>
-
   <div>
-    <h2>{{assemblyName}}</h2>
+    {{assemblyName}}
     <j-browse :assemblyName="assemblyName" :defaultSession="defaultSession" :assembly="assembly" :tracks="tracks"/>
   </div>
 </template>
@@ -12,6 +11,11 @@ import JBrowse from '../utils/jBrowse.js'
 
   export default {
     props:['assemblyName'],
+    watch:{
+      assemblyName(){
+        this.$forceUpdate()
+      }
+    },
     components: {
        'j-browse': JBrowse
     },

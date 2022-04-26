@@ -27,9 +27,9 @@
         <template #head(fasta)>
           <b-badge variant="success">Genomes</b-badge>
         </template>
-        <template #cell(actions)='row'>
-          <b-link class="actions-link"  @click="toGenomeBrowser(row.item.name)">
-          <b-icon-search :id="row.item.taxid"></b-icon-search>
+        <template #cell(name)='data'>
+          <b-link :to="{name: 'organism-details', params: {name: data.item.name}}">
+            {{data.item.name}}
           </b-link>
         </template>
         <template #cell(param)="data">
@@ -50,7 +50,7 @@
 
 <script>
 import portalService from "../../services/DataPortalService"
-import {BBadge,BIconSearch,BLink } from 'bootstrap-vue'
+import {BBadge,BLink } from 'bootstrap-vue'
 import TableComponent from '../base/TableComponent.vue';
 import FilterComponent from '../base/FilterComponent.vue';
 import PaginationComponent from '../base/PaginationComponent.vue';
@@ -62,7 +62,7 @@ export default {
   components: 
     {
       BBadge,TableComponent,PaginationComponent,FilterComponent,
-      TreeBreadCrumbComponent,FileListModal,BIconSearch,
+      TreeBreadCrumbComponent,FileListModal,
       BLink
     },
 
