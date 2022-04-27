@@ -120,6 +120,7 @@ class Organism(db.Document):
     common_name= db.StringField()
     taxid = db.StringField(required=True)
     taxon_lineage = db.ListField(db.LazyReferenceField(TaxonNode))
+    ordered_lineage = db.ListField() ##TODO fix duplicated lineage 
     genomes = db.ListField(db.LazyReferenceField(Genome))
     annotations = db.ListField(db.LazyReferenceField(Annotation))
     param_files = db.ListField(db.LazyReferenceField(ParamFile))

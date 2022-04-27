@@ -1,5 +1,8 @@
 from db.models import Annotation, Genome, ParamFile
+from errors import NotFound, SchemaValidationError
 from services import organism_service
+from flask import current_app as app
+from utils import common_functions
 
 GENERAL_PARAMS = ['name','taxid']
 GENOME_LOCATIONS = ['fastaLocation','faiLocation','gziLocation']
@@ -56,6 +59,10 @@ def create_file_model(params, model):
 
 def payload_parser(request, model):
     params = dict(**request.json) if request.is_json else dict(**request.form)
+    if not 'API_KEY' in params.keys() or not common_functions.auth_request(params['API_KEY']):
+        raise NotFound
+    else:
+        params.pop('API_KEY')
     error_keys=validate_params(params, GENERAL_PARAMS+location_handler(model))
     if error_keys:
         return error_keys

@@ -34,16 +34,16 @@ OrganismPipeline = [
 		"as": "param_files",
 		}
 	},
-	{"$lookup":
-		{"from": "taxon_node",
-		"localField": "taxon_lineage",
-		"foreignField": "_id",
-		"as": "taxon_lineage",
-		}
-	},
+	# {"$lookup":
+	# 	{"from": "taxon_node",
+	# 	"localField": "taxon_lineage",
+	# 	"foreignField": "_id",
+	# 	"as": "taxon_lineage",
+	# 	}
+	# },
 	{"$project": 
 		{"_id":0, 
-		"taxon_lineage" : {"_id":0,"children":0},
+		'taxon_lineage':0,
 		"genomes" : {"_id":0},
 		"annotations": {"_id":0, "created":0},
 		"param_files":{"_id":0}

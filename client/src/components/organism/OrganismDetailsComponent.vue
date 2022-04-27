@@ -9,7 +9,7 @@
             </b-row>
             <b-row>
                 <b-col style="font-size: 0.85rem">
-                    <b-link v-for="node in reverseItems(organism.taxon_lineage)" :key="node.taxid" 
+                    <b-link v-for="node in reverseItems(organism.ordered_lineage)" :key="node.taxid" 
                     :to="{name: 'tree-of-life', params: {node: node.name}}"
                     >
                         {{node.name}} (<strong>{{node.rank}}</strong>)
@@ -35,19 +35,19 @@
                             </b-list-group>
                         </b-card-body>
                         <b-card-body>
-                            <p>Gff3 files of {{assembly.name}}</p>
-                            <b-list-group v-for="ann in getAssemblyAnnotations(assembly.name)" :key="ann.name">
+                            <b-card :title="'Gff3 files of '+assembly.name">
+                                <b-list-group v-for="ann in getAssemblyAnnotations(assembly.name)" :key="ann.name">
                                 <!-- <p>{{ann.name}}</p> -->
-                                <p>{{ann.name}}</p>
-                                <b-icon-question :id="assembly.name+'annotation'"/>
-                                <b-tooltip :target="assembly.name+'annotation'" triggers="hover">
+                                <p :id="ann.name">{{ann.name}}</p>
+                                <b-tooltip :target="ann.name" triggers="hover">
                                     Evidence source: {{transformEvidences(ann.evidenceSource)}}
                                 </b-tooltip>
                                 <b-list-group>
                                     <b-list-group-item :href="ann.gffGzLocation">Download gff3.gz</b-list-group-item>
                                     <b-list-group-item :href="ann.tabIndexLocation">Download gff3.gz.tbi</b-list-group-item>
                                 </b-list-group>
-                            </b-list-group>
+                                </b-list-group>
+                            </b-card>
                         </b-card-body>
                     </b-collapse>
                 </b-card>
@@ -63,10 +63,10 @@
 </template>
 
 <script>
-import {BCollapse,BCard,BCardHeader,BCardBody,BButton,BTooltip,BIconQuestion,BListGroup,BListGroupItem} from 'bootstrap-vue'
+import {BCollapse,BCard,BCardHeader,BCardBody,BButton,BTooltip,BListGroup,BListGroupItem} from 'bootstrap-vue'
 import JBrowse from '../../views/JBrowseComponent.vue'
 export default {
-    components: { JBrowse,BCard,BCollapse,BButton,BListGroup,BListGroupItem,BCardHeader,BCardBody,BTooltip,BIconQuestion},
+    components: { JBrowse,BCard,BCollapse,BButton,BListGroup,BListGroupItem,BCardHeader,BCardBody,BTooltip},
     props:['organism'],
     watch:{
         organism: {
@@ -104,7 +104,7 @@ export default {
         },
         transformEvidences(evidenceString){
             const values = evidenceString.split('.')
-            const taxIdToName = this.organism.taxon_lineage.filter(node => node.taxid == values[1])[0].name
+            const taxIdToName = this.organism.ordered_lineage.filter(node => node.taxid === values[1])[0].name
             return values[0]+' '+values[2]+' '+taxIdToName
         },
         toGenomeBrowser(assemblyName){

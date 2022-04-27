@@ -32,7 +32,7 @@ def full_text_search(params,model):
     tax_node = TaxonNode.objects(name=resolved_params['taxName']).first()
     query_tax = query_by_taxNode(tax_node)
     query = query_by_taxid(resolved_params['filter']) if resolved_params['filter'].isnumeric() else query_by_name(resolved_params['filter'])
-    organisms = model.objects(query_tax & query)
+    organisms = model.objects(query_tax & query).exclude('taxon_lineage','ordered_lineage')
     if resolved_params['sortColumn']:
         sort = '-'+resolved_params['sortColumn'] if resolved_params['sortOrder'] == 'true' else resolved_params['sortColumn']
         organisms = organisms.order_by(sort)

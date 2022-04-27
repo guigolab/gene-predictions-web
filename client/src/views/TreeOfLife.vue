@@ -68,7 +68,8 @@ export default {
       portalService.getTree(node)
       .then(response => {
           this.data = response.data
-          this.legendDomains = this.getDomains(this.data, []).slice(0,8)
+          const domains = [this.data].concat(this.getDomains(this.data, []))
+          this.legendDomains = domains.slice(0,9)
           this.domains = this.legendDomains.map(value => value.name)
           this.$store.commit('portal/setBreadCrumb', {value: {text: node, to: {name: 'tree-of-life', params:{node: node}}}})
           if(this.data){
@@ -163,12 +164,16 @@ export default {
     getDomains(node,domains) {
       if(node.children){
         node.children.forEach(n => {
-          domains = this.getDomains(n,domains)
+          domains = this.getDomains(n, domains)
           })
-        if (node.children.length > 1)
+        if(node.children.length > 1){
+
+          // console.log(node)
+          // console.log(node.children.filter(n => n.leaves !== node.leaves))
           domains.push(node)
+        }
       }
-      return domains.sort((a,b) => b.leaves-a.leaves)
+      return domains.sort((a,b) => b.leaves - a.leaves || node.children.length - a.children.length)
     },
 
     getData(taxon){

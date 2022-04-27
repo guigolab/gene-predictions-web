@@ -19,7 +19,6 @@ def bfs(root,nodes):
 
 def dfs(stack, tree, max_level):
     node, level = stack.pop(0)
-    app.logger.info(node.to_json())
     tree["name"] = node.name
     tree["taxid"] = node.taxid
     tree["isOpen"] = True

@@ -15,6 +15,9 @@ DTOL_LIMIT=100
 def create_taxons_from_lineage(lineage):
     taxon_lineage = []
     for node in lineage:
+        if node['scientificName'] == 'root' or node['scientificName'] == 'cellular organisms':
+            continue
+        # and node['scientificName'] not in ['root', 'cellular organism']
         # if ('rank' in node.keys() and node['rank'] in utils.RANKS) or node['taxId'] == 1:
         taxon_node = TaxonNode.objects(taxid=node['taxId']).first()
         if not taxon_node:

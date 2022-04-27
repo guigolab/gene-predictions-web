@@ -1,3 +1,7 @@
+import os
+from flask import current_app as app
+
+API_KEY = os.getenv('API_KEY')
 
 def resolve_params(allowed_params, **params):
   # add default params if not present
@@ -7,3 +11,5 @@ def resolve_params(allowed_params, **params):
   return allowed_params
 
 
+def auth_request(api_key):
+  return api_key == API_KEY

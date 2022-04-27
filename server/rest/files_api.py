@@ -21,16 +21,16 @@ class GenomesApi(Resource):
     def post(self):
         return Response(file_service.payload_parser(request, GENOMES))
 
-    def put(self, name):
-        model_obj = file_service.model_handler(GENOMES)
-        obj = model_obj.objects(name=name).first()
-        ## add validating step
-        obj.modify(**request.form)
+    # def put(self, name):
+    #     model_obj = file_service.model_handler(GENOMES)
+    #     obj = model_obj.objects(name=name).first()
+    #     ## add validating step
+    #     obj.modify(**request.form)
 
-    def delete(self, name):
-        model_obj = file_service.model_handler(GENOMES)
-        obj = model_obj.objects(name=name).first()
-        obj.delete()
+    # def delete(self, name):
+    #     model_obj = file_service.model_handler(GENOMES)
+    #     obj = model_obj.objects(name=name).first()
+    #     obj.delete()
 
 class AnnotationApi(Resource):
     def get(self):
@@ -39,31 +39,31 @@ class AnnotationApi(Resource):
     def post(self):
         return Response(file_service.payload_parser(request, ANNOTATIONS))
 
-    def put(self, name):
-        model_obj = file_service.model_handler(ANNOTATIONS)
-        obj = model_obj.objects(name=name).first()
-        ## add validating step
-        obj.modify(**request.form)
+    # def put(self, name):
+    #     model_obj = file_service.model_handler(ANNOTATIONS)
+    #     obj = model_obj.objects(name=name).first()
+    #     ## add validating step
+    #     obj.modify(**request.form)
 
-    def delete(self, name):
-        model_obj = file_service.model_handler(ANNOTATIONS)
-        obj = model_obj.objects(name=name).first()
-        obj.delete()
+    # def delete(self, name):
+    #     model_obj = file_service.model_handler(ANNOTATIONS)
+    #     obj = model_obj.objects(name=name).first()
+    #     obj.delete()
 
 class ParamApi(Resource):
     def get(self):
         return Response(file_service.search_by_taxid(request,PARAMETERS))
 
-    def post(self):
-        return Response(file_service.payload_parser(request, PARAMETERS))
+    # def post(self):
+    #     return Response(file_service.payload_parser(request, PARAMETERS))
 
-    def put(self, name):
-        model_obj = file_service.model_handler(PARAMETERS)
-        obj = model_obj.objects(name=name).first()
-        ## add validating step
-        obj.modify(**request.form)
+    # def put(self, name):
+    #     model_obj = file_service.model_handler(PARAMETERS)
+    #     obj = model_obj.objects(name=name).first()
+    #     ## add validating step
+    #     obj.modify(**request.form)
 
-    def delete(self, name):
-        model_obj = file_service.model_handler(PARAMETERS)
-        obj = model_obj.objects(name=name).first()
-        obj.delete()
+    # def delete(self, name):
+    #     model_obj = file_service.model_handler(PARAMETERS)
+    #     obj = model_obj.objects(name=name).first()
+    #     obj.delete()
