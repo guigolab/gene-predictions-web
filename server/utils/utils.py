@@ -1,6 +1,5 @@
 from lxml import etree
 # from .constants import CHECKLIST_PARSER
-from flask import make_response,jsonify
 import os
 
 RANKS = os.getenv('RANKS').split(',')

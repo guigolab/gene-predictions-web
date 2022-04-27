@@ -4,11 +4,7 @@
         <b-col>
             <b-row>
                 <b-col>
-                    <b-row>
-                        <b-col>
-                            <h2 >{{organism.name}}</h2>
-                        </b-col>
-                    <b-row>
+                    <h2>{{organism.common_name ? organism.name +' ('+ organism.common_name + ')': organism.name}}</h2>
                 </b-col>
             </b-row>
             <b-row>
@@ -25,7 +21,7 @@
     <b-row>
         <b-col lg="3">
             <div class="accordion" role="tablist">
-                <b-card no-body class="mb-1" v-for="assembly in organism.genomes" :key="assembly.name">
+                <b-card bg-variant="light" no-body class="mb-1" v-for="assembly in organism.genomes" :key="assembly.name">
                     <b-card-header header-tag="header" class="p-1" role="tab">
                         <b-button variant="info" block v-b-toggle="assembly.name">{{assembly.name}}</b-button>
                     </b-card-header>
@@ -42,7 +38,11 @@
                             <p>Gff3 files of {{assembly.name}}</p>
                             <b-list-group v-for="ann in getAssemblyAnnotations(assembly.name)" :key="ann.name">
                                 <!-- <p>{{ann.name}}</p> -->
-                                <p>Protein source: {{ann.evidenceSource}}</p>
+                                <p>{{ann.name}}</p>
+                                <b-icon-question :id="assembly.name+'annotation'"/>
+                                <b-tooltip :target="assembly.name+'annotation'" triggers="hover">
+                                    Evidence source: {{transformEvidences(ann.evidenceSource)}}
+                                </b-tooltip>
                                 <b-list-group>
                                     <b-list-group-item :href="ann.gffGzLocation">Download gff3.gz</b-list-group-item>
                                     <b-list-group-item :href="ann.tabIndexLocation">Download gff3.gz.tbi</b-list-group-item>
@@ -63,10 +63,10 @@
 </template>
 
 <script>
-import {BCollapse,BCard,BCardHeader,BCardBody,BButton,BListGroup,BListGroupItem} from 'bootstrap-vue'
+import {BCollapse,BCard,BCardHeader,BCardBody,BButton,BTooltip,BIconQuestion,BListGroup,BListGroupItem} from 'bootstrap-vue'
 import JBrowse from '../../views/JBrowseComponent.vue'
 export default {
-    components: { JBrowse,BCard,BCollapse,BButton,BListGroup,BListGroupItem,BCardHeader,BCardBody},
+    components: { JBrowse,BCard,BCollapse,BButton,BListGroup,BListGroupItem,BCardHeader,BCardBody,BTooltip,BIconQuestion},
     props:['organism'],
     watch:{
         organism: {
@@ -102,10 +102,14 @@ export default {
         reverseItems(items) {
             return items.slice().reverse();
         },
+        transformEvidences(evidenceString){
+            const values = evidenceString.split('.')
+            const taxIdToName = this.organism.taxon_lineage.filter(node => node.taxid == values[1])[0].name
+            return values[0]+' '+values[2]+' '+taxIdToName
+        },
         toGenomeBrowser(assemblyName){
             const annotations = this.getAssemblyAnnotations(assemblyName)
             const assemblyObj = this.organism.genomes.filter(el => el.name === assemblyName)[0] || this.organism.genomes[0]
-            console.log(assemblyObj)
             const sessionTracks = []
             const assemblyView = {
               name : assemblyName,

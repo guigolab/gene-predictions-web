@@ -16,7 +16,7 @@ def handler(event):
 # model for species browsing
 class TaxonNode(db.Document):
     children = db.ListField(db.LazyReferenceField('self', passthrough=True))
-    name = db.StringField(required=True,unique=True)
+    name = db.StringField(required=True)
     taxid = db.StringField(required=True)
     rank = db.StringField()
     leaves = db.IntField()
@@ -80,6 +80,7 @@ class FileModel(db.Document):
 
 class Genome(db.Document):
     name = db.StringField(required=True,unique=True)
+    insdc_accession = db.StringField()
     fastaLocation = db.StringField(required=True,unique=True)
     faiLocation = db.StringField(required=True,unique=True)
     gziLocation = db.StringField(required=True,unique=True) 
@@ -116,6 +117,7 @@ class ParamFile(db.Document):
 
 class Organism(db.Document):
     name = db.StringField(required=True,unique=True)
+    common_name= db.StringField()
     taxid = db.StringField(required=True)
     taxon_lineage = db.ListField(db.LazyReferenceField(TaxonNode))
     genomes = db.ListField(db.LazyReferenceField(Genome))

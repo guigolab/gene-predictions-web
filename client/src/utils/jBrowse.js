@@ -5,15 +5,16 @@ import {
 } from '@jbrowse/react-linear-genome-view'
 
 import React from 'react'
+import store from '../store'
+
 
 export default class JBrowse extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-        assemblyName: this.props.assemblyName,
-        assembly: this.props.assembly,
-        tracks: this.props.tracks,
-        defaultSession: this.props.defaultSession
+        assembly: store.getters['jbrowse/assembly'],
+        tracks: store.getters['jbrowse/tracks'],
+        defaultSession: store.getters['jbrowse/defaultSession']
     }
   }
   render() {
@@ -38,8 +39,8 @@ export default class JBrowse extends React.Component {
         "uri": "<%= BASE_URL %>favicon.ico"
       }
     }
-    var {assembly,tracks,defaultSession,assemblyName} = this.state
-    console.log(assemblyName)
+    var {assembly,tracks,defaultSession} = this.state
+    console.log(assembly.name)
     var state = createViewState({
       assembly,
       tracks,

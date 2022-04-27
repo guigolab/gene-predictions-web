@@ -15,11 +15,12 @@ DTOL_LIMIT=100
 def create_taxons_from_lineage(lineage):
     taxon_lineage = []
     for node in lineage:
-        if ('rank' in node.keys() and node['rank'] in utils.RANKS) or node['taxId'] == 1:
-            taxon_node = TaxonNode.objects(taxid=node['taxId']).first()
-            if not taxon_node:
-                taxon_node = TaxonNode(taxid=node['taxId'], name=node['scientificName'], rank=node['rank']).save()
-            taxon_lineage.append(taxon_node)
+        # if ('rank' in node.keys() and node['rank'] in utils.RANKS) or node['taxId'] == 1:
+        taxon_node = TaxonNode.objects(taxid=node['taxId']).first()
+        if not taxon_node:
+            rank = node['rank'] if 'rank' in node.keys() else 'other'
+            taxon_node = TaxonNode(taxid=node['taxId'], name=node['scientificName'], rank=rank).save()
+        taxon_lineage.append(taxon_node)
     #create relationship
     create_relationship(taxon_lineage)
     return taxon_lineage
@@ -36,7 +37,7 @@ def delete_taxons(lineage):
 def create_relationship(lineage):
     for index in range(len(lineage)-1):
         child_taxon = lineage[index]
-        father_taxon = lineage[index + 1] if child_taxon.rank != 'subspecies' else lineage[index+2]
+        father_taxon = lineage[index + 1]
         if not any(child_node.id == child_taxon.id for child_node in father_taxon.children):
             father_taxon.children.append(child_taxon)
             father_taxon.save()

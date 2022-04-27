@@ -44,7 +44,7 @@ def query_by_taxNode(taxNode):
     return Q(taxon_lineage=taxNode)
 
 def query_by_name(filter):
-    return (Q(name__iexact=filter) | Q(name__icontains=filter))
+    return (Q(name__iexact=filter) | Q(name__icontains=filter) | Q(common_name__iexact=filter) | Q(common_name__icontains=filter))
 
 def query_by_taxid(filter):
     return (Q(taxid__iexact=filter) | Q(taxid__icontains=filter))

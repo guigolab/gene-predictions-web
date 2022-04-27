@@ -68,7 +68,7 @@ export default {
       portalService.getTree(node)
       .then(response => {
           this.data = response.data
-          this.legendDomains = this.getDomains(this.data, []).slice(0,9)
+          this.legendDomains = this.getDomains(this.data, []).slice(0,8)
           this.domains = this.legendDomains.map(value => value.name)
           this.$store.commit('portal/setBreadCrumb', {value: {text: node, to: {name: 'tree-of-life', params:{node: node}}}})
           if(this.data){

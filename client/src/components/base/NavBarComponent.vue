@@ -1,7 +1,8 @@
 <template>
     <div style="margin-bottom:15px">
   <b-navbar toggleable="true" type="dark" variant="info">
-  <b-navbar-brand to="/"> Geneid Web Server </b-navbar-brand>    <b-navbar-toggle target="nav-collapse">
+  <b-navbar-brand to="/"> Geneid Predictions </b-navbar-brand>    
+    <b-navbar-toggle target="nav-collapse">
     </b-navbar-toggle>
     <b-sidebar id="nav-collapse" bg-variant="dark" text-variant="light" shadow aria-labelledby="sidebar-no-header-title" no-header right
       backdrop
@@ -12,7 +13,7 @@
            <b-icon icon="house" variant="outline-info"></b-icon>
             HOME 
           </b-nav-item>
-          <b-nav-item  active-class="active" class="nav-link" :to="{name: 'tree-of-life', params: {node: 'root'}}">
+          <b-nav-item  active-class="active" class="nav-link" :to="{name: 'tree-of-life', params: {node: 'Eukaryota'}}">
            <b-icon icon="diagram3" variant="outline-info"></b-icon>
             TREE OF LIFE 
           </b-nav-item> 

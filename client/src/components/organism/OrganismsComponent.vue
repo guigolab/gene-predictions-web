@@ -18,9 +18,9 @@
         :selectMode="'multi'"
         
         >
-        <template #head(param)>
+        <!-- <template #head(param)>
           <b-badge variant="warning">ParamFiles</b-badge>
-        </template>
+        </template> -->
         <template #head(gff)>
           <b-badge variant="primary">Annotations</b-badge>
         </template>
@@ -32,9 +32,9 @@
             {{data.item.name}}
           </b-link>
         </template>
-        <template #cell(param)="data">
+        <!-- <template #cell(param)="data">
             <b-badge style="cursor:pointer" v-if="data['item'].param_files.length" @click.stop="getFiles(data['item'], 'param_files')" pill variant="warning">{{data['item'].param_files.length}}</b-badge>
-        </template>
+        </template> -->
         <template #cell(gff)="data">
             <b-badge style="cursor:pointer" v-if="data['item'].annotations.length" @click.stop="getFiles(data['item'], 'annotations')" pill variant="primary">{{data['item'].annotations.length}}</b-badge>
         </template>        
@@ -80,14 +80,14 @@ export default {
     return {
       tableId:'organisms-table',
       pageOptions: [20,50,100],
-      props:['isAdmin'],
       isBusy: false,
       stickyHeader: '70vh',
       fields: [
         {key: 'actions', label:''},
         {key: 'taxid', label: 'TaxId',sortable: true},
         {key: 'name',label:'Name',sortable: true},
-        {key: 'param'},
+        {key: 'common_name', label:'Common name', sortable: true},
+        // {key: 'param'},
         {key: 'gff'},
         {key: 'fasta'}
       ],
@@ -133,7 +133,6 @@ export default {
       this.$store.dispatch('portal/showLoading')
       portalService.getFiles(model,{taxid:organism.taxid})
       .then(response => {
-        console.log(response.data)
         this.data = response.data
         this.model = model
         this.organism = organism.name
@@ -141,7 +140,7 @@ export default {
         this.$store.dispatch('portal/hideLoading')
       })
       .catch(e => {
-          console.log(e)
+        console.log(e)
          this.$store.dispatch('portal/hideLoading')
       })
     },

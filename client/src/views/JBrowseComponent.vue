@@ -1,6 +1,5 @@
 <template>
-  <div>
-    {{assemblyName}}
+  <div v-if="visible">
     <j-browse :assemblyName="assemblyName" :defaultSession="defaultSession" :assembly="assembly" :tracks="tracks"/>
   </div>
 </template>
@@ -11,8 +10,15 @@ import JBrowse from '../utils/jBrowse.js'
 
   export default {
     props:['assemblyName'],
+    data(){
+      return {
+        visible:true
+      }
+    },
     watch:{
       assemblyName(){
+        this.visible=!this.visible
+        this.visible=!this.visible
         this.$forceUpdate()
       }
     },
