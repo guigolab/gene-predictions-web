@@ -1,5 +1,5 @@
 from db.models import Annotation, Genome, ParamFile
-from errors import NotFound, SchemaValidationError
+from errors import NotFound
 from services import organism_service
 from flask import current_app as app
 from utils import common_functions
@@ -79,14 +79,14 @@ def payload_parser(request, model):
 
 def search_by_taxid(request, model):
     args = request.args
+    model_obj = model_handler(model)
     if 'taxid' in args.keys():
         taxid = args['taxid']
         organism = organism_service.get_or_create_organism(taxid)
-        model_obj = model_handler(model)
         ids = [ref.id for ref in reference_handler(model,organism)]
         return  model_obj.objects(id__in=ids).exclude('id').to_json()
     else:
-        return []
+        return model_obj.objects().exclude('id').to_json()
 #manage file deletion and organism and taxon deletion cascade
 def delete_file(name,model):
     model_obj = model_handler(model)

@@ -4,14 +4,6 @@ from db.models import TaxonNode,Organism
 from flask import current_app as app
 from utils import utils
 
-# from mongoengine.queryset.visitor import Q
-## create a service to retrieve lineage from taxon_id and create taxon_nodes from that
-## check http://etetoolkit.org/docs/latest/tutorial/tutorial_ncbitaxonomy.html
-
-RANKS = ['root','superkingdom','kingdom','phylum','class','order','family','genus','species','subspecies']
-LINEAGE_KEY = 'lineage_list'
-DTOL_LIMIT=100
-
 def create_taxons_from_lineage(lineage):
     taxon_lineage = []
     for node in lineage:

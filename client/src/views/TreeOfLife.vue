@@ -6,6 +6,7 @@
             <b-col style="min-height:600px">
               <h1 style="text-align:center">{{node}}</h1>
               <!-- <svg ref="legend"/> -->
+                <div ref="tooltip" class="tooltip"></div>
                 <svg ref="svg"  class="tree-svg"/>
             </b-col>
           </b-row>
@@ -68,8 +69,14 @@ export default {
       portalService.getTree(node)
       .then(response => {
           this.data = response.data
-          const domains = [this.data].concat(this.getDomains(this.data, []))
-          this.legendDomains = domains.slice(0,9)
+          const firstFork = this.getFirstFork(this.data)
+          if (firstFork && firstFork.children.length > 1){
+            const leftDomains =this.getDomains(firstFork.children[0], []).slice(0,4)
+            const rightDomains = this.getDomains(firstFork.children[1], []).slice(0,4)
+            this.legendDomains = [this.data].concat([...leftDomains,...rightDomains])
+          }else{
+            this.legendDomains = [this.data]
+          }
           this.domains = this.legendDomains.map(value => value.name)
           this.$store.commit('portal/setBreadCrumb', {value: {text: node, to: {name: 'tree-of-life', params:{node: node}}}})
           if(this.data){
@@ -108,6 +115,9 @@ export default {
   }
   
   `);
+  var div = d3.select(this.$refs.tooltip)
+    .style("opacity", 0)
+
     this.legend(svg);
     this.linkExtension =svg.append("g")
         .attr("fill", "none")
@@ -125,10 +135,30 @@ export default {
       .selectAll("path")
       .data(root.links())
       .join("path")
-        .each(function(d) { d.target.linkNode = this; })
+        .each(function(d) { d.target.linkNode = this})
         .attr("d", this.linkConstant)
-        .attr("stroke", d => d.target.color);
-  
+        .attr("stroke-width", function(d){
+            console.log(d) 
+          return d.width
+          })
+        .attr("stroke", d => d.target.color)
+        .on("mouseover", function(event, d){
+            console.log(d)	
+            console.log(event)
+            div.transition()		
+              .duration(200)		
+              .style("opacity", .9);		
+            div.html(d.target.data.name)	
+              .style("left", (event.layerX) + "px")		
+              .style("top", (event.layerY-15) + "px");	
+        })
+        .on("mouseout", function() {
+            div.transition()		
+                .duration(500)		
+                .style("opacity", 0);	
+        })
+        .on("click", this.info(this));
+
     svg.append("g")
       .selectAll("text")
       .data(root.leaves())
@@ -152,7 +182,10 @@ export default {
     },
    info(component) {
      return function(_, d){
-       if(d.data){
+       if(d.target && d.target.data){
+         component.getData(d.target.data)
+       }
+       else if(d.data){
         component.getData(d.data)
         }
         else {
@@ -160,20 +193,27 @@ export default {
         }
      }
     },
-
+    getFirstFork(node) {
+      if(node.children.length > 1){
+        return node
+      }else if(node.children){
+        var childNode = null
+        node.children.forEach(n => {
+          childNode = this.getFirstFork(n)
+          })
+        return childNode
+      }
+    },
     getDomains(node,domains) {
       if(node.children){
         node.children.forEach(n => {
           domains = this.getDomains(n, domains)
           })
         if(node.children.length > 1){
-
-          // console.log(node)
-          // console.log(node.children.filter(n => n.leaves !== node.leaves))
           domains.push(node)
         }
       }
-      return domains.sort((a,b) => b.leaves - a.leaves || node.children.length - a.children.length)
+      return domains.sort((a,b) => b.leaves - a.leaves)
     },
 
     getData(taxon){
@@ -188,6 +228,9 @@ export default {
         this.$router.push({name:'tree-of-life', params: {node: name}})
       }
     
+    },
+    mouseOverPath(){
+      return 
     },
     mouseovered(active) {
       return function(event, d) {
@@ -284,5 +327,16 @@ export default {
     height: 100%;
     /* max-width: 100%; */
     overflow: visible;
+}
+
+.tooltip {	
+  position: absolute;			
+  text-align: center;			
+  width: min-content;					
+  background: black;	
+  border: 0px;		
+  color: white;
+  border-radius: 8px;			
+  pointer-events: none;			
 }
 </style>

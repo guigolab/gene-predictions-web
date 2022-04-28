@@ -40,7 +40,6 @@ export default class JBrowse extends React.Component {
       }
     }
     var {assembly,tracks,defaultSession} = this.state
-    console.log(assembly.name)
     var state = createViewState({
       assembly,
       tracks,

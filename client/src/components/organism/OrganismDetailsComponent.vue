@@ -18,67 +18,50 @@
         </b-jumbotron>
         </b-col>
     </b-row>
-    <!-- <b-row>
-        <b-col>
-            <b-row>
-                <b-col>
-                    <h2>{{organism.common_name ? organism.name +' ('+ organism.common_name + ')': organism.name}}</h2>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col style="font-size: 0.85rem">
-                    <b-link v-for="node in reverseItems(organism.ordered_lineage)" :key="node.taxid" 
-                    :to="{name: 'tree-of-life', params: {node: node.name}}"
-                    >
-                        {{node.name}} (<strong>{{node.rank}}</strong>)
-                    </b-link>
-                </b-col>
-            </b-row>
-        </b-col>
-    </b-row> -->
-    <!-- <b-row>
-        <b-col>
-            <b-card-text></b-card-text>
-        </b-col>
-    </b-row> -->
     <b-row>
         <b-col lg="3">
             <b-card :title="assembly.name" border-variant="info" header-tag="header" v-for="assembly in organism.genomes" :key="assembly.name">
-                    <b-button variant="outline-info" @click="getAssemblyMetadata(assembly.insdc_accession)" block>Metadata</b-button>
-                    <div class="accordion" role="tablist">
-                        <b-card border-variant="info" no-body class="mb-1">
-                            <b-card-header header-tag="header" class="p-1" role="tab">
-                                <b-button variant="outline-info" block v-b-toggle="assembly.name+'fasta'">Fasta files</b-button>
-                            </b-card-header>
-                            <b-collapse :id="assembly.name+'fasta'" accordion="my-accordion" role="tabpanel">
-                                <b-list-group>
-                                    <b-list-group-item :href="assembly.fastaLocation">Download fa.gz</b-list-group-item>
-                                    <b-list-group-item :href="assembly.faiLocation">Download fa.gz.fai</b-list-group-item>
-                                    <b-list-group-item :href="assembly.gziLocation">Download fa.gz.gzi</b-list-group-item>
-                                </b-list-group>
-                            </b-collapse>
+                <div>
+                    <b-card no-body border-variant="info" class="mb-1">
+                        <b-card-header header-tag="header" class="p-1" role="tab">
+                            <b-button variant="info" @click="getAssemblyMetadata(assembly.insdc_accession)" block>Metadata</b-button>
+                        </b-card-header>
+                    </b-card>
+                </div>
+                <div class="accordion" role="tablist">
+                    <b-card border-variant="info" no-body class="mb-1">
+                        <b-card-header header-tag="header" class="p-1" role="tab">
+                            <b-button variant="info" block v-b-toggle="assembly.name+'fasta'">Fasta files</b-button>
+                        </b-card-header>
+                        <b-collapse :id="assembly.name+'fasta'" accordion="my-accordion" role="tabpanel">
+                            <b-list-group>
+                                <b-list-group-item :href="assembly.fastaLocation">Download fa.gz</b-list-group-item>
+                                <b-list-group-item :href="assembly.faiLocation">Download fa.gz.fai</b-list-group-item>
+                                <b-list-group-item :href="assembly.gziLocation">Download fa.gz.gzi</b-list-group-item>
+                            </b-list-group>
+                        </b-collapse>
+                    </b-card>
+                    <b-card border-variant="info" no-body class="mb-1">
+                        <b-card-header header-tag="header" class="p-1" role="tab">
+                            <b-button variant="info" block v-b-toggle="assembly.name+'gff'">Gff3 files</b-button>
+                        </b-card-header>
+                        <b-collapse :id="assembly.name+'gff'" visible accordion="my-accordion" role="tabpanel">
+                            <b-card border-variant="info">
+                            <b-list-group v-for="ann in getAssemblyAnnotations(assembly.name)" :key="ann.name">
+                            <!-- <p>{{ann.name}}</p> -->
+                            <p :id="ann.name">{{ann.name}}</p>
+                            <b-tooltip :target="ann.name" triggers="hover">
+                                Evidence source: {{transformEvidences(ann.evidenceSource)}}
+                            </b-tooltip>
+                            <b-list-group>
+                                <b-list-group-item :href="ann.gffGzLocation">Download gff3.gz</b-list-group-item>
+                                <b-list-group-item :href="ann.tabIndexLocation">Download gff3.gz.tbi</b-list-group-item>
+                            </b-list-group>
+                            </b-list-group>
                         </b-card>
-                        <b-card border-variant="info" no-body class="mb-1">
-                            <b-card-header header-tag="header" class="p-1" role="tab">
-                                <b-button variant="outline-info" block v-b-toggle="assembly.name+'gff'">Gff3 files</b-button>
-                            </b-card-header>
-                            <b-collapse :id="assembly.name+'gff'" visible accordion="my-accordion" role="tabpanel">
-                                <b-card border-variant="info">
-                                <b-list-group v-for="ann in getAssemblyAnnotations(assembly.name)" :key="ann.name">
-                                <!-- <p>{{ann.name}}</p> -->
-                                <p :id="ann.name">{{ann.name}}</p>
-                                <b-tooltip :target="ann.name" triggers="hover">
-                                    Evidence source: {{transformEvidences(ann.evidenceSource)}}
-                                </b-tooltip>
-                                <b-list-group>
-                                    <b-list-group-item :href="ann.gffGzLocation">Download gff3.gz</b-list-group-item>
-                                    <b-list-group-item :href="ann.tabIndexLocation">Download gff3.gz.tbi</b-list-group-item>
-                                </b-list-group>
-                                </b-list-group>
-                            </b-card>
-                            </b-collapse>
-                        </b-card>
-                    </div>
+                        </b-collapse>
+                    </b-card>
+                </div>
             </b-card>
         </b-col>
         <b-col lg="9">
@@ -87,7 +70,7 @@
             </div>
         </b-col>
     </b-row>
-    <assembly-info-modal :metadata="metadata" :chromosomes="chromosomes" :biosample="biosample"/>
+    <assembly-info-modal :metadata="metadata" :chromosomes="chromosomes"/>
 </b-container>
 </template>
 
@@ -117,7 +100,6 @@ export default {
             selectedAssembly:'',
             metadataLoaded: false,
             chromosomes:[],
-            biosample:null,
             metadata:null,
         }
     },
@@ -133,15 +115,11 @@ export default {
             const metadata = Object.entries(assembly)
             .map(([key,value]) => 
                 {
-                    console.log(key)
-                    console.log(typeof value === 'string')
                     if (typeof value === 'string'){
                         return [key,value]
                     }
                 }).filter(entry => entry)
-            console.log(metadata)
             return Object.fromEntries(metadata)
-            // return {chromosomes,biosample,...assembly}
         },
         reverseItems(items) {
             return items.slice().reverse();
@@ -152,7 +130,6 @@ export default {
             .then(response => {
                 if(response.data && response.data.assemblies){
                     this.chromosomes = response.data.assemblies[0].assembly.chromosomes
-                    this.biosample = response.data.assemblies[0].assembly.biosample
                     this.metadata = this.getMetadataFields(response.data.assemblies[0].assembly)
                     this.$store.dispatch('portal/hideLoading')
                     this.$bvModal.show('assembly-info-modal')
