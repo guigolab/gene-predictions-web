@@ -11,7 +11,7 @@
 <div>
   <h4> INTRODUCTION </H4>
   <p>
-  This portal contains the geneid predictions of the pipeline <a href="https://github.com/FerriolCalvet/geneidBLASTx-nf">geneidBLASTx-nf</a> pipeline
+  This portal contains the geneid predictions of the <a href="https://github.com/FerriolCalvet/geneidBLASTx-nf">geneidBLASTx-nf</a> pipeline
   </p>
 </div>
 </br>
