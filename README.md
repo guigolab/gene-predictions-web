@@ -5,6 +5,7 @@
   <li>INTRODUCTION</li>
   <li>DEPENDENCIES</li>
   <li>BUILD</li>
+  <li>PLUGINS</li>
 </ul>
 </div>
  
@@ -18,12 +19,20 @@
 <div>
   <h4> DEPENDENCIES </H4>
 </div>
-to add a dependency front-end side: npm install < package_name >
+to add a dependency front-end side: npm install < package_name > <br/>
 to add a dependency back-end side: pip install < package_name >
 
 
 <div>
-  <h4> BUILD </H4>
+  <h4> BUILD </h4>
 </div>
 
 to build the app in local: docker-compose -f docker-compose-dev.yml up --build
+
+
+<div>
+  <h4>PLUGINS</h4>
+  <a href="https://jbrowse.org/jb2/">Jbrowse</a>
+  <br/>
+
+  
