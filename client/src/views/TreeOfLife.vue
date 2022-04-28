@@ -65,7 +65,7 @@ export default {
   },
   methods: {
     getTree(node){
-      this.$store.commit('portal/setField', {value: true, label: 'loading'})
+      this.$store.dispatch('portal/showLoading')
       portalService.getTree(node)
       .then(response => {
           this.data = response.data
@@ -81,8 +81,13 @@ export default {
           this.$store.commit('portal/setBreadCrumb', {value: {text: node, to: {name: 'tree-of-life', params:{node: node}}}})
           if(this.data){
             this.chart = this.createD3Tree();
-            this.$store.commit('portal/setField', {value: false, label: 'loading'})
+            this.$store.dispatch('portal/hideLoading')
           }
+          this.$store.dispatch('portal/hideLoading')
+      })
+      .catch(e => {
+        console.log(e)
+        this.$store.dispatch('portal/hideLoading')
       })
     },
     createD3Tree(){
@@ -138,13 +143,10 @@ export default {
         .each(function(d) { d.target.linkNode = this})
         .attr("d", this.linkConstant)
         .attr("stroke-width", function(d){
-            console.log(d) 
           return d.width
           })
         .attr("stroke", d => d.target.color)
         .on("mouseover", function(event, d){
-            console.log(d)	
-            console.log(event)
             div.transition()		
               .duration(200)		
               .style("opacity", .9);		
@@ -218,7 +220,8 @@ export default {
 
     getData(taxon){
       const name = taxon.name || taxon
-      if(name.split(" ").length > 1){
+      console.log(taxon)
+      if(taxon.children && taxon.children.length === 0){
         this.$router.push({name:'organism-details', params: {name: name}})
       }
       else {
@@ -228,9 +231,6 @@ export default {
         this.$router.push({name:'tree-of-life', params: {node: name}})
       }
     
-    },
-    mouseOverPath(){
-      return 
     },
     mouseovered(active) {
       return function(event, d) {
