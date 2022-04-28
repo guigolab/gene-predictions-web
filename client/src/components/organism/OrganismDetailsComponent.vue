@@ -130,7 +130,16 @@ export default {
             return this.organism.annotations.filter(ann => ann.targetGenome === assemblyName)
         },
         getMetadataFields(assembly){
-            const metadata = Object.entries(assembly).filter((entry => typeof Object.values(entry)[0] === 'string'))
+            const metadata = Object.entries(assembly)
+            .map(([key,value]) => 
+                {
+                    console.log(key)
+                    console.log(typeof value === 'string')
+                    if (typeof value === 'string'){
+                        return [key,value]
+                    }
+                }).filter(entry => entry)
+            console.log(metadata)
             return Object.fromEntries(metadata)
             // return {chromosomes,biosample,...assembly}
         },

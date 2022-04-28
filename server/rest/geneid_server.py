@@ -1,12 +1,10 @@
 from flask import Response, request
 from flask import current_app as app
-from db.models import GeneIdResults,GeneIdStats
+from db.models import GeneIdResults
 from flask_restful import Resource
 from services import geneid_service
 from mongoengine.errors import ValidationError, DoesNotExist
 from errors import InternalServerError, SchemaValidationError, NotFound
-import json
-from mongoengine.queryset.visitor import Q
 
 
 

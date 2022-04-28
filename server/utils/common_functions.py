@@ -13,3 +13,4 @@ def resolve_params(allowed_params, **params):
 
 def auth_request(api_key):
   return api_key == API_KEY
+
