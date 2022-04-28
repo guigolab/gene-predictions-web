@@ -22,8 +22,6 @@ class OrganismApi(Resource):
 	def get(self,name):
 		try:
 			organism = Organism.objects(name=name).aggregate(*pipelines.OrganismPipeline).next()
-			app.logger.info(organism)
-			# utils.sort_lineage(organism['taxon_lineage']) #sort lineage (aggregation pipeline returns unordered list)
 			return Response(json.dumps(organism),mimetype="application/json", status=200)
 		except DoesNotExist:
 			raise NotFound

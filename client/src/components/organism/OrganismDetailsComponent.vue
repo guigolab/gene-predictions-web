@@ -2,6 +2,24 @@
 <b-container class="router-container" fluid>
     <b-row>
         <b-col>
+        <b-jumbotron style="margin-bottom:0px!important" header-level="4" bg-variant="white" text-variant="dark" border-variant="white">
+        <template #header>{{organism.name}}</template>
+        <template #lead>
+            {{organism.common_name}}
+        </template>
+        <hr class="my-4" >
+        <div style="font-size: 0.85rem !important">
+            <b-link v-for="node in reverseItems(organism.ordered_lineage)" :key="node.taxid" 
+            :to="{name: 'tree-of-life', params: {node: node.name}}"
+            >
+                {{node.name}} (<strong>{{node.rank}}</strong>)
+            </b-link>
+        </div>
+        </b-jumbotron>
+        </b-col>
+    </b-row>
+    <!-- <b-row>
+        <b-col>
             <b-row>
                 <b-col>
                     <h2>{{organism.common_name ? organism.name +' ('+ organism.common_name + ')': organism.name}}</h2>
@@ -17,25 +35,35 @@
                 </b-col>
             </b-row>
         </b-col>
-    </b-row>
+    </b-row> -->
+    <!-- <b-row>
+        <b-col>
+            <b-card-text></b-card-text>
+        </b-col>
+    </b-row> -->
     <b-row>
         <b-col lg="3">
-            <div class="accordion" role="tablist">
-                <b-card bg-variant="light" no-body class="mb-1" v-for="assembly in organism.genomes" :key="assembly.name">
-                    <b-card-header header-tag="header" class="p-1" role="tab">
-                        <b-button variant="info" block v-b-toggle="assembly.name">{{assembly.name}}</b-button>
-                    </b-card-header>
-                    <b-collapse :id="assembly.name" accordion="my-accordion" role="tabpanel">
-                        <b-card-body>
-                            <p>Fasta files of {{assembly.name}}</p>
-                            <b-list-group>
-                                <b-list-group-item :href="assembly.fastaLocation">Download fa.gz</b-list-group-item>
-                                <b-list-group-item :href="assembly.faiLocation">Download fa.gz.fai</b-list-group-item>
-                                <b-list-group-item :href="assembly.gziLocation">Download fa.gz.gzi</b-list-group-item>
-                            </b-list-group>
-                        </b-card-body>
-                        <b-card-body>
-                            <b-card :title="'Gff3 files of '+assembly.name">
+            <b-card :title="assembly.name" border-variant="info" header-tag="header" v-for="assembly in organism.genomes" :key="assembly.name">
+                    <b-button variant="outline-info" @click="getAssemblyMetadata(assembly.insdc_accession)" block>Metadata</b-button>
+                    <div class="accordion" role="tablist">
+                        <b-card border-variant="info" no-body class="mb-1">
+                            <b-card-header header-tag="header" class="p-1" role="tab">
+                                <b-button variant="outline-info" block v-b-toggle="assembly.name+'fasta'">Fasta files</b-button>
+                            </b-card-header>
+                            <b-collapse :id="assembly.name+'fasta'" accordion="my-accordion" role="tabpanel">
+                                <b-list-group>
+                                    <b-list-group-item :href="assembly.fastaLocation">Download fa.gz</b-list-group-item>
+                                    <b-list-group-item :href="assembly.faiLocation">Download fa.gz.fai</b-list-group-item>
+                                    <b-list-group-item :href="assembly.gziLocation">Download fa.gz.gzi</b-list-group-item>
+                                </b-list-group>
+                            </b-collapse>
+                        </b-card>
+                        <b-card border-variant="info" no-body class="mb-1">
+                            <b-card-header header-tag="header" class="p-1" role="tab">
+                                <b-button variant="outline-info" block v-b-toggle="assembly.name+'gff'">Gff3 files</b-button>
+                            </b-card-header>
+                            <b-collapse :id="assembly.name+'gff'" visible accordion="my-accordion" role="tabpanel">
+                                <b-card border-variant="info">
                                 <b-list-group v-for="ann in getAssemblyAnnotations(assembly.name)" :key="ann.name">
                                 <!-- <p>{{ann.name}}</p> -->
                                 <p :id="ann.name">{{ann.name}}</p>
@@ -48,10 +76,10 @@
                                 </b-list-group>
                                 </b-list-group>
                             </b-card>
-                        </b-card-body>
-                    </b-collapse>
-                </b-card>
-            </div>
+                            </b-collapse>
+                        </b-card>
+                    </div>
+            </b-card>
         </b-col>
         <b-col lg="9">
             <div v-if="selectedAssembly">
@@ -59,19 +87,21 @@
             </div>
         </b-col>
     </b-row>
+    <assembly-info-modal :metadata="metadata" :chromosomes="chromosomes" :biosample="biosample"/>
 </b-container>
 </template>
 
 <script>
-import {BCollapse,BCard,BCardHeader,BCardBody,BButton,BTooltip,BListGroup,BListGroupItem} from 'bootstrap-vue'
+import {BCollapse,BCard,BCardHeader,BButton,BTooltip,BListGroup,BListGroupItem,BJumbotron} from 'bootstrap-vue'
 import JBrowse from '../../views/JBrowseComponent.vue'
+import DataPortalService from '../../services/DataPortalService'
+import AssemblyInfoModal from '../modal/AssemblyInfoModal.vue'
 export default {
-    components: { JBrowse,BCard,BCollapse,BButton,BListGroup,BListGroupItem,BCardHeader,BCardBody,BTooltip},
+    components: { JBrowse,BCard,BCollapse,BButton,BListGroup,BListGroupItem,BCardHeader,BTooltip, AssemblyInfoModal,BJumbotron},
     props:['organism'],
     watch:{
         organism: {
             handler(){
-                this.$root.$emit('bv::toggle::collapse', this.firstAssemblyName)
                 this.toGenomeBrowser(this.firstAssemblyName)
             },
             deep:true
@@ -84,28 +114,56 @@ export default {
     },
     data(){
         return {
-            selectedAssembly:''
+            selectedAssembly:'',
+            metadataLoaded: false,
+            chromosomes:[],
+            biosample:null,
+            metadata:null,
         }
     },
-    mounted(){
-        this.$root.$emit('bv::toggle::collapse', this.firstAssemblyName)
-        this.$root.$on('bv::collapse::state', (collapseId, isJustShown) => {
-            if(isJustShown){
-                this.toGenomeBrowser(collapseId)
-            }
-        })
+    created(){
+        this.toGenomeBrowser(this.firstAssemblyName)
+        // this.$root.$emit('bv::toggle::collapse', this.firstAssemblyName)
     },
     methods: {
         getAssemblyAnnotations(assemblyName){
             return this.organism.annotations.filter(ann => ann.targetGenome === assemblyName)
         },
+        getMetadataFields(assembly){
+            const metadata = Object.entries(assembly).filter((entry => typeof Object.values(entry)[0] === 'string'))
+            return Object.fromEntries(metadata)
+            // return {chromosomes,biosample,...assembly}
+        },
         reverseItems(items) {
             return items.slice().reverse();
         },
+        getAssemblyMetadata(accession){
+            this.$store.dispatch('portal/showLoading')
+            DataPortalService.getAssemblyMetadata(accession)
+            .then(response => {
+                if(response.data && response.data.assemblies){
+                    this.chromosomes = response.data.assemblies[0].assembly.chromosomes
+                    this.biosample = response.data.assemblies[0].assembly.biosample
+                    this.metadata = this.getMetadataFields(response.data.assemblies[0].assembly)
+                    this.$store.dispatch('portal/hideLoading')
+                    this.$bvModal.show('assembly-info-modal')
+                }
+                this.$store.dispatch('portal/hideLoading')
+                return null
+            })
+            .catch(e => {
+                console.log(e)
+                this.$store.dispatch('portal/hideLoading')
+            })
+        },
         transformEvidences(evidenceString){
             const values = evidenceString.split('.')
-            const taxIdToName = this.organism.ordered_lineage.filter(node => node.taxid === values[1])[0].name
-            return values[0]+' '+values[2]+' '+taxIdToName
+            const taxIdToName = this.organism.ordered_lineage.filter(node => node.taxid === values[1])
+            if(taxIdToName.length){
+                return values[0]+' '+values[2]+' '+taxIdToName[0].name
+            }
+            return evidenceString
+            
         },
         toGenomeBrowser(assemblyName){
             const annotations = this.getAssemblyAnnotations(assemblyName)

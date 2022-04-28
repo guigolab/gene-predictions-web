@@ -1,6 +1,6 @@
 import http from "../utils/http-axios"
 
-const base = http.base
+const {base, ncbi} = http
 
 class DataPortalService {
 
@@ -33,6 +33,10 @@ class DataPortalService {
             params:params
         })
     }
+    getAssemblyMetadata(accession){
+        return ncbi.get(`/datasets/v1/genome/accession/${accession}`)
+    }
+
 }
 
 export default new DataPortalService();

@@ -12,9 +12,7 @@
       <b-row>
         <b-col lg="1"/>
         <b-col lg="10">
-          <b-container fluid class="router-container">
-              <router-view />
-          </b-container>
+            <router-view />
         </b-col>
         <b-col lg="1"/>
       </b-row>
