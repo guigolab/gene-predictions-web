@@ -17,10 +17,14 @@
            <b-icon icon="diagram3" variant="outline-info"></b-icon>
             TREE OF LIFE 
           </b-nav-item> 
-          <!-- <b-nav-item class="nav-link" to="/geneid-form" >
-          <b-icon icon="gear-wide" variant="outline-info"></b-icon>
-            GENEID WEB SERVER
-          </b-nav-item> -->
+          <b-nav-item class="nav-link" href="https://github.com/guigolab/gene-predictions-web" >
+          <b-icon-github variant="outline-info"/>
+            Geneid Predictions
+          </b-nav-item>
+          <b-nav-item class="nav-link" href="https://github.com/FerriolCalvet/geneidBLASTx-nf">
+          <b-icon-github variant="outline-info"/>
+            geneidBLASTx-nf
+          </b-nav-item>
       </b-nav>
     </div>
     </b-sidebar>
@@ -28,11 +32,11 @@
 </div>
 </template>
 <script>
-import { BNavbar, BSidebar, BNav, BNavbarToggle, BNavItem, BNavbarBrand} from 'bootstrap-vue'
+import { BNavbar, BIconGithub, BSidebar, BNav, BNavbarToggle, BNavItem, BNavbarBrand} from 'bootstrap-vue'
 
 export default {
   components: {
-    BNavbar, BSidebar, BNav, BNavbarToggle, BNavItem, BNavbarBrand
+    BNavbar, BSidebar, BNav, BIconGithub,BNavbarToggle, BNavItem, BNavbarBrand
   }
   
 }
