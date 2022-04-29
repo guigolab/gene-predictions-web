@@ -323,9 +323,7 @@ export default {
         // // })
       },
       onFastaFileChange(e) {
-        console.log(this.fastaFile)
         this.fastaFile = e.target.files[0]
-        console.log(this.fastaFile)
         // console.log(this.$store.getters['form/getFastaFile'])
         // // console.log(e.target.files[0])
         // this.$store.commit('form/updateForm',{label: 'fastaFile', value: e.target.files[0]})

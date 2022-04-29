@@ -19,7 +19,6 @@ export default {
     },
     watch:{
         name: function(name){
-            console.log('the organism has changed')
             this.getOrganism(name)
         }
     },

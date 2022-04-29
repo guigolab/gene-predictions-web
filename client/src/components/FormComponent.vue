@@ -168,9 +168,7 @@ export default {
         this.loading = true
         fileService.getAll({type: 'param'}).then(response => {
             this.$nextTick(() => {
-                console.log('before value assignment')
                 this.paramOptions = response.data.map(param => ({text : param.organism, value : param.name}))
-                console.log(this.paramOptions)
                 this.loading = false
             })
         })

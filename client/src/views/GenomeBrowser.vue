@@ -43,8 +43,7 @@ export default {
   },
   methods: {
       setTracks (tracks) {
-          console.log("father")
-            this.tracks = tracks
+          this.tracks = tracks
       }
   }
 };

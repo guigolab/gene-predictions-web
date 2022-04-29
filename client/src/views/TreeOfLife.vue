@@ -220,7 +220,6 @@ export default {
 
     getData(taxon){
       const name = taxon.name || taxon
-      console.log(taxon)
       if(taxon.children && taxon.children.length === 0){
         this.$router.push({name:'organism-details', params: {name: name}})
       }

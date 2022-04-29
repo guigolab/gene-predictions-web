@@ -19,8 +19,6 @@ const state = () => ({
 })
 const mutations= {
     updateForm(state, payload){
-        console.log(payload)
-        console.log(payload.value)
         state.geneidForm[payload.label] = payload.value
     },
     getParams(state){
