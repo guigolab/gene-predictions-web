@@ -5,8 +5,8 @@
           <b-row>
             <b-col style="min-height:600px">
               <h1 style="text-align:center">{{node}}</h1>
-              <!-- <svg ref="legend"/> -->
-                <div ref="tooltip" class="tooltip"></div>
+              <b-form-input id="range-1" v-model="maxNodes" type="range" min="30" max="150"></b-form-input>
+              <div class="mt-2">Leaves limit: {{ maxNodes }}</div>                <div ref="tooltip" class="tooltip"></div>
                 <svg ref="svg"  class="tree-svg"/>
             </b-col>
           </b-row>
@@ -21,6 +21,7 @@ import * as d3 from "d3";
 import portalService from "../services/DataPortalService";
 // import fileService from "../services/TaxonFileService"
 // import FileListModal from '../components/modal/FileListModal.vue';
+import {BFormInput} from 'bootstrap-vue'
 
 export default {
   name: "tree-of-life",
@@ -34,10 +35,9 @@ export default {
         domains: [],
         legendDomains: [],
         stack: [],
-        organism: '',
-        files: [],
     };
   },
+  components:{BFormInput},
   computed: {
     width(){
       return this.$refs.svg.clientWidth
@@ -53,6 +53,19 @@ export default {
     },
     legendPosition(){
       return this.width <= 450 ? -(this.width + this.outerRadius) : -this.outerRadius
+    },
+    maxNodes:{
+      get(){
+        return this.$store.getters['portal/getMaxNodes']
+      },
+      set(value){
+        this.$store.commit('portal/setMaxNodes',{value:value})
+        console.log(value)
+        console.log(this.leaves)
+        if(value <= this.data.leaves){
+          this.getTree(this.node, value)
+        }
+      }
     }
   },
   watch: {
@@ -66,7 +79,7 @@ export default {
   methods: {
     getTree(node){
       this.$store.dispatch('portal/showLoading')
-      portalService.getTree(node)
+      portalService.getTree(node,this.maxNodes)
       .then(response => {
           this.data = response.data
           const firstFork = this.getFirstFork(this.data)
@@ -142,9 +155,6 @@ export default {
       .join("path")
         .each(function(d) { d.target.linkNode = this})
         .attr("d", this.linkConstant)
-        .attr("stroke-width", function(d){
-          return d.width
-          })
         .attr("stroke", d => d.target.color)
         .on("mouseover", function(event, d){
             div.transition()		
@@ -229,7 +239,6 @@ export default {
         }
         this.$router.push({name:'tree-of-life', params: {node: name}})
       }
-    
     },
     mouseovered(active) {
       return function(event, d) {

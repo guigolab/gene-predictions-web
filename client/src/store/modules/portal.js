@@ -12,7 +12,8 @@ const state = () => ({
     currentPage: 1,
     tree: null,
     position: '',
-    breadcrumbs: [{text: 'Home', to: {name: 'home-page'}}] // home as default
+    breadcrumbs: [{text: 'Home', to: {name: 'home-page'}}], // home as default
+    maxLeaves:90
 })
 
 const findObj = (arr, idToFind) => {
@@ -58,6 +59,9 @@ const mutations = {
     hideLoading(state){
         state.loading = false
     },
+    setMaxNodes(state,payload){
+        state.maxLeaves = payload.value
+    },
     addTaxNameH(state){
         const index = state.taxNameHistory.indexOf(state.taxName)
         if(state.taxName === 'Eukaryota'){
@@ -84,6 +88,9 @@ const getters= {
     },
     getTaxNameHistory(state){
         return state.taxNameHistory
+    },
+    getMaxNodes(state){
+        return state.maxLeaves
     }
 }
 const actions= {

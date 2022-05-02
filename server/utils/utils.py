@@ -1,9 +1,5 @@
 from lxml import etree
 # from .constants import CHECKLIST_PARSER
-import os
-
-
-MAX_NODES = os.getenv('MAX_NODES')
 
 def parse_taxon(xml):
     root = etree.fromstring(xml)
