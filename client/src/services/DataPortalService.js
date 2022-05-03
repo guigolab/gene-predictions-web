@@ -17,8 +17,10 @@ class DataPortalService {
     getOrganism(name) {
         return base.get(`/organisms/${name}`)
     }
-    getTree(node){
-        return base.get(`/tree/${node}`);    
+    getTree(node, maxLeaves){
+        return base.get(`/tree/${node}`,{
+            params: {maxLeaves:maxLeaves}
+        });    
     }
     getTaxonChildren(name) {
         return base.get(`/taxons/${name}`)

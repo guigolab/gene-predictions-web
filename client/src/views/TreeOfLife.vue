@@ -5,8 +5,9 @@
           <b-row>
             <b-col style="min-height:600px">
               <h1 style="text-align:center">{{node}}</h1>
-              <b-form-input id="range-1" v-model="maxNodes" type="range" min="30" max="150"></b-form-input>
-              <div class="mt-2">Leaves limit: {{ maxNodes }}</div>                <div ref="tooltip" class="tooltip"></div>
+              <b-form-input debounce="500" id="range-1" v-model="maxNodes" type="range" :disabled="data && data.leaves < 30" :min="data && data.leaves < 30 ? data.leaves : '30'" :max="data && data.leaves < 150 ? data.leaves : '150'"></b-form-input>
+              <div class="mt-2">Leaves limit: {{ maxNodes }}</div>
+              <div ref="tooltip" class="tooltip"></div>
                 <svg ref="svg"  class="tree-svg"/>
             </b-col>
           </b-row>
@@ -35,6 +36,7 @@ export default {
         domains: [],
         legendDomains: [],
         stack: [],
+        waitingInput:false
     };
   },
   components:{BFormInput},
@@ -55,13 +57,12 @@ export default {
       return this.width <= 450 ? -(this.width + this.outerRadius) : -this.outerRadius
     },
     maxNodes:{
+      //add wait before triggering request
       get(){
         return this.$store.getters['portal/getMaxNodes']
       },
       set(value){
         this.$store.commit('portal/setMaxNodes',{value:value})
-        console.log(value)
-        console.log(this.leaves)
         if(value <= this.data.leaves){
           this.getTree(this.node, value)
         }
@@ -230,7 +231,7 @@ export default {
 
     getData(taxon){
       const name = taxon.name || taxon
-      if(taxon.children && taxon.children.length === 0){
+      if(taxon.rank === 'species' || taxon.rank === 'subspecies'){
         this.$router.push({name:'organism-details', params: {name: name}})
       }
       else {
