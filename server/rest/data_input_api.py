@@ -5,7 +5,7 @@ from flask_restful import Resource
 from errors import Unauthorized
 import os
 
-API_KEY = os.getenv('SECRET_KEY')
+API_KEY = os.getenv('API_KEY')
 REQUIRED_PARAMS=['taxid','API_KEY','type']
 
 class InputDataApi(Resource):
