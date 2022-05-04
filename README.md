@@ -14,6 +14,10 @@
   <p>
   This portal contains the geneid predictions of the <a href="https://github.com/FerriolCalvet/geneidBLASTx-nf">geneidBLASTx-nf</a> pipeline
   </p>
+  <br/>
+  <p>
+  See: https://genome.crg.cat/geneid-predictions
+  </p>
 </div>
 </br>
 <div>
